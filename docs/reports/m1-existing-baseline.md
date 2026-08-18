@@ -20,8 +20,9 @@ In accordance with the repository contract:
 ### 2.1 Runtime
 - **Repository**: `https://github.com/ggml-org/llama.cpp.git`
 - **Pinned Commit**: `169e4a7ff201e666c2325bcd35afb64573e39d09`
-- **Build Types**:
-  1. **Default Upstream Baseline (MMQ / Default Dispatch)**:
+- **Tracked Source State**: Completely clean (verified via `git diff-index --quiet HEAD --`)
+- **Build Configurations**:
+  1. **Default Upstream Baseline (Default MMQ Dispatch)**:
      ```bash
      CUDAFLAGS="-I.cuda_compat/include -Wno-deprecated-gpu-targets" \
      cmake -S .deps/llama.cpp -B .deps/llama.cpp/build-default \
@@ -45,13 +46,13 @@ In accordance with the repository contract:
 
 ### 2.2 System Toolchain
 - **Host**: `BigBoy`
-- **OS**: Debian GNU/Linux 13 (trixie) / Debian 13.6
+- **OS**: Debian GNU/Linux 13 (trixie)
 - **Kernel**: Linux 6.12.100+deb13-amd64 x86_64
 - **NVIDIA Driver**: `550.163.01`
 - **CUDA Toolkit**: CUDA 12.9.2 (`/usr/local/cuda-12.9`)
 - **NVCC**: 12.9.86 (`Cuda compilation tools, release 12.9, V12.9.86`)
-- **Host Compiler**: GCC 14.2.0 / G++ 14.2.0
-- **C Library**: glibc 2.41 (`Debian GLIBC 2.41-12+deb13u3`)
+- **Host Compiler**: GCC 14.2.0 (`gcc (Debian 14.2.0-19) 14.2.0`)
+- **C Library**: glibc 2.41 (`ldd (Debian GLIBC 2.41-12+deb13u3) 2.41`)
 
 ---
 
@@ -99,7 +100,11 @@ In accordance with the repository contract:
    - Turing processes are pinned to NUMA Node 1 via `numactl --cpunodebind=1 --membind=1`.
 3. **Full GPU Offload**:
    - Full model offload requested (`-ngl 99`).
-   - Verified that all 36 model layers and weights reside 100% in GPU VRAM (peak observed VRAM: 2841–3129 MiB out of 6065 MiB usable).
+   - Startup logs confirm complete layer and tensor offloading:
+     - `load_tensors: offloaded 37/37 layers to GPU`
+     - `CUDA0 model buffer size = 2375.91 MiB`, `CPU_Mapped model buffer size = 304.28 MiB`
+     - `llama_kv_cache: 36 layers: dev = CUDA0`
+   - Complete runtime diagnostic logs are committed in [pascal-offload-proof.txt](../../bench/results/m1/pascal-offload-proof.txt) and [turing-offload-proof.txt](../../bench/results/m1/turing-offload-proof.txt).
 4. **Canonical Workload**:
    - Prompt Processing: `512` tokens (`-p 512`)
    - Token Generation: `128` tokens (`-n 128`)
@@ -110,7 +115,7 @@ In accordance with the repository contract:
    - Flash Attention: Upstream default (`auto`)
    - Repetitions: `10` measured iterations per test configuration.
 5. **Statistical Metrics**:
-   - Conventional median, arithmetic mean, minimum, maximum, spread, and sample standard deviation derived from raw per-run `samples_ns` / `samples_ts` arrays.
+   - Conventional median, arithmetic mean, minimum, maximum, spread, and sample standard deviation ($N - 1$ degrees of freedom) calculated from raw `samples_ns` / `samples_ts` arrays.
 6. **Synchronous Telemetry**:
    - A dedicated telemetry sampler collected device temperature, power draw, SM clock, memory clock, utilization, and VRAM occupancy every 250 ms during all runs.
 
@@ -123,12 +128,12 @@ In accordance with the repository contract:
 - **NUMA**: Node 0 (`numactl --cpunodebind=0 --membind=0`)
 - **Runtime Path**: Default Upstream (`build-default`, MMQ DP4A active)
 
-| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | StdDev (t/s) | Spread (t/s) | Reps |
+| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | Sample StdDev (t/s) | Spread (t/s) | Reps |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **pp512** | `0` | **662.970** | 663.170 | 660.939 | 665.691 | 1.273 | 4.752 | 10 |
-| **tg128** | `0` | **38.133** | 38.144 | 38.018 | 38.261 | 0.090 | 0.242 | 10 |
-| **pp512** | `2048` | **454.218** | 454.108 | 452.156 | 455.680 | 0.856 | 3.524 | 10 |
-| **tg128** | `2048` | **35.320** | 35.319 | 35.296 | 35.331 | 0.009 | 0.035 | 10 |
+| **pp512** | `0` | **662.970** | 663.170 | 660.939 | 665.691 | 1.341 | 4.752 | 10 |
+| **tg128** | `0` | **38.133** | 38.144 | 38.018 | 38.261 | 0.095 | 0.242 | 10 |
+| **pp512** | `2048` | **454.218** | 454.108 | 452.156 | 455.680 | 0.902 | 3.524 | 10 |
+| **tg128** | `2048` | **35.320** | 35.319 | 35.296 | 35.331 | 0.010 | 0.035 | 10 |
 
 #### Individual Raw Samples (tokens/sec)
 - **pp512 @ depth 0**: `[660.939, 661.555, 662.757, 662.919, 662.940, 663.000, 663.801, 664.036, 664.059, 665.691]`
@@ -141,14 +146,14 @@ In accordance with the repository contract:
 ### 6.2 Turing Control Baseline (GTX 1660 SUPER)
 - **Isolation**: `CUDA_VISIBLE_DEVICES=GPU-8a043791-359d-1df4-9353-38c5bc98e5dd`
 - **NUMA**: Node 1 (`numactl --cpunodebind=1 --membind=1`)
-- **Runtime Path**: Default Upstream (`build-default`)
+- **Runtime Path**: Default Upstream (`build-default`, CC 7.5 MMQ selection)
 
-| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | StdDev (t/s) | Spread (t/s) | Reps |
+| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | Sample StdDev (t/s) | Spread (t/s) | Reps |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **pp512** | `0` | **252.917** | 252.761 | 251.347 | 252.946 | 0.472 | 1.599 | 10 |
-| **tg128** | `0` | **78.947** | 79.046 | 78.818 | 79.332 | 0.197 | 0.513 | 10 |
-| **pp512** | `2048` | **192.135** | 192.042 | 191.230 | 192.145 | 0.271 | 0.915 | 10 |
-| **tg128** | `2048` | **64.629** | 64.681 | 64.555 | 65.014 | 0.140 | 0.459 | 10 |
+| **pp512** | `0` | **252.917** | 252.761 | 251.347 | 252.946 | 0.497 | 1.599 | 10 |
+| **tg128** | `0` | **78.947** | 79.046 | 78.818 | 79.332 | 0.208 | 0.513 | 10 |
+| **pp512** | `2048` | **192.135** | 192.042 | 191.230 | 192.145 | 0.286 | 0.915 | 10 |
+| **tg128** | `2048` | **64.629** | 64.681 | 64.555 | 65.014 | 0.148 | 0.459 | 10 |
 
 #### Individual Raw Samples (tokens/sec)
 - **pp512 @ depth 0**: `[251.347, 252.880, 252.894, 252.915, 252.916, 252.918, 252.924, 252.933, 252.933, 252.946]`
@@ -163,10 +168,10 @@ In accordance with the repository contract:
 - **NUMA**: Node 0 (`numactl --cpunodebind=0 --membind=0`)
 - **Runtime Path**: Forced-cuBLAS (`-DGGML_CUDA_FORCE_CUBLAS=ON`)
 
-| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | StdDev (t/s) | Spread (t/s) | Reps | Comparison to Default MMQ |
+| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | Sample StdDev (t/s) | Spread (t/s) | Reps | Comparison to Default MMQ |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **pp512** | `0` | **380.736** | 380.755 | 380.009 | 381.981 | 0.496 | 1.972 | 10 | **42.6% slower** (380.7 vs 663.0 t/s) |
-| **tg128** | `0` | **37.883** | 37.885 | 37.866 | 37.901 | 0.011 | 0.035 | 10 | **0.7% slower** (37.88 vs 38.13 t/s) |
+| **pp512** | `0` | **380.736** | 380.755 | 380.009 | 381.981 | 0.523 | 1.972 | 10 | **42.6% slower** (380.7 vs 663.0 t/s) |
+| **tg128** | `0` | **37.883** | 37.885 | 37.866 | 37.901 | 0.012 | 0.035 | 10 | **0.7% slower** (37.88 vs 38.13 t/s) |
 
 #### Individual Raw Samples (tokens/sec)
 - **pp512 @ depth 0**: `[380.009, 380.438, 380.445, 380.453, 380.731, 380.742, 380.763, 380.991, 380.993, 381.981]`
@@ -178,10 +183,10 @@ In accordance with the repository contract:
 - **NUMA**: Node 0
 - **Configuration**: `-ngl 0`, 32 host threads, 3 repetitions
 
-| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | StdDev (t/s) | Reps |
+| Workload | Depth | Median (t/s) | Mean (t/s) | Min (t/s) | Max (t/s) | Sample StdDev (t/s) | Reps |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **pp512** | `0` | **211.369** | 210.166 | 207.735 | 211.393 | 1.719 | 3 |
-| **tg128** | `0` | **11.217** | 11.192 | 11.136 | 11.224 | 0.040 | 3 |
+| **pp512** | `0` | **211.369** | 210.166 | 207.735 | 211.393 | 2.105 | 3 |
+| **tg128** | `0` | **11.217** | 11.192 | 11.136 | 11.224 | 0.049 | 3 |
 
 ---
 
@@ -189,15 +194,15 @@ In accordance with the repository contract:
 
 Telemetry was captured at 250 ms intervals during physical benchmark runs.
 
-| Run Configuration | Samples | Temp Min–Max (°C) | Power Min–Max (W) | SM Clock Min–Max (MHz) | Mem Clock Min–Max (MHz) | Peak VRAM (MiB) | Throttling Observed |
+| Run Configuration | Samples | Temp Min–Max (°C) | Power Min–Max (W) | SM Clock Min–Max (MHz) | Mem Clock Min–Max (MHz) | Peak VRAM (MiB) | Thermal Behavior |
 | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Pascal Default Depth 0** | 151 | 48.0 – 70.0 | 7.4 – 127.3 | 139 – 1885 | 405 – 5003 | 2841 | None |
-| **Pascal Default Depth 2048** | 187 | 61.0 – 73.0 | 38.8 – 128.5 | 1695 – 1873 | 4799 – 5003 | 3129 | None |
-| **Pascal Forced-cuBLAS Depth 0** | 173 | 63.0 – 74.0 | 39.4 – 124.1 | 1695 – 1873 | 4799 – 5003 | 2929 | None |
-| **Turing Default Depth 0** | 142 | 44.0 – 68.0 | 9.4 – 126.4 | 300 – 1875 | 405 – 7000 | 2842 | None |
-| **Turing Default Depth 2048** | 210 | 58.0 – 74.0 | 28.6 – 128.1 | 495 – 1845 | 6801 – 7000 | 3130 | None |
+| **Pascal Default Depth 0** | 151 | 48.0 – 70.0 | 7.4 – 127.3 | 139 – 1885 | 405 – 5003 | 2841 | Stable boost clocks |
+| **Pascal Default Depth 2048** | 187 | 61.0 – 73.0 | 38.8 – 128.5 | 1695 – 1873 | 4799 – 5003 | 3129 | Stable boost clocks |
+| **Pascal Forced-cuBLAS Depth 0** | 173 | 63.0 – 74.0 | 39.4 – 124.1 | 1695 – 1873 | 4799 – 5003 | 2929 | Stable boost clocks |
+| **Turing Default Depth 0** | 142 | 44.0 – 68.0 | 9.4 – 126.4 | 300 – 1875 | 405 – 7000 | 2842 | Stable boost clocks |
+| **Turing Default Depth 2048** | 210 | 58.0 – 74.0 | 28.6 – 128.1 | 495 – 1845 | 6801 – 7000 | 3130 | Stable boost clocks |
 
-Both GPUs operated under their rated thermal ceiling (max observed 74.0 °C vs 83 °C thermal throttle threshold) and sustained boost clocks throughout all measurement runs.
+Both GPUs operated below their rated thermal ceilings (maximum observed 74.0 °C vs 83 °C thermal threshold) and sustained boost clocks throughout all measurement runs. No obvious thermal throttling is apparent from the recorded temperature and clock behavior, while explicit NVIDIA throttle-reason counters were not sampled in M1.
 
 ---
 
@@ -242,7 +247,7 @@ Inspection of the pinned upstream source (`ggml-org/llama.cpp` at commit `169e4a
          const int * __restrict__ x, const int * __restrict__ y, float * __restrict__ sum, const int k00)
      ```
 6. **SASS Disassembly Verification**:
-   - Inspection of the compiled `template-instances/mmq-instance-q4_k.cu.o` binary using `cuobjdump -sass` confirms dense generation of hardware `IDP.4A.S8.S8` instructions (Pascal DP4A byte dot-product with INT32 accumulation) targeting SM 6.1.
+   - Inspection of `mmq-instance-q4_k.cu.o` using `cuobjdump -sass` confirms dense generation of hardware `IDP.4A.S8.S8` instructions (Pascal DP4A byte dot-product with INT32 accumulation) targeting SM 6.1 (2,912 matching instructions recorded in [m1-pascal-q4k-sass.txt](../evidence/m1-pascal-q4k-sass.txt)).
 
 ---
 
@@ -286,39 +291,45 @@ So, if the memory bandwidth is low, the system can't keep up with the data trans
 
 1. **Current llama.cpp Baseline**:
    - Current `llama.cpp` achieved **662.970 median pp512 tokens/s** and **38.133 median tg128 tokens/s** on the physical GTX 1060 6GB under default dispatch at context depth 0.
-   - At context depth 2048, prompt processing drops to **454.218 median tokens/s** (a 31.5% reduction due to KV cache attention computation overhead), while token generation slightly reduces to **35.320 median tokens/s** (a 7.4% reduction).
+   - At context depth 2048, prompt processing drops to **454.218 median tokens/s** (a 31.5% reduction, consistent with increased KV cache attention computation overhead), while token generation slightly reduces to **35.320 median tokens/s** (a 7.4% reduction).
 2. **Forced-cuBLAS vs MMQ DP4A**:
    - Forcing dequantization + cuBLAS on Pascal degrades prompt processing by **42.6%** (down to 380.736 tokens/s), while token generation remains essentially unchanged (37.883 tokens/s).
-   - This proves that upstream's default MMQ selection is already an active, highly effective optimization on Pascal.
-3. **Pascal vs Turing Architecture Dynamics**:
-   - In autoregressive token generation (`tg128`), which is memory-bandwidth bound ($M=1$ matrix-vector multiplication), Turing GTX 1660 SUPER achieves **78.947 tokens/s** (2.07× Pascal's 38.133 tokens/s), closely mirroring the 1.75× memory bandwidth advantage of GDDR6 (336 GB/s) over GDDR5 (192 GB/s) plus architectural memory subsystem enhancements.
-   - In prompt processing (`pp512`), which is compute-bound ($M=512$), Pascal's default MMQ path utilizes its native DP4A compute path to achieve **662.970 tokens/s**, whereas Turing's default path (which lacks tensor cores on the GTX 1660 SUPER and uses default FP16/cuBLAS dequantization) runs at **252.917 tokens/s**.
+   - This indicates that upstream's default MMQ selection is an active, highly effective existing optimization on Pascal.
+3. **Turing Control Path & Cross-Architecture Observations**:
+   - The GTX 1660 SUPER default run enters `llama.cpp`'s MMQ selection according to the pinned CC 7.5 dispatch logic (`turing_mma_available(cc)`). The build contains `sm_75`, so CC 7.5 satisfies that architecture-level MMQ selection condition. The GTX 1660 SUPER is a TU116 GTX product without physical Tensor Cores. M1 does not establish the exact instruction-level behavior of that MMQ path on TU116.
+   - In token generation (`tg128`), the GTX 1660 SUPER achieves **78.947 tokens/s** compared to Pascal's **38.133 tokens/s**, which is consistent with the higher theoretical memory bandwidth of GDDR6 (336 GB/s) over GDDR5 (192 GB/s) and Turing memory subsystem differences.
+   - In prompt processing (`pp512`), Pascal default MMQ achieves **662.970 tokens/s**, while the Turing default run achieves **252.917 tokens/s**.
+   - M1 does not yet establish the limiting hardware resource for these execution paths; explicit bottleneck proof is deferred to M2.
 4. **Baseline Characterization**:
-   - Upstream `llama.cpp` already possesses a mature, hand-optimized DP4A quantized execution path for Pascal CC 6.1. Future research in this repository must acknowledge this established high watermark.
+   - Upstream `llama.cpp` already possesses a mature DP4A quantized execution path for Pascal CC 6.1. Future research in this repository must acknowledge this established high watermark.
 
 ---
 
 ## 11. Known Limitations
 
-- In M1, profiling with modern Nsight Compute was not performed due to Pascal SM 6.x architecture profiling constraints under recent toolchain releases; detailed hardware counter profiling is deferred to M2.
+- In M1, profiling with hardware performance counters was not performed due to Pascal SM 6.x architecture profiling constraints under recent toolchain releases; detailed hardware counter profiling is deferred to M2.
+- Explicit NVIDIA GPU throttle-reason bitmasks were not captured in the 250 ms telemetry sampling stream.
 
 ---
 
 ## 12. M1 Acceptance Evidence Files
 
-All raw benchmark JSON outputs, telemetry logs, and machine-readable manifests are preserved in the repository:
-- Manifest: [`bench/results/m1/manifest.json`](file:///home/taly/legacy-ai/bench/results/m1/manifest.json)
-- Statistical Analysis: [`bench/results/m1/analysis-summary.json`](file:///home/taly/legacy-ai/bench/results/m1/analysis-summary.json)
-- Pascal Default Depth 0: [`bench/results/m1/pascal-default-depth0.json`](file:///home/taly/legacy-ai/bench/results/m1/pascal-default-depth0.json)
-- Pascal Default Depth 2048: [`bench/results/m1/pascal-default-depth2048.json`](file:///home/taly/legacy-ai/bench/results/m1/pascal-default-depth2048.json)
-- Pascal Default Depth 0 Telemetry: [`bench/results/m1/pascal-default-depth0-telemetry.csv`](file:///home/taly/legacy-ai/bench/results/m1/pascal-default-depth0-telemetry.csv)
-- Pascal Default Depth 2048 Telemetry: [`bench/results/m1/pascal-default-depth2048-telemetry.csv`](file:///home/taly/legacy-ai/bench/results/m1/pascal-default-depth2048-telemetry.csv)
-- Pascal Forced cuBLAS Depth 0: [`bench/results/m1/pascal-cublas-depth0.json`](file:///home/taly/legacy-ai/bench/results/m1/pascal-cublas-depth0.json)
-- Pascal Forced cuBLAS Depth 0 Telemetry: [`bench/results/m1/pascal-cublas-depth0-telemetry.csv`](file:///home/taly/legacy-ai/bench/results/m1/pascal-cublas-depth0-telemetry.csv)
-- Turing Default Depth 0: [`bench/results/m1/turing-default-depth0.json`](file:///home/taly/legacy-ai/bench/results/m1/turing-default-depth0.json)
-- Turing Default Depth 2048: [`bench/results/m1/turing-default-depth2048.json`](file:///home/taly/legacy-ai/bench/results/m1/turing-default-depth2048.json)
-- Turing Default Depth 0 Telemetry: [`bench/results/m1/turing-default-depth0-telemetry.csv`](file:///home/taly/legacy-ai/bench/results/m1/turing-default-depth0-telemetry.csv)
-- Turing Default Depth 2048 Telemetry: [`bench/results/m1/turing-default-depth2048-telemetry.csv`](file:///home/taly/legacy-ai/bench/results/m1/turing-default-depth2048-telemetry.csv)
-- CPU Context Depth 0: [`bench/results/m1/cpu-context-depth0.json`](file:///home/taly/legacy-ai/bench/results/m1/cpu-context-depth0.json)
-- Pascal Sanity Log: [`bench/results/m1/pascal-cli-sanity.txt`](file:///home/taly/legacy-ai/bench/results/m1/pascal-cli-sanity.txt)
-- Turing Sanity Log: [`bench/results/m1/turing-cli-sanity.txt`](file:///home/taly/legacy-ai/bench/results/m1/turing-cli-sanity.txt)
+All raw benchmark JSON outputs, telemetry logs, offload proofs, disassembly evidence, and machine-readable manifests are preserved in the repository:
+- Manifest: [manifest.json](../../bench/results/m1/manifest.json)
+- Statistical Analysis: [analysis-summary.json](../../bench/results/m1/analysis-summary.json)
+- Pascal Offload Proof: [pascal-offload-proof.txt](../../bench/results/m1/pascal-offload-proof.txt)
+- Turing Offload Proof: [turing-offload-proof.txt](../../bench/results/m1/turing-offload-proof.txt)
+- Pascal SASS Disassembly Evidence: [m1-pascal-q4k-sass.txt](../evidence/m1-pascal-q4k-sass.txt)
+- Pascal Default Depth 0: [pascal-default-depth0.json](../../bench/results/m1/pascal-default-depth0.json)
+- Pascal Default Depth 2048: [pascal-default-depth2048.json](../../bench/results/m1/pascal-default-depth2048.json)
+- Pascal Default Depth 0 Telemetry: [pascal-default-depth0-telemetry.csv](../../bench/results/m1/pascal-default-depth0-telemetry.csv)
+- Pascal Default Depth 2048 Telemetry: [pascal-default-depth2048-telemetry.csv](../../bench/results/m1/pascal-default-depth2048-telemetry.csv)
+- Pascal Forced cuBLAS Depth 0: [pascal-cublas-depth0.json](../../bench/results/m1/pascal-cublas-depth0.json)
+- Pascal Forced cuBLAS Depth 0 Telemetry: [pascal-cublas-depth0-telemetry.csv](../../bench/results/m1/pascal-cublas-depth0-telemetry.csv)
+- Turing Default Depth 0: [turing-default-depth0.json](../../bench/results/m1/turing-default-depth0.json)
+- Turing Default Depth 2048: [turing-default-depth2048.json](../../bench/results/m1/turing-default-depth2048.json)
+- Turing Default Depth 0 Telemetry: [turing-default-depth0-telemetry.csv](../../bench/results/m1/turing-default-depth0-telemetry.csv)
+- Turing Default Depth 2048 Telemetry: [turing-default-depth2048-telemetry.csv](../../bench/results/m1/turing-default-depth2048-telemetry.csv)
+- CPU Context Depth 0: [cpu-context-depth0.json](../../bench/results/m1/cpu-context-depth0.json)
+- Pascal Sanity Log: [pascal-cli-sanity.txt](../../bench/results/m1/pascal-cli-sanity.txt)
+- Turing Sanity Log: [turing-cli-sanity.txt](../../bench/results/m1/turing-cli-sanity.txt)

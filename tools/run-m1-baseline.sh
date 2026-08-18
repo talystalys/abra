@@ -8,9 +8,11 @@ MODELS_DIR="${REPO_ROOT}/models"
 MODEL_FILE="${MODELS_DIR}/Qwen3-4B-Q4_K_M.gguf"
 EXPECTED_SHA256="7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
 
-LLAMA_BENCH_DEFAULT="${REPO_ROOT}/.deps/llama.cpp/build-default/bin/llama-bench"
-LLAMA_CLI_DEFAULT="${REPO_ROOT}/.deps/llama.cpp/build-default/bin/llama-cli"
-LLAMA_BENCH_CUBLAS="${REPO_ROOT}/.deps/llama.cpp/build-cublas/bin/llama-bench"
+LLAMA_DIR="${REPO_ROOT}/.deps/llama.cpp"
+PINNED_COMMIT="169e4a7ff201e666c2325bcd35afb64573e39d09"
+LLAMA_BENCH_DEFAULT="${LLAMA_DIR}/build-default/bin/llama-bench"
+LLAMA_CLI_DEFAULT="${LLAMA_DIR}/build-default/bin/llama-cli"
+LLAMA_BENCH_CUBLAS="${LLAMA_DIR}/build-cublas/bin/llama-bench"
 export LD_LIBRARY_PATH="/usr/local/cuda-12.9/lib64:${LD_LIBRARY_PATH:-}"
 
 PASCAL_UUID="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
@@ -26,6 +28,30 @@ echo "Milestone M1: llama.cpp Baseline Benchmark Suite"
 echo "Host: $(hostname)"
 echo "Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 echo "============================================================"
+
+# Verify pinned llama.cpp commit and clean source
+if [[ ! -d "${LLAMA_DIR}/.git" ]]; then
+    echo "llama.cpp repository missing at ${LLAMA_DIR}" >&2
+    echo "Running setup script..."
+    "${REPO_ROOT}/tools/setup-llama-cpp.sh"
+fi
+
+cd "${LLAMA_DIR}"
+ACTUAL_LLAMA_COMMIT="$(git rev-parse HEAD)"
+if [[ "${ACTUAL_LLAMA_COMMIT}" != "${PINNED_COMMIT}" ]]; then
+    echo "FATAL: llama.cpp commit mismatch!" >&2
+    echo "Expected: ${PINNED_COMMIT}" >&2
+    echo "Actual:   ${ACTUAL_LLAMA_COMMIT}" >&2
+    exit 1
+fi
+
+if ! git diff-index --quiet HEAD --; then
+    echo "FATAL: Tracked source files in ${LLAMA_DIR} are modified!" >&2
+    git status --short
+    exit 1
+fi
+echo "Verified clean llama.cpp source at pinned commit: ${ACTUAL_LLAMA_COMMIT}"
+cd "${REPO_ROOT}"
 
 # Verify model hash
 if [[ ! -f "${MODEL_FILE}" ]]; then
@@ -120,7 +146,7 @@ run_with_telemetry "${PASCAL_UUID}" \
     -r 10 \
     -o json
 
-# Pascal forced-cuBLAS diagnostic @ depth 0
+# Pascal Forced-cuBLAS Diagnostic
 echo "--> Running Pascal Forced-cuBLAS Diagnostic @ depth 0 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 run_with_telemetry "${PASCAL_UUID}" \
@@ -136,7 +162,7 @@ run_with_telemetry "${PASCAL_UUID}" \
     -r 10 \
     -o json
 
-# Pascal CLI Sanity Check
+# Pascal llama-cli End-to-End Sanity Check
 echo "--> Running Pascal llama-cli End-to-End Sanity Check..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
@@ -148,10 +174,18 @@ numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
     -st --simple-io > "${RESULTS_DIR}/pascal-cli-sanity.txt" 2>&1
 echo "Pascal CLI Sanity output written to: ${RESULTS_DIR}/pascal-cli-sanity.txt"
 
+# Pascal Offload Proof Diagnostics
+echo "--> Generating Pascal Offload Proof Diagnostics..."
+CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
+numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
+"${LLAMA_BENCH_DEFAULT}" \
+    -m "${MODEL_FILE}" \
+    -p 512 -n 128 -ngl 99 -r 1 -v > "${RESULTS_DIR}/pascal-offload-proof.txt" 2>&1
+echo "Pascal Offload Proof written to: ${RESULTS_DIR}/pascal-offload-proof.txt"
+
 # -----------------------------------------------------------------------------
 # 2. Turing Control Baseline (GTX 1660 SUPER)
 # -----------------------------------------------------------------------------
-echo
 echo "============================================================"
 echo "2. Turing Control Baseline (GTX 1660 SUPER, CC 7.5)"
 echo "   Isolation: ${TURING_UUID} | NUMA: ${TURING_NUMA}"
@@ -201,10 +235,18 @@ numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
     -st --simple-io > "${RESULTS_DIR}/turing-cli-sanity.txt" 2>&1
 echo "Turing CLI Sanity output written to: ${RESULTS_DIR}/turing-cli-sanity.txt"
 
+# Turing Offload Proof Diagnostics
+echo "--> Generating Turing Offload Proof Diagnostics..."
+CUDA_VISIBLE_DEVICES="${TURING_UUID}" \
+numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
+"${LLAMA_BENCH_DEFAULT}" \
+    -m "${MODEL_FILE}" \
+    -p 512 -n 128 -ngl 99 -r 1 -v > "${RESULTS_DIR}/turing-offload-proof.txt" 2>&1
+echo "Turing Offload Proof written to: ${RESULTS_DIR}/turing-offload-proof.txt"
+
 # -----------------------------------------------------------------------------
 # 3. CPU Context Baseline (Context Only)
 # -----------------------------------------------------------------------------
-echo
 echo "============================================================"
 echo "3. CPU Context Baseline (CONTEXT ONLY — NOT PRIMARY COMPETITOR)"
 echo "============================================================"
@@ -216,12 +258,13 @@ numactl --cpunodebind=0 --membind=0 \
     -b 2048 -ub 512 \
     -ctk f16 -ctv f16 \
     -ngl 0 \
+    -t 32 \
     -r 3 \
     -o json > "${RESULTS_DIR}/cpu-context-depth0.json"
 echo "CPU Context output written to: ${RESULTS_DIR}/cpu-context-depth0.json"
 
 # -----------------------------------------------------------------------------
-# 4. Generate Analysis & Manifest
+# 4. Processing Statistics and Manifest
 # -----------------------------------------------------------------------------
 echo
 echo "============================================================"

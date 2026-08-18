@@ -1,0 +1,61 @@
+# Milestone M1 Evidence: Pascal SM 6.1 SASS Disassembly of Q4_K MMQ Kernel
+
+## 1. Object Inspected
+- Object File: `.deps/llama.cpp/build-default/ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/template-instances/mmq-instance-q4_k.cu.o`
+- Target Architectures in Build: `sm_61`, `sm_75`
+- Compilation Compiler: NVIDIA NVCC 12.9.86
+- Compilation Flags: `CUDAFLAGS="-I.cuda_compat/include -Wno-deprecated-gpu-targets"`
+
+## 2. Disassembly Command
+```bash
+/usr/local/cuda-12.9/bin/cuobjdump -sass .deps/llama.cpp/build-default/ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/template-instances/mmq-instance-q4_k.cu.o
+```
+
+## 3. Matching Instruction Frequency
+- Total `IDP.4A` instruction instances in `mmq-instance-q4_k.cu.o`: **2,912**
+
+## 4. Architecture & Function Context
+The `mmq-instance-q4_k.cu.o` object instantiates the matrix-multiplication kernels for `Q4_K` weights (`GGML_TYPE_Q4_K`), which are executed against `Q8_1` dynamically quantized activations. For Pascal Compute Capability 6.1 (`__CUDA_ARCH__ >= 610`), the inner loop invokes `ggml_cuda_mmq_vec_dot_q4_K_q8_1_dp4a`, which compiles `__dp4a` intrinsics into native hardware `IDP.4A.S8.S8` (4-element 8-bit integer vector dot product with 32-bit accumulation) instructions.
+
+## 5. Representative SASS Disassembly Excerpt (SM 6.1)
+```sass
+        /*14a8*/                   LOP32I.AND R70, R78, 0xf0f0f0f ;                      /* 0x0400f0f0f0f74e46 */
+        /*14b0*/                   LDS.U.32 R45, [R77+0x250c] ;                          /* 0xef4c100250c74d2d */
+        /*14b8*/                   LOP32I.AND R60, R76, 0xf0f0f0f ;                      /* 0x0400f0f0f0f74c3c */
+                                                                                         /* 0x001df408fe000754 */
+        /*14c8*/                   LDS.U.32 R44, [R77+0x358c] ;                          /* 0xef4c100358c74d2c */
+        /*14d0*/                   IDP.4A.S8.S8 R30, R71, R36, RZ ;                      /* 0x53faff800247471e */
+        /*14d8*/                   LDS.U.32 R89, [R77+0x2510] ;                          /* 0xef4c100251074d59 */
+                                                                                         /* 0x081fc000f22087f0 */
+        /*14e8*/                   LOP32I.AND R59, R80, 0xf0f0f0f ;                      /* 0x0400f0f0f0f7503b */
+        /*14f0*/                   LDS.U.32 R87, [R77+0x3590] ;                          /* 0xef4c100359074d57 */
+        /*14f8*/                   IDP.4A.S8.S8 R28, R70.reuse, R36, RZ ;                /* 0x53faff800247461c */
+                                                                                         /* 0x001fc4c0fe000711 */
+        /*1508*/                   LDS.U.32 R74, [R77+0x2514] ;                          /* 0xef4c100251474d4a */
+        /*1510*/                   IDP.4A.S8.S8 R36, R60.reuse, R37.reuse, R30 ;         /* 0x53fa8f0002573c24 */
+        /*1518*/                   LDS.U.32 R75, [R77+0x3594] ;                          /* 0xef4c100359474d4b */
+                                                                                         /* 0x001fc000fe8407f0 */
+        /*1528*/                   IDP.4A.S8.S8 R66, R71, R40.reuse, RZ ;                /* 0x53faff8002874742 */
+        /*1530*/                   LDS.U.128 R32, [R62+0x5a0] ;                          /* 0xef4e10005a073e20 */
+        /*1538*/                   IDP.4A.S8.S8 R37, R59, R37, R28 ;                     /* 0x53fa8e0002573b25 */
+                                                                                         /* 0x001e4400fe000771 */
+        /*1548*/                   LDS.U.128 R28, [R62+0x120] ;                          /* 0xef4e100012073e1c */
+        /*1550*/                   IDP.4A.S8.S8 R64, R70, R40, RZ ;                      /* 0x53faff8002874640 */
+        /*1558*/                   LDS.U.32 R88, [R77+0x2518] ;                          /* 0xef4c100251874d58 */
+                                                                                         /* 0x003fc000f22007f0 */
+        /*1568*/                   LOP32I.AND R67, R47, 0xf0f0f0f ;                      /* 0x0400f0f0f0f72f43 */
+        /*1570*/                   LDS.U.32 R90, [R77+0x3598] ;                          /* 0xef4c100359874d5a */
+        /*1578*/                   LOP32I.AND R63, R46, 0xf0f0f0f ;                      /* 0x0400f0f0f0f72e3f */
+                                                                                         /* 0x001fcc80fe0007f1 */
+        /*1588*/                   LDS.U.32 R97, [R77+0x251c] ;                          /* 0xef4c100251c74d61 */
+        /*1590*/                   IDP.4A.S8.S8 R40, R60, R41.reuse, R66 ;               /* 0x53faa10002973c28 */
+        /*1598*/                   LDS.U.32 R98, [R77+0x359c] ;                          /* 0xef4c100359c74d62 */
+                                                                                         /* 0x005fc4c0fe2007e1 */
+        /*15a8*/                   IDP.4A.S8.S8 R41, R59, R41, R64 ;                     /* 0x53faa00002973b29 */
+        /*15b0*/                   IDP.4A.S8.S8 R36, R67.reuse, R38.reuse, R36 ;         /* 0x53fa920002674324 */
+        /*15b8*/                   LOP32I.AND R65, R45, 0xf0f0f0f ;                      /* 0x0400f0f0f0f72d41 */
+                                                                                         /* 0x101fc404fe2207f1 */
+        /*15c8*/                   IDP.4A.S8.S8 R37, R63.reuse, R38, R37 ;               /* 0x53fa928002673f25 */
+        /*15d0*/                   LOP32I.AND R64, R44, 0xf0f0f0f ;                      /* 0x0400f0f0f0f72c40 */
+        /*15d8*/                   IDP.4A.S8.S8 R40, R67, R42.reuse, R40 ;               /* 0x53fa940002a74328 */
+```
