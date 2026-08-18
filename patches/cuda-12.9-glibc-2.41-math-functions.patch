@@ -1,5 +1,5 @@
---- a/targets/x86_64-linux/include/crt/math_functions.h
-+++ b/targets/x86_64-linux/include/crt/math_functions.h
+--- a/crt/math_functions.h
++++ b/crt/math_functions.h
 @@ -2553,7 +2553,7 @@
   *
   * \note_accuracy_double
@@ -60,8 +60,8 @@
  
  __func__(void sincospif(float a, float *sptr, float *cptr));
  
---- a/targets/x86_64-linux/include/crt/math_functions.hpp
-+++ b/targets/x86_64-linux/include/crt/math_functions.hpp
+--- a/crt/math_functions.hpp
++++ b/crt/math_functions.hpp
 @@ -2979,7 +2979,7 @@
    return t;
  }

@@ -10,6 +10,11 @@ using namespace legacy_ai;
 
 int main(int argc, char **argv) {
     std::string target_spec = "";
+    std::string assert_name = "";
+    int assert_cc_major = 0;
+    int assert_cc_minor = 0;
+    std::string assert_pci = "";
+    std::string assert_uuid = "";
     int iterations = 50;
     int warmup_iterations = 10;
     size_t n = 1048576; // 1M elements
@@ -21,6 +26,25 @@ int main(int argc, char **argv) {
             target_spec = argv[++i];
         } else if (arg == "--device" && i + 1 < argc) {
             target_spec = argv[++i];
+        } else if (arg == "--pci" && i + 1 < argc) {
+            target_spec = argv[++i];
+        } else if (arg == "--uuid" && i + 1 < argc) {
+            target_spec = argv[++i];
+        } else if (arg == "--assert-name" && i + 1 < argc) {
+            assert_name = argv[++i];
+        } else if (arg == "--assert-cc" && i + 1 < argc) {
+            std::string cc_str = argv[++i];
+            size_t dot_pos = cc_str.find('.');
+            if (dot_pos != std::string::npos) {
+                assert_cc_major = std::stoi(cc_str.substr(0, dot_pos));
+                assert_cc_minor = std::stoi(cc_str.substr(dot_pos + 1));
+            } else {
+                assert_cc_major = std::stoi(cc_str);
+            }
+        } else if (arg == "--assert-pci" && i + 1 < argc) {
+            assert_pci = argv[++i];
+        } else if (arg == "--assert-uuid" && i + 1 < argc) {
+            assert_uuid = argv[++i];
         } else if (arg == "--iterations" && i + 1 < argc) {
             iterations = std::stoi(argv[++i]);
         } else if (arg == "--warmup" && i + 1 < argc) {
@@ -28,6 +52,19 @@ int main(int argc, char **argv) {
         } else if (arg == "--size" && i + 1 < argc) {
             n = std::stoull(argv[++i]);
         }
+    }
+
+    if (iterations <= 0) {
+        std::cerr << "ERROR: --iterations must be greater than 0 (got " << iterations << ").\n";
+        return 1;
+    }
+    if (warmup_iterations < 0) {
+        std::cerr << "ERROR: --warmup must be non-negative (got " << warmup_iterations << ").\n";
+        return 1;
+    }
+    if (n == 0) {
+        std::cerr << "ERROR: --size must be greater than 0.\n";
+        return 1;
     }
 
     auto all_devices = query_all_devices();
@@ -47,6 +84,14 @@ int main(int argc, char **argv) {
 
     CUDA_CHECK(cudaSetDevice(dev_idx));
     GpuDevice dev = get_device_info(dev_idx);
+
+    // Verify assertions if specified
+    std::string identity_err;
+    if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
+        std::cerr << "BLOCKER: Physical GPU assertion failure on device " << dev.index << ":\n" << identity_err;
+        std::cerr << "Refusing execution due to device identity mismatch.\n";
+        return 2;
+    }
 
     std::cout << "\n============================================================\n";
     std::cout << "HARNESS VALIDATION ONLY\n";
@@ -80,12 +125,14 @@ int main(int argc, char **argv) {
     CUDA_CHECK(cudaEventCreate(&ev_stop));
 
     // Warm-up phase
-    std::cout << "Executing " << warmup_iterations << " warm-up iterations...\n";
-    for (int i = 0; i < warmup_iterations; ++i) {
-        launch_smoke_kernel(d_a, d_b, d_c, n, block_size);
+    if (warmup_iterations > 0) {
+        std::cout << "Executing " << warmup_iterations << " warm-up iterations...\n";
+        for (int i = 0; i < warmup_iterations; ++i) {
+            launch_smoke_kernel(d_a, d_b, d_c, n, block_size);
+        }
+        CUDA_CHECK(cudaDeviceSynchronize());
+        std::cout << "Warm-up completed.\n\n";
     }
-    CUDA_CHECK(cudaDeviceSynchronize());
-    std::cout << "Warm-up completed.\n\n";
 
     // Measurement phase
     std::vector<float> raw_times_ms;
@@ -117,7 +164,16 @@ int main(int argc, char **argv) {
     std::sort(sorted_times.begin(), sorted_times.end());
     float min_time = sorted_times.front();
     float max_time = sorted_times.back();
-    float median_time = sorted_times[sorted_times.size() / 2];
+    
+    // Conventional median calculation
+    size_t num_samples = sorted_times.size();
+    float median_time = 0.0f;
+    if (num_samples % 2 == 1) {
+        median_time = sorted_times[num_samples / 2];
+    } else {
+        median_time = (sorted_times[(num_samples / 2) - 1] + sorted_times[num_samples / 2]) / 2.0f;
+    }
+
     double sum = std::accumulate(raw_times_ms.begin(), raw_times_ms.end(), 0.0);
     double mean_time = sum / raw_times_ms.size();
 

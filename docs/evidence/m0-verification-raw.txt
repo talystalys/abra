@@ -1,0 +1,190 @@
+============================================================
+Milestone M0: Reproducible Baseline Verification
+Host: BigBoy
+Date: 2026-08-18 12:56:26 UTC
+============================================================
+
+--- Step 1: Collecting Live Environment Inventory ---
+Saved raw hardware inventory to: docs/evidence/hardware-inventory-raw.txt
+
+--- Step 2: Applying Canonical CUDA Compatibility Patch ---
+Applying canonical patch: /home/taly/legacy-ai/patches/cuda-12.9-glibc-2.41-math-functions.patch
+patching file crt/math_functions.h
+patching file crt/math_functions.hpp
+CUDA compatibility overlay successfully established at: /home/taly/legacy-ai/.cuda_compat/include
+
+--- Step 3: Clean Configure and Build (sm_61 + sm_75) ---
+-- The CXX compiler identification is GNU 14.2.0
+-- The CUDA compiler identification is NVIDIA 12.9.86 with host compiler GNU 14.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/local/cuda-12.9/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Legacy GPU Target Architectures: 61;75
+-- Using CUDA compatibility overlay from: /home/taly/legacy-ai/.cuda_compat/include
+-- Configuring done (3.1s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/taly/legacy-ai/build
+[ 12%] Building CUDA object CMakeFiles/legacy_smoke.dir/kernels/smoke/smoke.cu.o
+[ 25%] Linking CUDA static library liblegacy_smoke.a
+[ 25%] Built target legacy_smoke
+[ 37%] Building CUDA object CMakeFiles/list_cuda_devices.dir/tools/list_cuda_devices.cu.o
+[ 50%] Building CUDA object CMakeFiles/smoke_test.dir/tests/smoke_test.cu.o
+[ 62%] Building CUDA object CMakeFiles/timer_smoke.dir/bench/micro/timer_smoke.cu.o
+[ 75%] Linking CUDA executable list_cuda_devices
+[ 75%] Built target list_cuda_devices
+[ 87%] Linking CUDA executable smoke_test
+[ 87%] Built target smoke_test
+[100%] Linking CUDA executable timer_smoke
+[100%] Built target timer_smoke
+Build completed successfully.
+
+--- Step 4: Inspecting Generated Binary Architectures ---
+ELF file    1: smoke_test.1.sm_61.cubin
+ELF file    2: smoke_test.2.sm_75.cubin
+ELF file    3: smoke_test.3.sm_61.cubin
+ELF file    4: smoke_test.4.sm_75.cubin
+Verified sm_61 artifact present in binary.
+Verified sm_75 artifact present in binary.
+
+--- Step 5: Enumerating Visible CUDA Devices ---
+
+=== CUDA Device Enumeration ===
+Index Name                            CC        VRAM (MiB)      PCI Bus ID        UUID
+----------------------------------------------------------------------------------------------------------------------------------
+0     NVIDIA GeForce GTX 1660 SUPER   7.5       5930            0000:81:00.0      GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
+1     NVIDIA GeForce GTX 1060 6GB     6.1       6066            0000:03:00.0      GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
+----------------------------------------------------------------------------------------------------------------------------------
+
+
+--- Step 6: Pascal Correctness Qualification (Pinned: GPU-5078520c-bf92-4143-0d48-b02fd9d250dd / 0000:03:00.0) ---
+
+=== CUDA Device Enumeration ===
+Index Name                            CC        VRAM (MiB)      PCI Bus ID        UUID
+----------------------------------------------------------------------------------------------------------------------------------
+0     NVIDIA GeForce GTX 1660 SUPER   7.5       5930            0000:81:00.0      GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
+1     NVIDIA GeForce GTX 1060 6GB     6.1       6066            0000:03:00.0      GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
+----------------------------------------------------------------------------------------------------------------------------------
+
+============================================================
+TEST RUN FOR DEVICE 1
+GPU: NVIDIA GeForce GTX 1060 6GB
+CC:  6.1
+PCI: 0000:03:00.0
+UUID: GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
+Block Size: 256 threads/block
+============================================================
+Dimension   Divisible(B)    Mismatches  Status
+-------------------------------------------------------
+1           NO              0           [PASS]
+31          NO              0           [PASS]
+32          NO              0           [PASS]
+33          NO              0           [PASS]
+255         NO              0           [PASS]
+256         YES             0           [PASS]
+257         NO              0           [PASS]
+1024        YES             0           [PASS]
+65536       YES             0           [PASS]
+-------------------------------------------------------
+DEVICE 1 (NVIDIA GeForce GTX 1060 6GB, CC 6.1) RESULT: PASS
+
+============================================================
+FINAL TEST SUITE OUTCOME: PASS
+============================================================
+Pascal physical CUDA correctness (GTX 1060 6GB): PASS
+
+--- Step 7: Turing Control Correctness (Pinned: GPU-8a043791-359d-1df4-9353-38c5bc98e5dd / 0000:81:00.0) ---
+
+=== CUDA Device Enumeration ===
+Index Name                            CC        VRAM (MiB)      PCI Bus ID        UUID
+----------------------------------------------------------------------------------------------------------------------------------
+0     NVIDIA GeForce GTX 1660 SUPER   7.5       5930            0000:81:00.0      GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
+1     NVIDIA GeForce GTX 1060 6GB     6.1       6066            0000:03:00.0      GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
+----------------------------------------------------------------------------------------------------------------------------------
+
+============================================================
+TEST RUN FOR DEVICE 0
+GPU: NVIDIA GeForce GTX 1660 SUPER
+CC:  7.5
+PCI: 0000:81:00.0
+UUID: GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
+Block Size: 256 threads/block
+============================================================
+Dimension   Divisible(B)    Mismatches  Status
+-------------------------------------------------------
+1           NO              0           [PASS]
+31          NO              0           [PASS]
+32          NO              0           [PASS]
+33          NO              0           [PASS]
+255         NO              0           [PASS]
+256         YES             0           [PASS]
+257         NO              0           [PASS]
+1024        YES             0           [PASS]
+65536       YES             0           [PASS]
+-------------------------------------------------------
+DEVICE 0 (NVIDIA GeForce GTX 1660 SUPER, CC 7.5) RESULT: PASS
+
+============================================================
+FINAL TEST SUITE OUTCOME: PASS
+============================================================
+Turing physical CUDA correctness (GTX 1660 SUPER): PASS
+
+--- Step 8: Timing Harness Infrastructure Smoke Validation on Pascal GPU ---
+
+============================================================
+HARNESS VALIDATION ONLY
+NOT A PERFORMANCE RESULT
+============================================================
+Selected GPU: NVIDIA GeForce GTX 1060 6GB (Index: 1)
+Compute Capability: 6.1
+PCI Bus ID: 0000:03:00.0
+UUID: GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
+Workload: 1048576 int32 elements (12 MiB active data)
+Warm-up Iterations: 5
+Measured Iterations: 20
+============================================================
+
+Executing 5 warm-up iterations...
+Warm-up completed.
+
+Recording 20 timing iterations (CUDA event measurement):
+
+=== Raw Measurements (ms) ===
+  0.0713   0.0707   0.0707   0.0706   0.0706   0.0707   0.0714   0.0706   0.0707   0.0696 
+  0.0707   0.0705   0.0703   0.0702   0.0704   0.0704   0.0696   0.0707   0.0696   0.0707 
+
+=== Timing Statistics ===
+Iterations: 20
+Min:        0.0696 ms
+Median:     0.0706 ms
+Mean:       0.0705 ms
+Max:        0.0714 ms
+Spread:     0.0018 ms
+Std Dev:    0.0005 ms
+Correctness Mismatches: 0 (expected 0)
+
+============================================================
+HARNESS VALIDATION COMPLETE — SUCCESS
+============================================================
+
+============================================================
+M0 Environment Verification Summary
+============================================================
+M0 environment verification: SUCCESS
+
+GTX 1060 detected: YES
+GTX 1060 CC 6.1 verified: YES
+sm_61 artifact verified: YES
+Pascal physical CUDA execution: YES
+
+GTX 1660 SUPER detected: YES
+GTX 1660 SUPER CC 7.5 verified: YES
+sm_75 artifact verified: YES
+Turing control execution: YES
+============================================================

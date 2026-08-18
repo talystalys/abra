@@ -39,6 +39,15 @@ std::vector<GpuDevice> query_all_devices();
 void print_device_table(const std::vector<GpuDevice> &devices);
 GpuDevice get_device_info(int device_index);
 int find_device_by_spec(const std::string &spec);
+int find_device_by_uuid(const std::string &uuid);
+int find_device_by_pci(const std::string &pci);
+bool verify_device_identity(const GpuDevice &dev,
+                            const std::string &expected_name,
+                            int expected_cc_major,
+                            int expected_cc_minor,
+                            const std::string &expected_pci,
+                            const std::string &expected_uuid,
+                            std::string &error_msg);
 
 // CPU Oracle and Deterministic Input Generation
 void generate_deterministic_inputs(int32_t *a, int32_t *b, size_t n);
