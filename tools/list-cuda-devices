@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
+BUILD_DIR="${REPO_ROOT}/build"
+EXE="${BUILD_DIR}/list_cuda_devices"
+
+if [[ ! -x "${EXE}" ]]; then
+    "${REPO_ROOT}/tools/verify-m0.sh" >/dev/null 2>&1 || true
+fi
+
+if [[ -x "${EXE}" ]]; then
+    exec "${EXE}" "$@"
+else
+    echo "ERROR: list_cuda_devices binary not found at ${EXE}. Please build the project first." >&2
+    exit 1
+fi
