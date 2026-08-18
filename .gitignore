@@ -1,0 +1,26 @@
+# Build artifacts
+build/
+build-*/
+cmake-build-*/
+bin/
+out/
+
+# CUDA compatibility generated overlay directory
+.cuda_compat/
+
+# Local run logs and temp files
+*.log
+*.tmp
+*.o
+*.a
+*.so
+*.cubin
+*.ptx
+*.fatbin
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
