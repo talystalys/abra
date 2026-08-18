@@ -2,7 +2,7 @@
 
 Current milestone: M0
 Current branch: m0/reproducible-baseline
-Current commit: PENDING_M0_COMMIT
+Current commit: 9938befd49316b6ba9548cedf3346e3da2ed0502
 
 Execution host: BigBoy
 

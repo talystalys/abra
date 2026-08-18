@@ -9,7 +9,7 @@ This report documents the verification of Milestone M0 for the legacy-NVIDIA-GPU
 - **Starting Branch**: `m0/reproducible-baseline`
 - **Starting Commit**: `unborn` (clean initialization, no pre-existing commit)
 - **Final Branch**: `m0/reproducible-baseline`
-- **Final Commit**: PENDING_M0_COMMIT
+- **Final Commit**: `9938befd49316b6ba9548cedf3346e3da2ed0502`
 
 ---
 
