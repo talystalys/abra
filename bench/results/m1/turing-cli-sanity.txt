@@ -1,0 +1,38 @@
+
+
+Loading model... 
+
+▄▄ ▄▄
+██ ██
+██ ██  ▀▀█▄ ███▄███▄  ▀▀█▄    ▄████ ████▄ ████▄
+██ ██ ▄█▀██ ██ ██ ██ ▄█▀██    ██    ██ ██ ██ ██
+██ ██ ▀█▄██ ██ ██ ██ ▀█▄██ ██ ▀████ ████▀ ████▀
+                                    ██    ██
+                                    ▀▀    ▀▀
+
+build      : b10489-169e4a7ff
+model      : /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf
+ftype      : Q4_K - Medium
+modalities : text
+
+available commands:
+  /exit or Ctrl+C     stop or exit
+  /regen              regenerate the last response
+  /clear              clear the chat history
+  /read <file>        add a text file
+  /glob <pattern>     add text files using globbing pattern
+
+
+
+> Explain in one short paragraph why memory bandwidth matters for neural-network inference.
+
+[Start thinking]
+
+Okay, the user is asking why memory bandwidth matters for neural-network inference. Let me start by recalling what memory bandwidth is. It's the rate at which data can be read from or written to memory. Now, neural networks, especially deep ones, require a lot of data movement. During inference, the model processes input data through multiple layers, each layer needing to access weights and activations.
+
+So, if the memory bandwidth is low, the system can't keep up with the data transfer rate. That would cause bottlenecks. For example, if the GPU or CPU is fast at processing but the memory is slow, the data
+
+[ Prompt: 179.9 t/s | Generation: 75.7 t/s ]
+
+
+Exiting...
