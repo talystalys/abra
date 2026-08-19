@@ -61,7 +61,7 @@ target_compile_options(legacy_dp4a PRIVATE
 add_executable(dp4a_test
     tests/dp4a_test.cu
 )
-target_link_libraries(dp4a_test PRIVATE legacy_dp4a)
+target_link_libraries(dp4a_test PRIVATE legacy_dp4a legacy_smoke)
 target_compile_options(dp4a_test PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
@@ -70,7 +70,16 @@ target_compile_options(dp4a_test PRIVATE
 add_executable(dp4a_bench
     bench/micro/dp4a_bench.cu
 )
-target_link_libraries(dp4a_bench PRIVATE legacy_dp4a)
+target_link_libraries(dp4a_bench PRIVATE legacy_dp4a legacy_smoke)
 target_compile_options(dp4a_bench PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
+# 6. DP4A Theoretical Occupancy Extraction Tool
+add_executable(dump_m2_occupancy
+    tools/dump_m2_occupancy.cu
+)
+target_link_libraries(dump_m2_occupancy PRIVATE legacy_dp4a legacy_smoke)
+target_compile_options(dump_m2_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )

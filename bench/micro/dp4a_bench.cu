@@ -9,8 +9,12 @@
 #include <climits>
 #include <fstream>
 #include <sstream>
+#include <iostream>
+#include <iomanip>
 #include "kernels/dp4a/dp4a_gemv.cuh"
+#include "smoke/smoke.h"
 
+using namespace legacy_ai;
 using namespace legacy_ai::dp4a;
 
 // CPU Oracle Reference for validation
@@ -99,44 +103,45 @@ BenchmarkResult run_microbenchmark(
     size_t x_bytes = (size_t)K * sizeof(int8_t);
     size_t y_bytes = (size_t)N * sizeof(int32_t);
 
-    cudaMalloc(&d_W, w_bytes);
-    cudaMalloc(&d_x, x_bytes);
-    cudaMalloc(&d_y, y_bytes);
+    CUDA_CHECK(cudaMalloc(&d_W, w_bytes));
+    CUDA_CHECK(cudaMalloc(&d_x, x_bytes));
+    CUDA_CHECK(cudaMalloc(&d_y, y_bytes));
 
-    cudaMemcpy(d_W, h_W.data(), w_bytes, cudaMemcpyHostToDevice);
-    cudaMemcpy(d_x, h_x.data(), x_bytes, cudaMemcpyHostToDevice);
-    cudaMemset(d_y, 0, y_bytes);
+    CUDA_CHECK(cudaMemcpy(d_W, h_W.data(), w_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), x_bytes, cudaMemcpyHostToDevice));
+    CUDA_CHECK(cudaMemset(d_y, 0, y_bytes));
 
     // Warmup
     for (int i = 0; i < warmup_reps; ++i) {
         launch_gemv(variant, d_W, d_x, d_y, N, K, 0);
     }
-    cudaDeviceSynchronize();
+    CUDA_CHECK(cudaGetLastError());
+    CUDA_CHECK(cudaDeviceSynchronize());
 
     // Measured repetitions with CUDA events
     cudaEvent_t start, stop;
-    cudaEventCreate(&start);
-    cudaEventCreate(&stop);
+    CUDA_CHECK(cudaEventCreate(&start));
+    CUDA_CHECK(cudaEventCreate(&stop));
 
     std::vector<double> latencies_us(measured_reps, 0.0);
 
     for (int r = 0; r < measured_reps; ++r) {
-        cudaEventRecord(start, 0);
+        CUDA_CHECK(cudaEventRecord(start, 0));
         launch_gemv(variant, d_W, d_x, d_y, N, K, 0);
-        cudaEventRecord(stop, 0);
-        cudaEventSynchronize(stop);
+        CUDA_CHECK(cudaEventRecord(stop, 0));
+        CUDA_CHECK(cudaEventSynchronize(stop));
 
         float ms = 0.0f;
-        cudaEventElapsedTime(&ms, start, stop);
+        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
         latencies_us[r] = static_cast<double>(ms) * 1000.0; // convert ms to us
     }
 
-    cudaEventDestroy(start);
-    cudaEventDestroy(stop);
+    CUDA_CHECK(cudaEventDestroy(start));
+    CUDA_CHECK(cudaEventDestroy(stop));
 
     // Verify bit-for-bit correctness after timing
     std::vector<int32_t> h_y_gpu(N, 0);
-    cudaMemcpy(h_y_gpu.data(), d_y, y_bytes, cudaMemcpyDeviceToHost);
+    CUDA_CHECK(cudaMemcpy(h_y_gpu.data(), d_y, y_bytes, cudaMemcpyDeviceToHost));
 
     bool correct = true;
     for (int n = 0; n < N; ++n) {
@@ -148,9 +153,9 @@ BenchmarkResult run_microbenchmark(
         }
     }
 
-    cudaFree(d_W);
-    cudaFree(d_x);
-    cudaFree(d_y);
+    CUDA_CHECK(cudaFree(d_W));
+    CUDA_CHECK(cudaFree(d_x));
+    CUDA_CHECK(cudaFree(d_y));
 
     // Compute stats
     std::vector<double> sorted_lat = latencies_us;
@@ -209,17 +214,17 @@ BenchmarkResult run_microbenchmark(
 void print_json_results(
     const std::vector<BenchmarkResult>& results,
     const std::string& out_filepath,
-    const cudaDeviceProp& prop,
-    const char* pci_bus_id
+    const GpuDevice& dev
 ) {
     std::ostringstream ss;
     ss << "{\n";
     ss << "  \"benchmark\": \"dp4a_gemv_microbenchmark\",\n";
     ss << "  \"device\": {\n";
-    ss << "    \"name\": \"" << prop.name << "\",\n";
-    ss << "    \"compute_capability\": \"" << prop.major << "." << prop.minor << "\",\n";
-    ss << "    \"pci_bus_id\": \"" << pci_bus_id << "\",\n";
-    ss << "    \"total_vram_bytes\": " << prop.totalGlobalMem << "\n";
+    ss << "    \"name\": \"" << dev.name << "\",\n";
+    ss << "    \"compute_capability\": \"" << dev.compute_capability_str() << "\",\n";
+    ss << "    \"pci_bus_id\": \"" << dev.pci_bus_id << "\",\n";
+    ss << "    \"uuid\": \"" << dev.uuid << "\",\n";
+    ss << "    \"total_vram_bytes\": " << dev.total_memory_bytes << "\n";
     ss << "  },\n";
     ss << "  \"results\": [\n";
 
@@ -266,24 +271,114 @@ void print_json_results(
     printf("%s", ss.str().c_str());
 }
 
+void print_bench_usage(const char* prog) {
+    std::cout << "Usage: " << prog << " [out_file] [warmup_reps] [measured_reps] [options]\n"
+              << "Options:\n"
+              << "  --arch <pascal|turing>    : Assert expected architecture preset\n"
+              << "  --assert-name <str>       : Assert exact GPU name substring\n"
+              << "  --assert-cc <major.minor> : Assert compute capability\n"
+              << "  --assert-pci <pci_id>     : Assert PCI bus ID\n"
+              << "  --assert-uuid <uuid_str>  : Assert GPU UUID\n"
+              << "  --help                    : Show help\n";
+}
+
 int main(int argc, char** argv) {
-    int device = 0;
-    cudaGetDevice(&device);
-    cudaDeviceProp prop;
-    cudaGetDeviceProperties(&prop, device);
+    std::string out_file = "";
+    int warmup_reps = 10;
+    int measured_reps = 100;
 
-    char pci_bus_id[64];
-    cudaDeviceGetPCIBusId(pci_bus_id, sizeof(pci_bus_id), device);
+    std::string assert_name = "";
+    int assert_cc_major = 0;
+    int assert_cc_minor = 0;
+    std::string assert_pci = "";
+    std::string assert_uuid = "";
 
-    std::string out_file = (argc > 1) ? argv[1] : "";
-    int warmup_reps = (argc > 2) ? std::atoi(argv[2]) : 10;
-    int measured_reps = (argc > 3) ? std::atoi(argv[3]) : 100;
+    int positional_idx = 0;
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+        if ((arg == "--arch" || arg == "-a") && i + 1 < argc) {
+            std::string arch = argv[++i];
+            if (arch == "pascal" || arch == "Pascal" || arch == "sm_61") {
+                assert_name = "GTX 1060";
+                assert_cc_major = 6;
+                assert_cc_minor = 1;
+                assert_pci = "0000:03:00.0";
+                assert_uuid = "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd";
+            } else if (arch == "turing" || arch == "Turing" || arch == "sm_75") {
+                assert_name = "GTX 1660 SUPER";
+                assert_cc_major = 7;
+                assert_cc_minor = 5;
+                assert_pci = "0000:81:00.0";
+                assert_uuid = "GPU-8a043791-359d-1df4-9353-38c5bc98e5dd";
+            } else {
+                std::cerr << "Unknown arch preset: " << arch << "\n";
+                return 1;
+            }
+        } else if (arg == "--pascal") {
+            assert_name = "GTX 1060";
+            assert_cc_major = 6;
+            assert_cc_minor = 1;
+            assert_pci = "0000:03:00.0";
+            assert_uuid = "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd";
+        } else if (arg == "--turing") {
+            assert_name = "GTX 1660 SUPER";
+            assert_cc_major = 7;
+            assert_cc_minor = 5;
+            assert_pci = "0000:81:00.0";
+            assert_uuid = "GPU-8a043791-359d-1df4-9353-38c5bc98e5dd";
+        } else if (arg == "--assert-name" && i + 1 < argc) {
+            assert_name = argv[++i];
+        } else if (arg == "--assert-cc" && i + 1 < argc) {
+            std::string cc_str = argv[++i];
+            size_t dot_pos = cc_str.find('.');
+            if (dot_pos != std::string::npos) {
+                assert_cc_major = std::stoi(cc_str.substr(0, dot_pos));
+                assert_cc_minor = std::stoi(cc_str.substr(dot_pos + 1));
+            } else {
+                assert_cc_major = std::stoi(cc_str);
+            }
+        } else if (arg == "--assert-pci" && i + 1 < argc) {
+            assert_pci = argv[++i];
+        } else if (arg == "--assert-uuid" && i + 1 < argc) {
+            assert_uuid = argv[++i];
+        } else if (arg == "--help" || arg == "-h") {
+            print_bench_usage(argv[0]);
+            return 0;
+        } else if (!arg.empty() && arg[0] != '-') {
+            if (positional_idx == 0) out_file = arg;
+            else if (positional_idx == 1) warmup_reps = std::atoi(arg.c_str());
+            else if (positional_idx == 2) measured_reps = std::atoi(arg.c_str());
+            positional_idx++;
+        } else {
+            std::cerr << "Unknown option: " << arg << "\n";
+            print_bench_usage(argv[0]);
+            return 1;
+        }
+    }
 
-    printf("============================================================\n");
-    printf("Milestone M2 DP4A Microbenchmark Suite\n");
-    printf("Device: %s (CC %d.%d, PCI %s)\n", prop.name, prop.major, prop.minor, pci_bus_id);
-    printf("Warmup Reps: %d | Measured Reps: %d\n", warmup_reps, measured_reps);
-    printf("============================================================\n\n");
+    int active_dev_idx = 0;
+    CUDA_CHECK(cudaGetDevice(&active_dev_idx));
+    GpuDevice dev = get_device_info(active_dev_idx);
+
+    std::cout << "============================================================\n";
+    std::cout << "Milestone M2 DP4A Microbenchmark Suite\n";
+    std::cout << "Device: " << dev.name << "\n";
+    std::cout << "Compute Capability: " << dev.compute_capability_str() << "\n";
+    std::cout << "PCI Bus ID: " << dev.pci_bus_id << "\n";
+    std::cout << "UUID: " << dev.uuid << "\n";
+    std::cout << "Warmup Reps: " << warmup_reps << " | Measured Reps: " << measured_reps << "\n";
+    std::cout << "============================================================\n\n";
+
+    // Strict Device Identity Assertion
+    std::string identity_err;
+    if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
+        std::cerr << "BLOCKER: Physical GPU assertion failure on active device " << dev.index << ":\n" << identity_err;
+        std::cerr << "Refusing benchmark execution due to device identity mismatch.\n";
+        return 2;
+    }
+    if (!assert_name.empty() || assert_cc_major > 0 || !assert_pci.empty() || !assert_uuid.empty()) {
+        std::cout << "PASS: Physical GPU identity assertions verified successfully.\n\n";
+    }
 
     const std::vector<ShapeSpec> shapes = {
         // Required Real Qwen3-4B Shapes
@@ -323,6 +418,6 @@ int main(int argc, char** argv) {
         printf("\n");
     }
 
-    print_json_results(all_results, out_file, prop, pci_bus_id);
+    print_json_results(all_results, out_file, dev);
     return 0;
 }

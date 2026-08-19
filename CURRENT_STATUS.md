@@ -1,11 +1,12 @@
 # CURRENT_STATUS.md
 
-Current milestone: M2 (Implementation Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
+Current milestone: M2 (Corrective Pass Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
 Current branch: m2/dp4a-microkernel
 Accepted M1 base commit: 3ef60d1f11ba6d9e867b6108dad33d0c96d2195f
 (Git repository HEAD is authoritative for current commit state)
 
 Execution host: BigBoy
+OS: Debian GNU/Linux 13 (trixie) (Kernel 6.12.100+deb13-amd64 x86_64)
 
 Pascal qualification GPU: NVIDIA GeForce GTX 1060 6GB
 Pascal PCI/UUID: PCI 0000:03:00.0 / UUID GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
@@ -15,9 +16,11 @@ Control GPU: NVIDIA GeForce GTX 1660 SUPER
 Control PCI/UUID: PCI 0000:81:00.0 / UUID GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
 Control compute capability: 7.5 (NUMA node 1)
 
-NVIDIA driver: 550.120
-CUDA toolkit: CUDA 12.9.2 (/usr/local/cuda-12.9)
+NVIDIA driver: 550.163.01
+CUDA toolkit: CUDA 12.9 (/usr/local/cuda-12.9)
 NVCC: 12.9.86
+Host compiler: gcc 14.2.0 (Debian 14.2.0-19)
+glibc: Debian GLIBC 2.41-12+deb13u3 (2.41)
 
 ---
 
@@ -30,29 +33,31 @@ NVCC: 12.9.86
   - `gemv_dp4a_basic_kernel` (Variant B): **43** `IDP.4A` instructions.
   - `gemv_dp4a_opt_kernel` (Variant C): **99** `IDP.4A` instructions.
   - `gemv_dp4a_shared_kernel` (Variant D): **111** `IDP.4A` instructions.
-- **Resource Usage**: Zero local memory spill stores / loads across all four kernels on both architectures.
+- **Hardware Resources & Theoretical Occupancy (CUDA Occupancy API)**:
+  - Pascal (`sm_61`): Variants A, B, C achieve **100.0% theoretical occupancy** (64 resident warps/SM, $\le 32$ regs/thread); Variant D achieves **50.0% theoretical occupancy** (32 resident warps/SM, 4 blocks/SM, 55 regs/thread, 2048 B smem). Zero register spills across all variants.
+  - Turing (`sm_75`): All variants achieve **100.0% theoretical occupancy** (32 resident warps/SM). Zero spills.
 
 ### Primary Qualification GPU (NVIDIA GeForce GTX 1060 6GB — Pascal SM 6.1):
 - **`attn_q`** ($4096 \times 2560$):
   - Scalar Baseline: $198.66\ \mu\text{s}$ ($52.78\text{ GMAC/s}$, $49.25\text{ GiB/s}$)
   - Basic DP4A: $60.42\ \mu\text{s}$ ($173.56\text{ GMAC/s}$, $161.93\text{ GiB/s}$, **$3.29\times$ speedup**)
-  - Optimized DP4A: $60.42\ \mu\text{s}$ ($173.56\text{ GMAC/s}$, $161.93\text{ GiB/s}$, **$3.29\times$ speedup**)
-  - Shared DP4A: $65.22\ \mu\text{s}$ ($160.79\text{ GMAC/s}$, $150.01\text{ GiB/s}$, $3.05\times$ speedup)
+  - Optimized DP4A: $60.35\ \mu\text{s}$ ($173.74\text{ GMAC/s}$, $162.10\text{ GiB/s}$, **$3.29\times$ speedup**)
+  - Shared DP4A: $65.30\ \mu\text{s}$ ($160.58\text{ GMAC/s}$, $149.82\text{ GiB/s}$, $3.04\times$ speedup)
 - **`ffn_gate_up`** ($9728 \times 2560$):
   - Scalar Baseline: $465.92\ \mu\text{s}$ ($53.45\text{ GMAC/s}$, $49.86\text{ GiB/s}$)
-  - Basic DP4A: $134.14\ \mu\text{s}$ ($185.65\text{ GMAC/s}$, $173.19\text{ GiB/s}$, **$3.47\times$ speedup**)
-  - Optimized DP4A: $130.74\ \mu\text{s}$ ($190.49\text{ GMAC/s}$, **$177.70\text{ GiB/s}$ / $99.38\%$ of theoretical DRAM peak**, **$3.56\times$ speedup**)
-  - Shared DP4A: $140.29\ \mu\text{s}$ ($177.52\text{ GMAC/s}$, $165.60\text{ GiB/s}$, $3.32\times$ speedup)
+  - Basic DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, $171.88\text{ GiB/s}$, **$3.45\times$ speedup**)
+  - Optimized DP4A: $131.90\ \mu\text{s}$ ($188.80\text{ GMAC/s}$, **$176.13\text{ GiB/s}$ effective bandwidth**, **$3.53\times$ speedup**)
+  - Shared DP4A: $144.38\ \mu\text{s}$ ($172.48\text{ GMAC/s}$, $160.91\text{ GiB/s}$, $3.23\times$ speedup)
 - **`ffn_down`** ($2560 \times 9728$):
-  - Scalar Baseline: $481.28\ \mu\text{s}$ ($51.74\text{ GMAC/s}$, $48.23\text{ GiB/s}$)
-  - Basic DP4A: $142.30\ \mu\text{s}$ ($175.00\text{ GMAC/s}$, $163.12\text{ GiB/s}$, **$3.38\times$ speedup**)
-  - Optimized DP4A: $135.12\ \mu\text{s}$ ($184.31\text{ GMAC/s}$, $171.79\text{ GiB/s}$, **$3.56\times$ speedup**)
-  - Shared DP4A: $140.85\ \mu\text{s}$ ($176.81\text{ GMAC/s}$, $164.80\text{ GiB/s}$, $3.42\times$ speedup)
+  - Scalar Baseline: $491.46\ \mu\text{s}$ ($50.67\text{ GMAC/s}$, $47.23\text{ GiB/s}$)
+  - Basic DP4A: $145.41\ \mu\text{s}$ ($171.26\text{ GMAC/s}$, $159.63\text{ GiB/s}$, **$3.38\times$ speedup**)
+  - Optimized DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, **$171.73\text{ GiB/s}$ effective bandwidth**, **$3.63\times$ speedup**)
+  - Shared DP4A: $141.31\ \mu\text{s}$ ($176.23\text{ GMAC/s}$, $164.26\text{ GiB/s}$, $3.48\times$ speedup)
 
 ### Secondary Control GPU (NVIDIA GeForce GTX 1660 SUPER — Turing SM 7.5):
-- `attn_q`: Scalar $56.67\ \mu\text{s}$ vs Optimized DP4A $39.28\ \mu\text{s}$ (**$1.44\times$ speedup**)
-- `ffn_gate_up`: Scalar $120.67\ \mu\text{s}$ vs Optimized DP4A $84.37\ \mu\text{s}$ (**$1.43\times$ speedup**)
-- `ffn_down`: Scalar $122.88\ \mu\text{s}$ vs Optimized DP4A $84.35\ \mu\text{s}$ (**$1.46\times$ speedup**)
+- `attn_q`: Scalar $52.83\ \mu\text{s}$ vs Optimized DP4A $37.12\ \mu\text{s}$ (**$1.42\times$ speedup**, $257.65\text{ GiB/s}$)
+- `ffn_gate_up`: Scalar $125.79\ \mu\text{s}$ vs Optimized DP4A $88.06\ \mu\text{s}$ (**$1.43\times$ speedup**, $256.24\text{ GiB/s}$)
+- `ffn_down`: Scalar $126.98\ \mu\text{s}$ vs Optimized DP4A $88.58\ \mu\text{s}$ (**$1.43\times$ speedup**, $254.73\text{ GiB/s}$)
 
 ---
 

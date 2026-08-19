@@ -1,31 +1,38 @@
-# Milestone M2 Evidence: Compiler & Hardware Resource Usage
+# Milestone M2 Evidence: Compiler & Hardware Resource Usage (Hardened)
 
-## 1. Object Inspected
+## 1. Object & Toolchain Details
 - Object File: `build/CMakeFiles/legacy_dp4a.dir/kernels/dp4a/dp4a_gemv.cu.o`
-- Compiler: NVIDIA NVCC 12.9.86
-- Extraction Tool: `cuobjdump --dump-resource-usage` and `ptxas -v`
+- Compiler: NVIDIA NVCC 12.9.86 (`-O3 -arch=sm_61 -arch=sm_75 --ptxas-options=-v`)
+- Extraction Methodology: `cuobjdump --dump-resource-usage` and CUDA Runtime Occupancy API (`cudaOccupancyMaxActiveBlocksPerMultiprocessor`) via `tools/dump_m2_occupancy.cu`
 
-## 2. Resource Usage by Architecture
+---
 
-### 2.1 Primary Qualification Architecture — Pascal SM 6.1 (`sm_61`)
+## 2. Resource Usage and Theoretical Occupancy by Architecture
 
-| Kernel Variant | Function Symbol | Registers / Thread | Shared Memory (bytes) | Stack Frame (bytes) | Local Memory (bytes) | Spill Stores (bytes) | Spill Loads (bytes) | Max Theoretical Occupancy |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | 29 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
-| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | 31 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
-| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | 32 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
-| **Variant D: Shared-Memory x-Staged** | `gemv_dp4a_shared_kernel` | 55 | 2,048 | 0 | 0 | 0 | 0 | 58.6% (1200 threads / SM) |
+### 2.1 Primary Qualification GPU — Pascal SM 6.1 (`sm_61`)
+*Device: NVIDIA GeForce GTX 1060 6GB (GP106, 10 SMs, 64 max warps/SM = 2048 max resident threads/SM, 65536 registers/SM)*
 
-### 2.2 Secondary Control Architecture — Turing SM 7.5 (`sm_75`)
+| Kernel Variant | Function Symbol | Block Dim | Threads / Block | Registers / Thread | Static Shared Mem (bytes) | Active Blocks / SM | Resident Warps / SM | Max SM Warps | Theoretical Occupancy (%) | Spill Stores (bytes) | Spill Loads (bytes) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | $32 \times 4$ | 128 | 29 | 0 | 16 | 64 | 64 | **100.0%** | 0 | 0 |
+| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | $32 \times 4$ | 128 | 31 | 0 | 16 | 64 | 64 | **100.0%** | 0 | 0 |
+| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | $32 \times 8$ | 256 | 32 | 0 | 8 | 64 | 64 | **100.0%** | 0 | 0 |
+| **Variant D: Shared-Memory $x$-Staged** | `gemv_dp4a_shared_kernel` | $32 \times 8$ | 256 | 55 | 2,048 | 4 | 32 | 64 | **50.0%** | 0 | 0 |
 
-| Kernel Variant | Function Symbol | Registers / Thread | Shared Memory (bytes) | Stack Frame (bytes) | Local Memory (bytes) | Spill Stores (bytes) | Spill Loads (bytes) |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | 49 | 0 | 0 | 0 | 0 | 0 |
-| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | 51 | 0 | 0 | 0 | 0 | 0 |
-| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | 52 | 0 | 0 | 0 | 0 | 0 |
-| **Variant D: Shared-Memory x-Staged** | `gemv_dp4a_shared_kernel` | 64 | 2,048 | 0 | 0 | 0 | 0 |
+### 2.2 Secondary Control GPU — Turing SM 7.5 (`sm_75`)
+*Device: NVIDIA GeForce GTX 1660 SUPER (TU116, 22 SMs, 32 max warps/SM = 1024 max resident threads/SM, 65536 registers/SM)*
 
-## 3. Key Observations
-1. **Zero Spills**: All four variants achieve zero local memory spill stores and zero spill loads on both architectures.
-2. **Register Allocation**: Variants A, B, and C on Pascal maintain $\le 32$ registers per thread, enabling 100% theoretical SM occupancy.
-3. **Shared Memory Staging**: Variant D requires 55 registers per thread and 2048 bytes of shared memory per block, lowering SM occupancy on Pascal to ~58.6% due to register limits.
+| Kernel Variant | Function Symbol | Block Dim | Threads / Block | Registers / Thread | Static Shared Mem (bytes) | Active Blocks / SM | Resident Warps / SM | Max SM Warps | Theoretical Occupancy (%) | Spill Stores (bytes) | Spill Loads (bytes) |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | $32 \times 4$ | 128 | 49 | 0 | 8 | 32 | 32 | **100.0%** | 0 | 0 |
+| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | $32 \times 4$ | 128 | 51 | 0 | 8 | 32 | 32 | **100.0%** | 0 | 0 |
+| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | $32 \times 8$ | 256 | 52 | 0 | 4 | 32 | 32 | **100.0%** | 0 | 0 |
+| **Variant D: Shared-Memory $x$-Staged** | `gemv_dp4a_shared_kernel` | $32 \times 8$ | 256 | 64 | 2,048 | 4 | 32 | 32 | **100.0%** | 0 | 0 |
+
+---
+
+## 3. Key Observations & Physical Limiting Factors
+1. **Zero Register Spills**: All four kernel variants compile with exactly 0 spill stores and 0 spill loads to local memory on both architectures.
+2. **Occupancy on Pascal**:
+   - Variants A, B, and C strictly maintain $\le 32$ registers per thread, permitting the maximum block count (16 blocks of 128 threads or 8 blocks of 256 threads) to achieve full **100.0% theoretical occupancy** (64 resident warps per SM).
+   - Variant D uses 55 registers per thread ($14,080$ registers per 256-thread block), restricting each SM to 4 active blocks ($1,024$ resident threads = 32 resident warps), yielding exactly **50.0% theoretical occupancy**.

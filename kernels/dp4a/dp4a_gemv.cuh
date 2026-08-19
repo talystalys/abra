@@ -2,6 +2,7 @@
 
 #include <cuda_runtime.h>
 #include <cstdint>
+#include <string>
 
 namespace legacy_ai {
 namespace dp4a {
@@ -61,6 +62,23 @@ cudaError_t launch_gemv(
     int N, int K,
     cudaStream_t stream = 0
 );
+
+// Theoretical Occupancy Query Structure
+struct KernelOccupancyInfo {
+    std::string variant_name;
+    int block_dim_x;
+    int block_dim_y;
+    int threads_per_block;
+    int registers_per_thread;
+    size_t static_shared_bytes;
+    int active_blocks_per_sm;
+    int resident_threads_per_sm;
+    int resident_warps_per_sm;
+    int max_warps_per_sm;
+    double theoretical_occupancy_pct;
+};
+
+KernelOccupancyInfo get_kernel_occupancy_info(KernelVariant variant, int device_id = 0);
 
 } // namespace dp4a
 } // namespace legacy_ai
