@@ -16,7 +16,7 @@ host = linux
 compile_size = 64bit
 
 	code for sm_61
-		Function : _Z31quantize_q8_1_standalone_kernelPKfP10block_q8_1i
+		Function : _Z31CUSTOM_REFERENCE_Q8_1_QUANTIZERPKfP10block_q8_1i
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                        /* 0x001c5800fe0007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                              /* 0x4c98078000870001 */

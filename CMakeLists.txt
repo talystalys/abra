@@ -10,10 +10,17 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(LegacyGpuArch)
 
+# Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/kernels
+    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/include
+    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/src
 )
+
+# Pinned llama.cpp library location
+set(LLAMA_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/build-default/bin")
+link_directories(${LLAMA_LIB_DIR})
 
 # Common smoke kernel library (M0)
 add_library(legacy_smoke STATIC
@@ -89,6 +96,7 @@ target_compile_options(dump_m2_occupancy PRIVATE
 # =============================================================================
 add_library(legacy_q4k STATIC
     kernels/q4k/q4k_q8_mmvq.cu
+    kernels/q4k/upstream_adapter.cu
 )
 set_target_properties(legacy_q4k PROPERTIES
     CUDA_SEPARABLE_COMPILATION OFF
@@ -98,20 +106,28 @@ target_compile_options(legacy_q4k PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
 
-# 7. Q4_K x Q8_1 Correctness Test Suite
+# 7. Q4_K x Q8_1 Correctness Test Suite (links exact pinned libggml-cuda and libggml-base)
 add_executable(q4k_q8_test
     tests/q4k_q8_test.cu
 )
-target_link_libraries(q4k_q8_test PRIVATE legacy_q4k legacy_smoke)
+target_link_libraries(q4k_q8_test PRIVATE legacy_q4k legacy_smoke ggml-cuda ggml-base ggml)
+set_target_properties(q4k_q8_test PROPERTIES
+    BUILD_RPATH "${LLAMA_LIB_DIR}"
+    INSTALL_RPATH "${LLAMA_LIB_DIR}"
+)
 target_compile_options(q4k_q8_test PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
 
-# 8. Q4_K x Q8_1 Microbenchmark Harness
+# 8. Q4_K x Q8_1 Microbenchmark Harness (links exact pinned libggml-cuda and libggml-base)
 add_executable(q4k_q8_bench
     bench/micro/q4k_q8_bench.cu
 )
-target_link_libraries(q4k_q8_bench PRIVATE legacy_q4k legacy_smoke)
+target_link_libraries(q4k_q8_bench PRIVATE legacy_q4k legacy_smoke ggml-cuda ggml-base ggml)
+set_target_properties(q4k_q8_bench PROPERTIES
+    BUILD_RPATH "${LLAMA_LIB_DIR}"
+    INSTALL_RPATH "${LLAMA_LIB_DIR}"
+)
 target_compile_options(q4k_q8_bench PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
@@ -120,8 +136,11 @@ target_compile_options(q4k_q8_bench PRIVATE
 add_executable(dump_m3_occupancy
     tools/dump_m3_occupancy.cu
 )
-target_link_libraries(dump_m3_occupancy PRIVATE legacy_q4k legacy_smoke)
+target_link_libraries(dump_m3_occupancy PRIVATE legacy_q4k legacy_smoke ggml-cuda ggml-base ggml)
+set_target_properties(dump_m3_occupancy PROPERTIES
+    BUILD_RPATH "${LLAMA_LIB_DIR}"
+    INSTALL_RPATH "${LLAMA_LIB_DIR}"
+)
 target_compile_options(dump_m3_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
-

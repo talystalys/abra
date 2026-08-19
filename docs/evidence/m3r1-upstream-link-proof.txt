@@ -1,0 +1,24 @@
+=== Pinned ggml-cuda Binary Link Proof ===
+Target Binary: /home/taly/legacy-ai/build/q4k_q8_bench
+Date: Wed Aug 19 04:45:48 PM UTC 2026
+
+--- Dynamic Library Linkage (ldd) ---
+	libggml-cuda.so.0 => /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-cuda.so.0 (0x00007fca90400000)
+	libggml-base.so.0 => /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-base.so.0 (0x00007fca94bcb000)
+	libcudart.so.12 => /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcudart.so.12 (0x00007fca8fa00000)
+	libcublas.so.12 => /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcublas.so.12 (0x00007fca89200000)
+	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007fca87600000)
+	libcublasLt.so.12 => /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcublasLt.so.12 (0x00007fca55200000)
+
+--- Referenced Pinned Upstream Symbols in Binary (nm -C) ---
+                 U quantize_row_q4_K_ref
+                 U quantize_row_q8_1_cuda(float const*, int const*, void*, ggml_type, long, long, long, long, long, long, long, long, CUstream_st*)
+                 U ggml_cuda_op_mul_mat_vec_q(ggml_backend_cuda_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*, char const*, float const*, char const*, float*, long, long, long, long, CUstream_st*)
+
+--- Exported Symbols in libggml-cuda.so ---
+000000000039b9e0 T quantize_row_q8_1_cuda(float const*, int const*, void*, ggml_type, long, long, long, long, long, long, long, long, CUstream_st*)
+000000000038f320 T ggml_cuda_op_mul_mat_vec_q(ggml_backend_cuda_context&, ggml_tensor const*, ggml_tensor const*, ggml_tensor*, char const*, float const*, char const*, float*, long, long, long, long, CUstream_st*)
+
+--- Exported Symbols in libggml-base.so ---
+000000000007bc40 T dequantize_row_q4_K
+000000000007a7a0 T quantize_row_q4_K_ref
