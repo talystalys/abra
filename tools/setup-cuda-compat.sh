@@ -51,3 +51,7 @@ for item in "${CUDA_TARGET_INC}/"*; do
 done
 
 echo "CUDA compatibility overlay successfully established at: ${OVERLAY_INC}"
+
+export PATH="${CUDA_ROOT}/bin:${PATH}"
+export CUDACXX="${CUDA_ROOT}/bin/nvcc"
+export CUDAFLAGS="-I${OVERLAY_INC} -Wno-deprecated-gpu-targets"

@@ -1,0 +1,27 @@
+=== Upstream llama.cpp MMVQ Dispatch Contract Proof ===
+Pinned llama.cpp Commit: 169e4a7ff201e666c2325bcd35afb64573e39d09
+
+1. MMVQ Dispatch Rule:
+   In ggml-cuda.cu / mmvq.cuh:
+   bool ggml_cuda_should_use_mmvq(enum ggml_type type, int cc, int64_t ne11) {
+       if (!ggml_is_quantized(type)) return false;
+       return ne11 <= MMVQ_MAX_BATCH_SIZE; // MMVQ_MAX_BATCH_SIZE == 8
+   }
+   During autoregressive decode (ne11 == 1, batch=1), ggml_cuda_should_use_mmvq() returns TRUE.
+   The decode incumbent for Q4_K is therefore MMVQ (NOT MMQ).
+
+2. Architectural Parameter Tables in mmvq.cu:
+   - For Pascal SM 6.1:
+     Falls into MMVQ_PARAMETERS_GENERIC table.
+     calc_nwarps(GGML_TYPE_Q4_K, ncols_dst=1, MMVQ_PARAMETERS_GENERIC) -> returns 4.
+     Generic Pascal MMVQ uses 4 warps collaborating on 1 output row (1 row per block).
+   - For Turing SM 7.5:
+     Falls into MMVQ_PARAMETERS_TURING table.
+     calc_nwarps(GGML_TYPE_Q4_K, ncols_dst=1, MMVQ_PARAMETERS_TURING) -> returns 2.
+     Turing MMVQ uses 2 warps collaborating on 1 output row.
+
+3. Numerical Accumulation Contract:
+   - Quantized Weight Block: block_q4_K (144 bytes per 256 weights, 4.5 bpw, asymmetric scales/mins).
+   - Quantized Activation Block: block_q8_1 (36 bytes per 32 values, scale d + sum-scale s).
+   - Kernel vec_dot_q4_K_q8_1 executes IDP.4A.S8.S8 SIMD dot products directly on quantized byte representations.
+   - Dequantization scale/min offsets are accumulated in FP32 without intermediate full-tensor dequantization in global memory.

@@ -2,7 +2,7 @@
 
 This document outlines the research and engineering roadmap for exploring modern quantized neural-network inference on legacy NVIDIA architectures (specifically NVIDIA Pascal SM 6.1).
 
-> **Important**: Milestone M2 corrective pass and documentation synchronization is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
+> **Important**: Milestone M3 characterization is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
 
 ---
 
@@ -19,16 +19,20 @@ This document outlines the research and engineering roadmap for exploring modern
   - Quantified baseline inference performance on legacy hardware using upstream `llama.cpp` MMQ on `Qwen3-4B-Q4_K_M.gguf`.
   - Established hardware offload proofs and telemetry on Pascal (GTX 1060) and Turing (GTX 1660 SUPER).
 
-- **M2: DP4A Microkernel** *(CORRECTIVE DOCUMENTATION SYNCHRONIZATION COMPLETE — AWAITING TECHNICAL LEAD AUDIT)*
+- **M2: DP4A Microkernel** *(COMPLETED — PASS)*
   - Implemented signed INT8 $\times$ signed INT8 $\to$ INT32 matrix-vector arithmetic microkernels for Pascal SM 6.1 (`IDP.4A.S8.S8`).
   - Verified 100% bit-exact correctness against CPU 64-bit accumulation reference oracle across 156 test cases on both Pascal and Turing GPUs.
   - SASS disassembly analysis proving 0 `IDP.4A` in scalar baseline and active `IDP.4A.S8.S8` in DP4A variants.
   - Characterized $2.60\times\text{--}3.64\times$ speedup on Pascal over compiler-verified scalar baseline, achieving up to $176.13\text{ GiB/s}$ effective requested throughput.
 
-- **M3: Quantized Weight Microkernel** *(PLANNED — NOT STARTED / NOT AUTHORIZED)*
-  - Implement specialized quantized weight kernels (Q4/Q5/Q8) with on-the-fly dequantization and INT32 accumulation.
+- **M3: Pascal Q4_K × Q8_1 Decode Microkernel Characterization** *(COMPLETED — AWAITING TECHNICAL LEAD AUDIT)*
+  - Identified actual upstream decode incumbent as MMVQ (`ne11 <= 8`).
+  - Extracted canonical model tensor map (`Qwen3-4B-Q4_K_M.gguf`, 398 tensors: 216 Q4_K, 37 Q6_K, 145 F32).
+  - Implemented custom Q4_K × Q8_1 MMVQ microkernel variants (Variant A: 4-warp control, Variant B: 2-warp split, Variant C: 1-warp row).
+  - Validated 114/114 tests against double-precision reference oracle (max relative error $4.20 \times 10^{-6}$).
+  - Characterized $+43.5\%\text{--}+48.5\%$ speedup on Pascal $K=2560$ shapes by resolving 4-warp $K$-tail idle slot waste.
 
-- **M4: Autotuned Kernel Family** *(PLANNED)*
+- **M4: Autotuned Kernel Family** *(PLANNED — NOT STARTED / NOT AUTHORIZED)*
   - Develop family of parameter-tuned kernels (tile size, warp layout, memory access patterns) for Pascal hardware characteristics.
 
 - **M5: Runtime Integration** *(PLANNED)*
