@@ -10,12 +10,20 @@ set(CMAKE_CUDA_STANDARD_REQUIRED ON)
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 include(LegacyGpuArch)
 
+add_definitions(
+    -DGGML_CUDA_USE_GRAPHS
+    -DUSE_CUDA_GRAPH
+    -DGGML_CUDA_PEER_MAX_BATCH_SIZE=128
+    -DGGML_SCHED_MAX_COPIES=4
+)
+
 # Include directories
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/kernels
     ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/include
     ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/src
+    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/src/ggml-cuda
 )
 
 # Pinned llama.cpp library location

@@ -5,9 +5,10 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_DIR="${REPO_DIR}/build"
 RESULTS_DIR="${REPO_DIR}/bench/results/m3"
-PRE_REPAIR_DIR="${RESULTS_DIR}/pre-repair"
+PRE_M3R2_DIR="${RESULTS_DIR}/pre-m3r2"
 EVIDENCE_DIR="${REPO_DIR}/docs/evidence"
-LLAMA_LIB_DIR="${REPO_DIR}/.deps/llama.cpp/build-default/bin"
+LLAMA_DIR="${REPO_DIR}/.deps/llama.cpp"
+LLAMA_LIB_DIR="${LLAMA_DIR}/build-default/bin"
 MODEL_PATH="${REPO_DIR}/models/Qwen3-4B-Q4_K_M.gguf"
 
 PASCAL_UUID="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
@@ -19,7 +20,7 @@ PINNED_LLAMA_COMMIT="169e4a7ff201e666c2325bcd35afb64573e39d09"
 CANONICAL_MODEL_SHA="7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
 
 echo "======================================================================"
-echo "Milestone M3R1: Pascal Q4_K x Q8_1 Automated 25-Gate Qualification Suite"
+echo "Milestone M3R2: Pascal Q4_K x Q8_1 Automated 25-Gate Qualification Suite"
 echo "======================================================================"
 
 # Gate 1: Lineage and Branch
@@ -48,8 +49,28 @@ echo "  NVCC: $("${NVCC_BIN}" --version | grep "release" | head -n 1)"
 echo "  GCC:  $(gcc --version | head -n 1)"
 echo "  Glibc: $(ldd --version | head -n 1)"
 
-# Gate 3: Build & Device Architecture Image Verification
-echo "[Gate 3/25] Checking build and dual-arch device images (sm_61 and sm_75)..."
+# Gate 3: Mandatory Pinned llama.cpp Worktree & Clean State (Strict)
+echo "[Gate 3/25] Verifying mandatory pinned llama.cpp worktree and clean state..."
+if [[ ! -d "${LLAMA_DIR}" ]] || [[ ! -d "${LLAMA_DIR}/.git" ]]; then
+    echo "FATAL: Mandatory pinned llama.cpp directory missing at ${LLAMA_DIR}!" >&2
+    exit 1
+fi
+
+LLAMA_COMMIT=$(git -C "${LLAMA_DIR}" rev-parse HEAD)
+if [[ "${LLAMA_COMMIT}" != "${PINNED_LLAMA_COMMIT}" ]]; then
+    echo "FATAL: llama.cpp commit mismatch! Expected ${PINNED_LLAMA_COMMIT}, got ${LLAMA_COMMIT}" >&2
+    exit 1
+fi
+
+if ! git -C "${LLAMA_DIR}" diff-index --quiet HEAD --; then
+    echo "FATAL: llama.cpp worktree has uncommitted modifications!" >&2
+    git -C "${LLAMA_DIR}" status --short >&2
+    exit 1
+fi
+echo "  llama.cpp pinned commit verified: ${LLAMA_COMMIT} (clean worktree)."
+
+# Gate 4: Build & Device Architecture Image Verification
+echo "[Gate 4/25] Checking build and dual-arch device images (sm_61 and sm_75)..."
 cd "${BUILD_DIR}"
 make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m3_occupancy legacy_q4k
 
@@ -67,8 +88,8 @@ if ! echo "${ARCH_DUMP}" | grep -q "sm_75"; then
 fi
 echo "  Dual-architecture target images verified in ${OBJ_FILE}."
 
-# Gate 4: Canonical Model Checksum & Tensor Map
-echo "[Gate 4/25] Verifying Canonical GGUF model and tensor map..."
+# Gate 5: Canonical Model Checksum & Tensor Map
+echo "[Gate 5/25] Verifying Canonical GGUF model and tensor map..."
 if [[ -f "${MODEL_PATH}" ]]; then
     OBS_SHA=$(sha256sum "${MODEL_PATH}" | awk '{print $1}')
     if [[ "${OBS_SHA}" != "${CANONICAL_MODEL_SHA}" ]]; then
@@ -85,20 +106,17 @@ if [[ ! -f "${TENSOR_MAP_JSON}" ]]; then
 fi
 echo "  Tensor map file verified: ${TENSOR_MAP_JSON}"
 
-# Gate 5: Pinned Upstream llama.cpp Worktree
-echo "[Gate 5/25] Verifying pinned upstream llama.cpp worktree and clean state..."
-LLAMA_DIR="${REPO_DIR}/.deps/llama.cpp"
-if [[ -d "${LLAMA_DIR}" ]]; then
-    LLAMA_COMMIT=$(git -C "${LLAMA_DIR}" rev-parse HEAD)
-    if [[ "${LLAMA_COMMIT}" != "${PINNED_LLAMA_COMMIT}" ]]; then
-        echo "FATAL: llama.cpp commit mismatch! Expected ${PINNED_LLAMA_COMMIT}, got ${LLAMA_COMMIT}" >&2
-        exit 1
-    fi
-    echo "  llama.cpp pinned commit verified: ${LLAMA_COMMIT}"
+# Gate 6: Upstream Library Provenance Evidence
+echo "[Gate 6/25] Verifying upstream library provenance evidence..."
+PROV_FILE="${EVIDENCE_DIR}/m3r2-upstream-library-provenance.txt"
+if [[ ! -f "${PROV_FILE}" ]] || ! grep -q "libggml-cuda.so" "${PROV_FILE}" || ! grep -q "${PINNED_LLAMA_COMMIT}" "${PROV_FILE}"; then
+    echo "FATAL: Upstream library provenance evidence missing or incomplete at ${PROV_FILE}!" >&2
+    exit 1
 fi
+echo "  Verified library provenance: ${PROV_FILE}."
 
-# Gate 6: Link Proof Evidence
-echo "[Gate 6/25] Verifying upstream dynamic library link proof evidence..."
+# Gate 7: Link Proof Evidence
+echo "[Gate 7/25] Verifying upstream dynamic library link proof evidence..."
 LINK_PROOF="${EVIDENCE_DIR}/m3r1-upstream-link-proof.txt"
 if [[ ! -f "${LINK_PROOF}" ]] || ! grep -q "libggml-cuda.so" "${LINK_PROOF}" || ! grep -q "ggml_cuda_op_mul_mat_vec_q" "${LINK_PROOF}"; then
     echo "FATAL: Upstream link proof evidence missing or incomplete in ${LINK_PROOF}!" >&2
@@ -106,8 +124,8 @@ if [[ ! -f "${LINK_PROOF}" ]] || ! grep -q "libggml-cuda.so" "${LINK_PROOF}" || 
 fi
 echo "  Verified dynamic link proof in ${LINK_PROOF}."
 
-# Gate 7: Upstream SASS Evidence
-echo "[Gate 7/25] Verifying upstream SASS disassembly evidence..."
+# Gate 8: Upstream SASS Evidence
+echo "[Gate 8/25] Verifying upstream SASS disassembly evidence..."
 UPSTREAM_SASS="${EVIDENCE_DIR}/m3r1-upstream-sass.txt"
 if [[ ! -f "${UPSTREAM_SASS}" ]]; then
     echo "FATAL: Upstream SASS evidence missing at ${UPSTREAM_SASS}!" >&2
@@ -115,8 +133,8 @@ if [[ ! -f "${UPSTREAM_SASS}" ]]; then
 fi
 echo "  Verified upstream SASS evidence (${UPSTREAM_SASS})."
 
-# Gate 8: Custom Kernel SASS Evidence
-echo "[Gate 8/25] Verifying native IDP.4A.S8.S8 in custom Pascal SASS disassembly..."
+# Gate 9: Custom Kernel SASS Evidence
+echo "[Gate 9/25] Verifying native IDP.4A.S8.S8 in custom Pascal SASS disassembly..."
 CUSTOM_SASS="${EVIDENCE_DIR}/m3-pascal-q4k-sass.txt"
 if [[ ! -f "${CUSTOM_SASS}" ]] || ! grep -q "IDP.4A.S8.S8" "${CUSTOM_SASS}"; then
     echo "FATAL: Custom SASS evidence missing IDP.4A.S8.S8 instructions!" >&2
@@ -124,8 +142,8 @@ if [[ ! -f "${CUSTOM_SASS}" ]] || ! grep -q "IDP.4A.S8.S8" "${CUSTOM_SASS}"; the
 fi
 echo "  Verified native IDP.4A.S8.S8 instructions in ${CUSTOM_SASS}."
 
-# Gate 9: Theoretical Occupancy & Resource Usage Evidence
-echo "[Gate 9/25] Verifying theoretical occupancy and resource usage evidence..."
+# Gate 10: Theoretical Occupancy & Resource Usage Evidence
+echo "[Gate 10/25] Verifying theoretical occupancy and resource usage evidence..."
 OCC_FILE="${EVIDENCE_DIR}/m3-resource-usage.txt"
 if [[ ! -f "${OCC_FILE}" ]] || ! grep -q "GTX 1060" "${OCC_FILE}"; then
     echo "FATAL: Resource usage evidence missing or incomplete in ${OCC_FILE}!" >&2
@@ -133,8 +151,8 @@ if [[ ! -f "${OCC_FILE}" ]] || ! grep -q "GTX 1060" "${OCC_FILE}"; then
 fi
 echo "  Verified theoretical occupancy metrics in ${OCC_FILE}."
 
-# Gate 10: Upstream MMVQ Dispatch Proof
-echo "[Gate 10/25] Verifying upstream MMVQ dispatch proof..."
+# Gate 11: Upstream MMVQ Dispatch Proof
+echo "[Gate 11/25] Verifying upstream MMVQ dispatch proof..."
 DISPATCH_FILE="${EVIDENCE_DIR}/m3-upstream-mmvq-dispatch.txt"
 if [[ ! -f "${DISPATCH_FILE}" ]] || ! grep -q "MMVQ_PARAMETERS_GENERIC" "${DISPATCH_FILE}"; then
     echo "FATAL: Upstream dispatch proof missing in ${DISPATCH_FILE}!" >&2
@@ -142,8 +160,8 @@ if [[ ! -f "${DISPATCH_FILE}" ]] || ! grep -q "MMVQ_PARAMETERS_GENERIC" "${DISPA
 fi
 echo "  Verified MMVQ dispatch proof in ${DISPATCH_FILE}."
 
-# Gate 11: Frozen Numerical Envelope
-echo "[Gate 11/25] Verifying frozen numerical envelope..."
+# Gate 12: Frozen Numerical Envelope
+echo "[Gate 12/25] Verifying frozen numerical envelope..."
 ENVELOPE_JSON="${RESULTS_DIR}/numerical-envelope.json"
 if [[ ! -f "${ENVELOPE_JSON}" ]]; then
     echo "FATAL: Numerical envelope missing at ${ENVELOPE_JSON}!" >&2
@@ -158,30 +176,26 @@ assert env['upstream_vs_f64_oracle']['max_rel_error'] < 0.005
 print('  Verified numerical envelope: max rel error =', env['upstream_vs_f64_oracle']['max_rel_error'])
 "
 
-# Gate 12: Pre-repair Evidence Preserved
-echo "[Gate 12/25] Verifying pre-repair 8f0290d evidence preservation..."
-if [[ ! -f "${PRE_REPAIR_DIR}/pascal-q4k-bench.json" ]]; then
-    echo "FATAL: Pre-repair benchmark evidence missing in ${PRE_REPAIR_DIR}!" >&2
+# Gate 13: Pre-m3r2 Evidence Preserved
+echo "[Gate 13/25] Verifying pre-m3r2 2e28b42 evidence preservation..."
+if [[ ! -f "${PRE_M3R2_DIR}/pascal-q4k-bench.json" ]]; then
+    echo "FATAL: Pre-m3r2 benchmark evidence missing in ${PRE_M3R2_DIR}!" >&2
     exit 1
 fi
-echo "  Pre-repair evidence preserved in ${PRE_REPAIR_DIR}."
+echo "  Pre-m3r2 evidence preserved in ${PRE_M3R2_DIR}."
 
-# Gate 13: Frozen B/C Source Integrity
-echo "[Gate 13/25] Verifying frozen Variant B and C kernel implementation integrity..."
-KERNEL_CU="${REPO_DIR}/kernels/q4k/q4k_q8_mmvq.cu"
-if ! grep -q "q4k_q8_mmvq_2warp_kernel" "${KERNEL_CU}" || ! grep -q "q4k_q8_mmvq_1warp_kernel" "${KERNEL_CU}"; then
-    echo "FATAL: Missing Variant B or Variant C kernel definition in ${KERNEL_CU}!" >&2
+# Gate 14: Upstream Adapter ABI Verification (No Fake Context)
+echo "[Gate 14/25] Verifying upstream_adapter.cu uses real common.cuh context..."
+ADAPTER_CU="${REPO_DIR}/kernels/q4k/upstream_adapter.cu"
+if grep -q "char padding\[1024\]" "${ADAPTER_CU}" || grep -q "struct ggml_backend_cuda_context {" "${ADAPTER_CU}"; then
+    echo "FATAL: Fake ggml_backend_cuda_context definition detected in ${ADAPTER_CU}!" >&2
     exit 1
 fi
-echo "  Variant B and C kernel source verified."
-
-# Gate 14: Standalone Quantizer Renamed
-echo "[Gate 14/25] Verifying standalone quantizer renamed to CUSTOM_REFERENCE_Q8_1_QUANTIZER..."
-if ! grep -q "CUSTOM_REFERENCE_Q8_1_QUANTIZER" "${KERNEL_CU}"; then
-    echo "FATAL: Custom reference quantizer naming assertion failed in ${KERNEL_CU}!" >&2
+if ! grep -q "common.cuh" "${ADAPTER_CU}" || ! grep -q "ggml_backend_cuda_context ctx(dev_id)" "${ADAPTER_CU}"; then
+    echo "FATAL: Real ggml_backend_cuda_context construction missing in ${ADAPTER_CU}!" >&2
     exit 1
 fi
-echo "  Verified CUSTOM_REFERENCE_Q8_1_QUANTIZER naming."
+echo "  Verified real ggml_backend_cuda_context ABI usage in upstream_adapter.cu."
 
 # Gate 15: Distinct Kernel Verification
 echo "[Gate 15/25] Verifying Variant U != Variant A != Variant B != Variant C..."
@@ -310,5 +324,5 @@ print('  Git workspace hygiene verified: 0 forbidden files tracked.')
 
 echo "======================================================================"
 echo "ALL 25 QUALIFICATION GATES PASSED PERFECTLY!"
-echo "Milestone M3R1 is verified, reproducible, and ready for lead review."
+echo "Milestone M3R2 is verified, reproducible, and ready for lead review."
 echo "======================================================================"

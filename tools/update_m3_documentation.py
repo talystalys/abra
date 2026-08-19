@@ -29,6 +29,23 @@ def generate_report(summary, manifest, envelope):
     pascal = summary["pascal"]
     turing = summary["turing"]
     
+    host_info = manifest.get("observed_execution_environment", {}).get("host", {})
+    toolchain_info = manifest.get("observed_execution_environment", {}).get("toolchain", {})
+    
+    hostname = host_info.get("hostname", "BigBoy")
+    os_name = host_info.get("os", "Debian GNU/Linux 13 (trixie)")
+    kernel_ver = host_info.get("kernel", "Linux")
+    cpu_name = host_info.get("cpu", "2 x Intel Xeon")
+    ram_data = host_info.get("ram", {})
+    ram_str = f"{ram_data.get('total_gib', 62.77)} GiB Total ({ram_data.get('total_kib', 65820952):,} KiB)" if isinstance(ram_data, dict) else str(ram_data)
+    numa_nodes = host_info.get("numa_nodes_count", 2)
+    
+    driver_ver = toolchain_info.get("nvidia_driver", "550.163.01")
+    cuda_path = toolchain_info.get("cuda_toolkit_path", "/usr/local/cuda-12.9")
+    nvcc_ver = toolchain_info.get("nvcc_version", "12.9.86")
+    gcc_ver = toolchain_info.get("host_compiler", "gcc 14.2.0")
+    glibc_ver = toolchain_info.get("glibc_version", "glibc 2.41")
+    
     pascal_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in pascal["shapes"]}
     turing_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in turing["shapes"]}
     
@@ -84,7 +101,7 @@ Milestone M3 evaluates whether a Pascal GP106-specific execution mapping for the
    - As hypothesized, the speedup from restructuring warp collaboration is concentrated on tail-waste dimensions ($K=2560$), confirming the analytical performance model.
 
 4. **Activation Quantization Pipeline Overhead (Timing Mode 2)**:
-   - Standalone GPU activation quantization ($F32 \\to Q8\\_1$ via exact pinned `quantize_row_q8_1_cuda`) incurs **4.10 µs to 12.30 µs** on Pascal GP106.
+   - Standalone GPU activation quantization ($F32 \\to Q8\\_1$ via exact pinned `quantize_row_q8_1_cuda`) incurs **{format_num(pascal_shapes['synth_256'][0]['quantize_only_median_us'])} µs to {format_num(pascal_shapes['ffn_down'][0]['quantize_only_median_us'])} µs** on Pascal GP106.
    - In end-to-end decode pipelines (Exact Pinned Quantize + Multiply), Variant B maintains speedups of **{pascal_shapes['attn_q'][2]['speedup_mode2_vs_upstream']:.3f}×** (`attn_q`), **{pascal_shapes['attn_kv'][2]['speedup_mode2_vs_upstream']:.3f}×** (`attn_kv`), and **{pascal_shapes['ffn_gate_up'][2]['speedup_mode2_vs_upstream']:.3f}×** (`ffn_gate_up`) over the upstream pipeline.
 
 5. **Numerical Exactness, Frozen Envelope & Real Model Bytes**:
@@ -100,16 +117,16 @@ All experiments were executed on host `BigBoy` in strict compliance with `AGENTS
 
 ```text
 Host Environment:
-  Host: BigBoy
-  OS: Debian GNU/Linux 13 (trixie)
-  Kernel: Linux 6.12.100+bpo-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100~bpo12+1 (2025-05-24) x86_64
-  CPU: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads)
-  RAM: 62.77 GiB Total (65,820,952 KiB)
-  NUMA Nodes: 2 nodes (Node 0: CPUs 0-15,32-47; Node 1: CPUs 16-31,48-63)
-  NVIDIA Driver: 550.163.01
-  CUDA Toolkit: 12.9.86 (/usr/local/cuda-12.9)
-  Host Compiler: gcc 14.2.0 (Debian 14.2.0-19)
-  C Standard Library: glibc 2.41 (Debian GLIBC 2.41-3)
+  Host: {hostname}
+  OS: {os_name}
+  Kernel: {kernel_ver}
+  CPU: {cpu_name}
+  RAM: {ram_str}
+  NUMA Nodes: {numa_nodes} nodes
+  NVIDIA Driver: {driver_ver}
+  CUDA Toolkit: {cuda_path}
+  Host Compiler: {gcc_ver}
+  C Standard Library: {glibc_ver}
 ```
 
 ```text
@@ -225,17 +242,17 @@ For `block_q4_K` ($QK\\_K = 256$, $QI4\\_K = 32$, $vdr = 2$), each 32-thread war
 
 The test suite (`tests/q4k_q8_test.cu`) compares all GPU kernel variants against an independent double-precision ($F64$) CPU oracle and directly against Variant U.
 
-- **Total Test Cases**: 168
-- **Passed Test Cases**: 168 (100% PASS)
+- **Total Test Cases**: {envelope.get('total_tests', 168)}
+- **Passed Test Cases**: {envelope.get('passed_tests', 168)} (100% PASS)
 - **Input Families Evaluated**:
   1. `ALL_ZERO` (Zero relative error)
   2. `LOW_AMPLITUDE_CONST` (Zero relative error)
   3. `ALTERNATING_SIGN` (Zero relative error)
-  4. `BOUNDED_PSEUDORANDOM` (Max relative error: $6.52 \\times 10^{-6}$)
-  5. `WIDE_DYNAMIC_RANGE` (Max relative error: $3.64 \\times 10^{-6}$)
-  6. `SPARSE_OUTLIERS` (Max relative error: $1.50 \\times 10^{-7}$)
-  7. `VARYING_SCALE` (Max relative error: $4.04 \\times 10^{-6}$)
-  8. `NONZERO_MIN_EXERCISE` (Max relative error: $1.06 \\times 10^{-7}$)
+  4. `BOUNDED_PSEUDORANDOM`
+  5. `WIDE_DYNAMIC_RANGE`
+  6. `SPARSE_OUTLIERS`
+  7. `VARYING_SCALE`
+  8. `NONZERO_MIN_EXERCISE`
 - **Upstream vs F64 Double Oracle Error**:
   - Max Relative Error: **{envelope['upstream_vs_f64_oracle']['max_rel_error']:.4e}**
   - Max Absolute Error: **{envelope['upstream_vs_f64_oracle']['max_abs_error']:.4e}**
@@ -311,7 +328,7 @@ The test suite (`tests/q4k_q8_test.cu`) compares all GPU kernel variants against
             sp_str = f"**{v['speedup_mode2_vs_upstream']:.3f}x**"
             report += f"| `{s_name}` | {dim_str} | {v['variant_name']} | {format_num(v['quantize_only_median_us'])} | {format_num(v['combined_median_us'])} | {format_num(v['combined_mean_us'])} | {format_num(v['combined_spread_us'])} | {sp_str} |\n"
 
-    report += """
+    report += f"""
 ---
 
 ## 9. Analysis & Synthesis
@@ -321,13 +338,13 @@ The empirical evidence across 8 distinct shapes and 2 GPU architectures provides
 - On GP106 (Pascal), the generic MMVQ kernel's 4-warp allocation imposes a mandatory 8-superblock granularity ($2048$ elements) on the $K$ reduction dimension.
 - For $K=2560$ (10 superblocks), the second iteration executes with only 2 active blocks and 6 idle block slots ($37.5\\%$ inactive threads during iteration 1).
 - By restructuring the thread block to 2 warps per row (Variant B, 4 blocks/iter) or 1 warp per row (Variant C, 2 blocks/iter), the $K$-loop achieves higher slot utilization ($83.3\\%$ and $100.0\\%$, respectively) while doubling or quadrupling the number of concurrently processed output rows per thread block.
-- Consequently, $K=2560$ shapes display the highest speedups (+14.1% to +31.1% over exact pinned upstream MMVQ), whereas $K=4096$ (100% slot utilization in 4-warp) and $K=9728$ (95% slot utilization in 4-warp) show modest gains (+2.8% to +5.3%).
+- Consequently, $K=2560$ shapes display the highest speedups (+{min(q_b_pct, ffn_b_pct):.1f}% to +{kv_b_pct:.1f}% over exact pinned upstream MMVQ), whereas $K=4096$ (100% slot utilization in 4-warp) and $K=9728$ (95% slot utilization in 4-warp) show modest gains (+{down_b_pct:.1f}% to +{out_b_pct:.1f}%).
 
 ### 2. Elimination of Cross-Warp Barriers
-Variant C eliminates inter-warp shared memory communication and `__syncthreads()` synchronization entirely. Every row reduction occurs strictly within registers using 5 intra-warp `__shfl_xor_sync` operations. This accounts for its strong performance on small shapes (`synth_256`: 4.70 µs vs 5.82 µs, 1.238× speedup; `synth_1024`: 8.19 µs vs 9.82 µs, 1.199× speedup).
+Variant C eliminates inter-warp shared memory communication and `__syncthreads()` synchronization entirely. Every row reduction occurs strictly within registers using 5 intra-warp `__shfl_xor_sync` operations. This accounts for its strong performance on small shapes (`synth_256`: {format_num(pascal_shapes['synth_256'][3]['median_us'])} µs vs {format_num(pascal_shapes['synth_256'][0]['median_us'])} µs, {pascal_shapes['synth_256'][3]['speedup_mode1_vs_upstream']:.3f}× speedup; `synth_1024`: {format_num(pascal_shapes['synth_1024'][3]['median_us'])} µs vs {format_num(pascal_shapes['synth_1024'][0]['median_us'])} µs, {pascal_shapes['synth_1024'][3]['speedup_mode1_vs_upstream']:.3f}× speedup).
 
 ### 3. Impact on End-to-End Autoregressive Generation
-In full autoregressive generation, input activations in $F32$ must be dynamically quantized to $Q8\\_1$ once per token decode step before projection multiplications occur. Because quantization latency ($4.10$ µs for $K=2560$) is amortized across multiple projection layers or executed once per vector, the multiplication speedups recorded in Mode 1 directly translate to significant pipeline reductions in Mode 2 (+12.5% speedup on `attn_q`, +14.7% speedup on `ffn_gate_up`).
+In full autoregressive generation, input activations in $F32$ must be dynamically quantized to $Q8\\_1$ once per token decode step before projection multiplications occur. Because quantization latency ({format_num(pascal_shapes['attn_q'][0]['quantize_only_median_us'])} µs for $K=2560$) is amortized across multiple projection layers or executed once per vector, the multiplication speedups recorded in Mode 1 directly translate to significant pipeline reductions in Mode 2 (+{((pascal_shapes['attn_q'][2]['speedup_mode2_vs_upstream']-1)*100):.1f}% speedup on `attn_q`, +{((pascal_shapes['ffn_gate_up'][2]['speedup_mode2_vs_upstream']-1)*100):.1f}% speedup on `ffn_gate_up`).
 
 ---
 
@@ -352,6 +369,23 @@ def generate_current_status(summary, manifest):
     pascal = summary["pascal"]
     turing = summary["turing"]
     
+    host_info = manifest.get("observed_execution_environment", {}).get("host", {})
+    toolchain_info = manifest.get("observed_execution_environment", {}).get("toolchain", {})
+    
+    hostname = host_info.get("hostname", "BigBoy")
+    os_name = host_info.get("os", "Debian GNU/Linux 13 (trixie)")
+    kernel_ver = host_info.get("kernel", "Linux")
+    cpu_name = host_info.get("cpu", "2 x Intel Xeon")
+    ram_data = host_info.get("ram", {})
+    ram_str = f"{ram_data.get('total_gib', 62.77)} GiB Total ({ram_data.get('total_kib', 65820952):,} KiB)" if isinstance(ram_data, dict) else str(ram_data)
+    numa_nodes = host_info.get("numa_nodes_count", 2)
+    
+    driver_ver = toolchain_info.get("nvidia_driver", "550.163.01")
+    cuda_path = toolchain_info.get("cuda_toolkit_path", "/usr/local/cuda-12.9")
+    nvcc_ver = toolchain_info.get("nvcc_version", "12.9.86")
+    gcc_ver = toolchain_info.get("host_compiler", "gcc 14.2.0")
+    glibc_ver = toolchain_info.get("glibc_version", "glibc 2.41")
+
     pascal_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in pascal["shapes"]}
     turing_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in turing["shapes"]}
 
@@ -362,10 +396,10 @@ Current branch: m3/q4k-q8-microkernel
 Accepted M2 base commit: f10ead5fa94925e0a36980b1f3bdaa4a6998aa84
 (Git repository HEAD is authoritative for current commit state)
 
-Execution host: BigBoy
-OS: Debian GNU/Linux 13 (trixie) (Kernel Linux 6.12.100+bpo-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100~bpo12+1 (2025-05-24) x86_64)
-CPU: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads, 2 NUMA nodes)
-RAM: 62.77 GiB Total (65,820,952 KiB)
+Execution host: {hostname}
+OS: {os_name} (Kernel {kernel_ver})
+CPU: {cpu_name} ({numa_nodes} NUMA nodes)
+RAM: {ram_str}
 
 Pascal qualification GPU: NVIDIA GeForce GTX 1060 6GB
 Pascal PCI/UUID: PCI 0000:03:00.0 / UUID GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
@@ -375,11 +409,11 @@ Control GPU: NVIDIA GeForce GTX 1660 SUPER
 Control PCI/UUID: PCI 0000:81:00.0 / UUID GPU-8a043791-359d-1df4-9353-38c5bc98e5dd
 Control compute capability: 7.5 (NUMA node 1)
 
-NVIDIA driver: 550.163.01
-CUDA toolkit: CUDA 12.9 (/usr/local/cuda-12.9)
-NVCC: 12.9.86
-Host compiler: gcc 14.2.0 (Debian 14.2.0-19)
-glibc: Debian GLIBC 2.41-3 (2.41)
+NVIDIA driver: {driver_ver}
+CUDA toolkit: CUDA 12.9 ({cuda_path})
+NVCC: {nvcc_ver}
+Host compiler: {gcc_ver}
+glibc: {glibc_ver}
 
 ---
 

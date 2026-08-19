@@ -1,14 +1,9 @@
+#include "common.cuh"
 #include "upstream_adapter.cuh"
 #include <iostream>
 #include <cuda_runtime.h>
 
-#include "../../.deps/llama.cpp/ggml/include/ggml.h"
-
-// Forward declaration of internal ggml-cuda context matching libggml-cuda.so ABI
-struct ggml_backend_cuda_context {
-    int device;
-    char padding[1024];
-};
+#include "ggml.h"
 
 // C++ mangled signatures exported by libggml-cuda.so
 void quantize_row_q8_1_cuda(
@@ -39,8 +34,7 @@ void launch_pinned_upstream_mmvq(
     int dev_id = 0;
     cudaGetDevice(&dev_id);
 
-    ggml_backend_cuda_context ctx{};
-    ctx.device = dev_id;
+    ggml_backend_cuda_context ctx(dev_id);
 
     ggml_tensor src0{};
     src0.type = GGML_TYPE_Q4_K;
