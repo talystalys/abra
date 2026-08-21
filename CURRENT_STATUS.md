@@ -2,7 +2,8 @@
 
 Current milestone: M0
 Current branch: m0/reproducible-baseline
-Current commit: 9938befd49316b6ba9548cedf3346e3da2ed0502
+Verified implementation commit: 9938befd49316b6ba9548cedf3346e3da2ed0502
+(Git repository HEAD is authoritative for current commit state)
 
 Execution host: BigBoy
 
@@ -20,10 +21,11 @@ CUDA toolkit: CUDA 12.9.2 (/usr/local/cuda-12.9)
 What works:
 - Live physical detection and device enumeration of both GTX 1060 6GB (Pascal SM 6.1) and GTX 1660 SUPER (Turing SM 7.5) on BigBoy
 - Dual architecture fatbinary code generation targeting sm_61 and sm_75 simultaneously
-- Smallest deterministic compatibility overlay for glibc 2.41 mathcalls exception specifications in CUDA 12.9 headers
-- CPU oracle correctness verification across test dimensions {1, 31, 32, 33, 255, 256, 257, 1024} executed independently on both GPUs
-- Micro-benchmark timing harness validation using CUDA events and proper host-device synchronization
-- Single-command automated verification flow via tools/verify-m0.sh
+- Canonical patch file applied cleanly via `patch` into `.cuda_compat` overlay without in-place modification of system headers
+- Physical device pinning in `verify-m0.sh` selecting GTX 1060 and GTX 1660 SUPER by immutable UUID / PCI bus ID with strict identity assertions
+- CPU oracle correctness verification across test dimensions {1, 31, 32, 33, 255, 256, 257, 1024, 65536} executed independently on both GPUs
+- Micro-benchmark timing harness validation using CUDA events, conventional median calculation, and input validation
+- Single-command automated verification flow via tools/verify-m0.sh including automated raw hardware and verification evidence generation
 
 What does not work:
 - Pascal SM 6.x profiling with modern Nsight Compute (known toolchain limitation on older architectures; to be addressed in M2)

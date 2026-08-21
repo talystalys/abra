@@ -13,6 +13,10 @@ void print_usage(const char *prog) {
               << "  --device <index>                         : Run on specific CUDA device index\n"
               << "  --pci <pci_bus_id>                       : Match device by PCI bus ID\n"
               << "  --uuid <uuid_str>                        : Match device by UUID\n"
+              << "  --assert-name <str>                      : Assert physical GPU name matches\n"
+              << "  --assert-cc <major.minor>                : Assert compute capability matches\n"
+              << "  --assert-pci <pci_bus_id>                : Assert PCI bus ID matches\n"
+              << "  --assert-uuid <uuid_str>                 : Assert UUID matches\n"
               << "  --all-devices                            : Run test suite on all CUDA-visible devices\n"
               << "  --block-size <threads>                   : CUDA block size (default: 256)\n"
               << "  --help                                   : Display this help message\n";
@@ -20,6 +24,11 @@ void print_usage(const char *prog) {
 
 int main(int argc, char **argv) {
     std::string target_spec = "";
+    std::string assert_name = "";
+    int assert_cc_major = 0;
+    int assert_cc_minor = 0;
+    std::string assert_pci = "";
+    std::string assert_uuid = "";
     bool run_all = false;
     int block_size = 256;
 
@@ -33,6 +42,21 @@ int main(int argc, char **argv) {
             target_spec = argv[++i];
         } else if (arg == "--uuid" && i + 1 < argc) {
             target_spec = argv[++i];
+        } else if (arg == "--assert-name" && i + 1 < argc) {
+            assert_name = argv[++i];
+        } else if (arg == "--assert-cc" && i + 1 < argc) {
+            std::string cc_str = argv[++i];
+            size_t dot_pos = cc_str.find('.');
+            if (dot_pos != std::string::npos) {
+                assert_cc_major = std::stoi(cc_str.substr(0, dot_pos));
+                assert_cc_minor = std::stoi(cc_str.substr(dot_pos + 1));
+            } else {
+                assert_cc_major = std::stoi(cc_str);
+            }
+        } else if (arg == "--assert-pci" && i + 1 < argc) {
+            assert_pci = argv[++i];
+        } else if (arg == "--assert-uuid" && i + 1 < argc) {
+            assert_uuid = argv[++i];
         } else if (arg == "--block-size" && i + 1 < argc) {
             block_size = std::stoi(argv[++i]);
         } else if (arg == "--all-devices") {
@@ -67,7 +91,6 @@ int main(int argc, char **argv) {
         }
         target_devices.push_back(dev_idx);
     } else {
-        // Default to device 0 if nothing specified
         target_devices.push_back(0);
     }
 
@@ -88,6 +111,15 @@ int main(int argc, char **argv) {
 
     for (int dev_idx : target_devices) {
         GpuDevice dev = get_device_info(dev_idx);
+
+        // Verify assertions if specified
+        std::string identity_err;
+        if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
+            std::cerr << "BLOCKER: Physical GPU assertion failure on device " << dev.index << ":\n" << identity_err;
+            std::cerr << "Refusing execution due to device identity mismatch.\n";
+            return 2;
+        }
+
         std::cout << "============================================================\n";
         std::cout << "TEST RUN FOR DEVICE " << dev.index << "\n";
         std::cout << "GPU: " << dev.name << "\n";

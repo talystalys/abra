@@ -88,6 +88,60 @@ GpuDevice get_device_info(int device_index) {
     return devs[device_index];
 }
 
+int find_device_by_uuid(const std::string &uuid) {
+    auto devs = query_all_devices();
+    for (const auto &d : devs) {
+        if (d.uuid == uuid || d.uuid.find(uuid) != std::string::npos) {
+            return d.index;
+        }
+    }
+    return -1;
+}
+
+int find_device_by_pci(const std::string &pci) {
+    auto devs = query_all_devices();
+    for (const auto &d : devs) {
+        if (d.pci_bus_id == pci || d.pci_bus_id.find(pci) != std::string::npos) {
+            return d.index;
+        }
+    }
+    return -1;
+}
+
+bool verify_device_identity(const GpuDevice &dev,
+                            const std::string &expected_name,
+                            int expected_cc_major,
+                            int expected_cc_minor,
+                            const std::string &expected_pci,
+                            const std::string &expected_uuid,
+                            std::string &error_msg) {
+    std::ostringstream oss;
+    bool match = true;
+
+    if (!expected_name.empty() && dev.name.find(expected_name) == std::string::npos) {
+        oss << "Device name mismatch: expected '" << expected_name << "', got '" << dev.name << "'\n";
+        match = false;
+    }
+    if (expected_cc_major > 0 && (dev.cc_major != expected_cc_major || dev.cc_minor != expected_cc_minor)) {
+        oss << "Compute capability mismatch: expected " << expected_cc_major << "." << expected_cc_minor
+            << ", got " << dev.cc_major << "." << dev.cc_minor << "\n";
+        match = false;
+    }
+    if (!expected_pci.empty() && dev.pci_bus_id.find(expected_pci) == std::string::npos) {
+        oss << "PCI ID mismatch: expected '" << expected_pci << "', got '" << dev.pci_bus_id << "'\n";
+        match = false;
+    }
+    if (!expected_uuid.empty() && dev.uuid.find(expected_uuid) == std::string::npos) {
+        oss << "UUID mismatch: expected '" << expected_uuid << "', got '" << dev.uuid << "'\n";
+        match = false;
+    }
+
+    if (!match) {
+        error_msg = oss.str();
+    }
+    return match;
+}
+
 int find_device_by_spec(const std::string &spec) {
     auto devs = query_all_devices();
     if (devs.empty()) {
@@ -102,6 +156,14 @@ int find_device_by_spec(const std::string &spec) {
         return static_cast<int>(idx);
     }
 
+    // UUID match
+    int by_uuid = find_device_by_uuid(spec);
+    if (by_uuid >= 0) return by_uuid;
+
+    // PCI match
+    int by_pci = find_device_by_pci(spec);
+    if (by_pci >= 0) return by_pci;
+
     // Check target arch strings
     if (spec == "sm_61" || spec == "6.1" || spec == "pascal" || spec == "Pascal") {
         for (const auto &d : devs) {
@@ -114,11 +176,9 @@ int find_device_by_spec(const std::string &spec) {
         }
     }
 
-    // Substring match on name, PCI ID, or UUID
+    // Substring match on name
     for (const auto &d : devs) {
-        if (d.name.find(spec) != std::string::npos ||
-            d.pci_bus_id.find(spec) != std::string::npos ||
-            d.uuid.find(spec) != std::string::npos) {
+        if (d.name.find(spec) != std::string::npos) {
             return d.index;
         }
     }

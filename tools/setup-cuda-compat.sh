@@ -19,26 +19,20 @@ if [[ ! -f "${PATCH_FILE}" ]]; then
     exit 1
 fi
 
+# Cleanly recreate compatibility directory
+rm -rf "${COMPAT_DIR}"
 mkdir -p "${OVERLAY_INC}/crt"
 
-# Copy and patch math_functions.h and math_functions.hpp
+# Copy pristine target header files from CUDA toolkit into overlay
 cp "${CUDA_TARGET_INC}/crt/math_functions.h" "${OVERLAY_INC}/crt/math_functions.h"
 cp "${CUDA_TARGET_INC}/crt/math_functions.hpp" "${OVERLAY_INC}/crt/math_functions.hpp"
 
-# Apply deterministic patch
-sed -i 's/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 sinpi(double x) throw();/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  sinpif(float x) throw();/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi(double x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ double                 cospi(double x) throw();/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cospif(float x);/extern __DEVICE_FUNCTIONS_DECL__ __device_builtin__ float                  cospif(float x) throw();/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/__func__(double sinpi(double a));/__func__(double sinpi(double a) throw());/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/__func__(double cospi(double a));/__func__(double cospi(double a) throw());/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/__func__(float sinpif(float a));/__func__(float sinpif(float a) throw());/' "${OVERLAY_INC}/crt/math_functions.h"
-sed -i 's/__func__(float cospif(float a));/__func__(float cospif(float a) throw());/' "${OVERLAY_INC}/crt/math_functions.h"
-
-sed -i 's/__func__(double sinpi(double a))/__func__(double sinpi(double a) throw())/' "${OVERLAY_INC}/crt/math_functions.hpp"
-sed -i 's/__func__(double cospi(double a))/__func__(double cospi(double a) throw())/' "${OVERLAY_INC}/crt/math_functions.hpp"
-sed -i 's/__func__(float sinpif(const float a))/__func__(float sinpif(const float a) throw())/' "${OVERLAY_INC}/crt/math_functions.hpp"
-sed -i 's/__func__(float cospif(const float a))/__func__(float cospif(const float a) throw())/' "${OVERLAY_INC}/crt/math_functions.hpp"
+# Apply canonical committed patch file
+echo "Applying canonical patch: ${PATCH_FILE}"
+if ! patch -p1 -d "${OVERLAY_INC}" < "${PATCH_FILE}"; then
+    echo "ERROR: Failed to cleanly apply ${PATCH_FILE}" >&2
+    exit 1
+fi
 
 # Symlink remainder of crt directory
 for item in "${CUDA_TARGET_INC}/crt/"*; do
@@ -56,4 +50,4 @@ for item in "${CUDA_TARGET_INC}/"*; do
     fi
 done
 
-echo "CUDA compatibility overlay established at: ${OVERLAY_INC}"
+echo "CUDA compatibility overlay successfully established at: ${OVERLAY_INC}"

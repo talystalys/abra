@@ -4,9 +4,21 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_DIR="${REPO_ROOT}/build"
+EVIDENCE_DIR="${REPO_ROOT}/docs/evidence"
 CUDA_ROOT="${CUDA_ROOT:-/usr/local/cuda-12.9}"
 NVCC="${CUDA_ROOT}/bin/nvcc"
 CUOBJDUMP="${CUDA_ROOT}/bin/cuobjdump"
+
+# Pinned Hardware Identities
+PASCAL_UUID="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
+PASCAL_PCI="0000:03:00.0"
+PASCAL_NAME="GeForce GTX 1060 6GB"
+PASCAL_CC="6.1"
+
+TURING_UUID="GPU-8a043791-359d-1df4-9353-38c5bc98e5dd"
+TURING_PCI="0000:81:00.0"
+TURING_NAME="GeForce GTX 1660 SUPER"
+TURING_CC="7.5"
 
 echo "============================================================"
 echo "Milestone M0: Reproducible Baseline Verification"
@@ -15,26 +27,22 @@ echo "Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 echo "============================================================"
 echo
 
-# Gate Tracking
-GTX_1060_DETECTED="NO"
-GTX_1060_CC_VERIFIED="NO"
-SM61_ARTIFACT_VERIFIED="NO"
-PASCAL_EXECUTION_VERIFIED="NO"
+mkdir -p "${EVIDENCE_DIR}"
 
-GTX_1660_DETECTED="NO"
-GTX_1660_CC_VERIFIED="NO"
-SM75_ARTIFACT_VERIFIED="NO"
-TURING_EXECUTION_VERIFIED="NO"
+# Step 1: Collect Live Hardware & Toolchain Inventory
+echo "--- Step 1: Collecting Live Environment Inventory ---"
+"${REPO_ROOT}/tools/collect-hardware.sh" > "${EVIDENCE_DIR}/hardware-inventory-raw.txt" 2>&1
+echo "Saved raw hardware inventory to: docs/evidence/hardware-inventory-raw.txt"
+echo
 
-M0_STATUS="FAIL"
-
-# Step 1: Establish CUDA compatibility layer
-echo "--- Step 1: Setting up glibc compatibility overlay ---"
+# Step 2: Establish CUDA compatibility overlay via canonical patch
+echo "--- Step 2: Applying Canonical CUDA Compatibility Patch ---"
 "${REPO_ROOT}/tools/setup-cuda-compat.sh"
 echo
 
-# Step 2: Configure & Build
-echo "--- Step 2: Configuring and Building Project (sm_61 + sm_75) ---"
+# Step 3: Clean Configure & Build
+echo "--- Step 3: Clean Configure and Build (sm_61 + sm_75) ---"
+rm -rf "${BUILD_DIR}"
 mkdir -p "${BUILD_DIR}"
 CUDAFLAGS="-I${REPO_ROOT}/.cuda_compat/include -Wno-deprecated-gpu-targets" \
 cmake -S "${REPO_ROOT}" -B "${BUILD_DIR}" \
@@ -45,8 +53,11 @@ cmake --build "${BUILD_DIR}" --parallel
 echo "Build completed successfully."
 echo
 
-# Step 3: Inspect Binary Architectures with cuobjdump
-echo "--- Step 3: Inspecting Generated Binary Architectures ---"
+# Step 4: Inspect Binary Architectures with cuobjdump
+echo "--- Step 4: Inspecting Generated Binary Architectures ---"
+SM61_ARTIFACT_VERIFIED="NO"
+SM75_ARTIFACT_VERIFIED="NO"
+
 CUOBJDUMP_OUTPUT="$("${CUOBJDUMP}" -lelf "${BUILD_DIR}/smoke_test" 2>&1)"
 echo "${CUOBJDUMP_OUTPUT}"
 
@@ -55,6 +66,7 @@ if echo "${CUOBJDUMP_OUTPUT}" | grep -q "sm_61"; then
     echo "Verified sm_61 artifact present in binary."
 else
     echo "ERROR: sm_61 artifact missing from binary!" >&2
+    exit 1
 fi
 
 if echo "${CUOBJDUMP_OUTPUT}" | grep -q "sm_75"; then
@@ -62,69 +74,79 @@ if echo "${CUOBJDUMP_OUTPUT}" | grep -q "sm_75"; then
     echo "Verified sm_75 artifact present in binary."
 else
     echo "ERROR: sm_75 artifact missing from binary!" >&2
+    exit 1
 fi
 echo
 
-# Step 4: Enumerate Hardware Devices
-echo "--- Step 4: Enumerating Visible CUDA Devices ---"
+# Step 5: Enumerate Hardware Devices
+echo "--- Step 5: Enumerating Visible CUDA Devices ---"
 "${BUILD_DIR}/list_cuda_devices"
-
-# Check physical presence of GPUs via nvidia-smi / device list
-if nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader | grep -qi "GTX 1060"; then
-    GTX_1060_DETECTED="YES"
-    if nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader | grep -i "GTX 1060" | grep -q "6.1"; then
-        GTX_1060_CC_VERIFIED="YES"
-    fi
-fi
-
-if nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader | grep -qi "GTX 1660"; then
-    GTX_1660_DETECTED="YES"
-    if nvidia-smi --query-gpu=name,compute_cap --format=csv,noheader | grep -i "GTX 1660" | grep -q "7.5"; then
-        GTX_1660_CC_VERIFIED="YES"
-    fi
-fi
 echo
 
-# Step 5: Execute Correctness Suite on GTX 1060 (Primary Pascal Qualification)
-echo "--- Step 5: Correctness Test on NVIDIA GeForce GTX 1060 6GB (Pascal SM 6.1) ---"
-if [[ "${GTX_1060_DETECTED}" != "YES" ]]; then
-    echo "BLOCKER: Physical GTX 1060 not detected. Refusing silent substitution." >&2
+# Step 6: Execute Correctness Suite on GTX 1060 (Pascal SM 6.1) by immutable identity
+echo "--- Step 6: Pascal Correctness Qualification (Pinned: ${PASCAL_UUID} / ${PASCAL_PCI}) ---"
+PASCAL_DETECTED="NO"
+PASCAL_CC_VERIFIED="NO"
+PASCAL_EXECUTION_VERIFIED="NO"
+
+if "${BUILD_DIR}/smoke_test" \
+    --uuid "${PASCAL_UUID}" \
+    --assert-uuid "${PASCAL_UUID}" \
+    --assert-pci "${PASCAL_PCI}" \
+    --assert-name "${PASCAL_NAME}" \
+    --assert-cc "${PASCAL_CC}"; then
+    PASCAL_DETECTED="YES"
+    PASCAL_CC_VERIFIED="YES"
+    PASCAL_EXECUTION_VERIFIED="YES"
+    echo "Pascal physical CUDA correctness (GTX 1060 6GB): PASS"
 else
-    if "${BUILD_DIR}/smoke_test" --target-arch sm_61; then
-        PASCAL_EXECUTION_VERIFIED="YES"
-        echo "Pascal physical CUDA correctness: PASS"
-    else
-        echo "Pascal physical CUDA correctness: FAIL" >&2
-    fi
+    echo "ERROR: Pascal correctness qualification failed on ${PASCAL_UUID}" >&2
+    exit 1
 fi
 echo
 
-# Step 6: Execute Correctness Suite on GTX 1660 SUPER (Turing SM 7.5 Control)
-echo "--- Step 6: Correctness Test on NVIDIA GeForce GTX 1660 SUPER (Turing SM 7.5) ---"
-if [[ "${GTX_1660_DETECTED}" != "YES" ]]; then
-    echo "BLOCKER: Physical GTX 1660 SUPER not detected. Refusing silent substitution." >&2
+# Step 7: Execute Correctness Suite on GTX 1660 SUPER (Turing SM 7.5 Control) by immutable identity
+echo "--- Step 7: Turing Control Correctness (Pinned: ${TURING_UUID} / ${TURING_PCI}) ---"
+TURING_DETECTED="NO"
+TURING_CC_VERIFIED="NO"
+TURING_EXECUTION_VERIFIED="NO"
+
+if "${BUILD_DIR}/smoke_test" \
+    --uuid "${TURING_UUID}" \
+    --assert-uuid "${TURING_UUID}" \
+    --assert-pci "${TURING_PCI}" \
+    --assert-name "${TURING_NAME}" \
+    --assert-cc "${TURING_CC}"; then
+    TURING_DETECTED="YES"
+    TURING_CC_VERIFIED="YES"
+    TURING_EXECUTION_VERIFIED="YES"
+    echo "Turing physical CUDA correctness (GTX 1660 SUPER): PASS"
 else
-    if "${BUILD_DIR}/smoke_test" --target-arch sm_75; then
-        TURING_EXECUTION_VERIFIED="YES"
-        echo "Turing physical CUDA correctness: PASS"
-    else
-        echo "Turing physical CUDA correctness: FAIL" >&2
-    fi
+    echo "ERROR: Turing control correctness failed on ${TURING_UUID}" >&2
+    exit 1
 fi
 echo
 
-# Step 7: Benchmark Timing Harness Smoke Validation
-echo "--- Step 7: Timing Harness Infrastructure Smoke Validation ---"
-"${BUILD_DIR}/timer_smoke" --target-arch sm_61 --iterations 20 --warmup 5
+# Step 8: Benchmark Timing Harness Validation on Pascal GPU
+echo "--- Step 8: Timing Harness Infrastructure Smoke Validation on Pascal GPU ---"
+"${BUILD_DIR}/timer_smoke" \
+    --uuid "${PASCAL_UUID}" \
+    --assert-uuid "${PASCAL_UUID}" \
+    --assert-pci "${PASCAL_PCI}" \
+    --assert-name "${PASCAL_NAME}" \
+    --assert-cc "${PASCAL_CC}" \
+    --iterations 20 \
+    --warmup 5
 echo
 
-# Determine Overall M0 Status
-if [[ "${GTX_1060_DETECTED}" == "YES" && \
-      "${GTX_1060_CC_VERIFIED}" == "YES" && \
+# Final Evaluation
+M0_STATUS="FAIL"
+if [[ "${PASCAL_DETECTED}" == "YES" && \
+      "${PASCAL_CC_VERIFIED}" == "YES" && \
       "${SM61_ARTIFACT_VERIFIED}" == "YES" && \
       "${PASCAL_EXECUTION_VERIFIED}" == "YES" && \
-      "${GTX_1660_DETECTED}" == "YES" && \
-      "${GTX_1660_CC_VERIFIED}" == "YES" && \
+      "${TURING_DETECTED}" == "YES" && \
+      "${TURING_CC_VERIFIED}" == "YES" && \
       "${SM75_ARTIFACT_VERIFIED}" == "YES" && \
       "${TURING_EXECUTION_VERIFIED}" == "YES" ]]; then
     M0_STATUS="SUCCESS"
@@ -135,13 +157,13 @@ echo "M0 Environment Verification Summary"
 echo "============================================================"
 echo "M0 environment verification: ${M0_STATUS}"
 echo
-echo "GTX 1060 detected: ${GTX_1060_DETECTED}"
-echo "GTX 1060 CC 6.1 verified: ${GTX_1060_CC_VERIFIED}"
+echo "GTX 1060 detected: ${PASCAL_DETECTED}"
+echo "GTX 1060 CC 6.1 verified: ${PASCAL_CC_VERIFIED}"
 echo "sm_61 artifact verified: ${SM61_ARTIFACT_VERIFIED}"
 echo "Pascal physical CUDA execution: ${PASCAL_EXECUTION_VERIFIED}"
 echo
-echo "GTX 1660 SUPER detected: ${GTX_1660_DETECTED}"
-echo "GTX 1660 SUPER CC 7.5 verified: ${GTX_1660_CC_VERIFIED}"
+echo "GTX 1660 SUPER detected: ${TURING_DETECTED}"
+echo "GTX 1660 SUPER CC 7.5 verified: ${TURING_CC_VERIFIED}"
 echo "sm_75 artifact verified: ${SM75_ARTIFACT_VERIFIED}"
 echo "Turing control execution: ${TURING_EXECUTION_VERIFIED}"
 echo "============================================================"

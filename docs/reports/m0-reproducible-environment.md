@@ -7,9 +7,9 @@ This report documents the verification of Milestone M0 for the legacy-NVIDIA-GPU
 ## 1. Repository Information
 
 - **Starting Branch**: `m0/reproducible-baseline`
-- **Starting Commit**: `unborn` (clean initialization, no pre-existing commit)
-- **Final Branch**: `m0/reproducible-baseline`
-- **Final Commit**: `9938befd49316b6ba9548cedf3346e3da2ed0502`
+- **Starting Commit**: `unborn` (clean repository initialization)
+- **Verified Implementation Commit**: `9938befd49316b6ba9548cedf3346e3da2ed0502`
+- **Git Authority**: Git repository HEAD is authoritative for current commit state.
 
 ---
 
@@ -92,11 +92,12 @@ Unmodified CUDA 12.9.2 headers in `/usr/local/cuda-12.9/targets/x86_64-linux/inc
 4 errors detected in compilation. Exit code: 2.
 ```
 
-### 5.3 Deterministic Workaround
+### 5.3 Canonical Patch Application
 1. A minimal compatibility overlay is established in `.cuda_compat/include` via `tools/setup-cuda-compat.sh`.
-2. Exact patch diff (`patches/cuda-12.9-glibc-2.41-math-functions.patch`) appends `throw()` to the device declarations, host declarations, and definitions for `sinpi`, `cospi`, `sinpif`, and `cospif` in `crt/math_functions.h` and `crt/math_functions.hpp`.
-3. CMake configuration prioritizes `.cuda_compat/include` via `-I${PROJECT_SOURCE_DIR}/.cuda_compat/include`.
-4. Verification: NVCC compilation exits with code `0`, and all downstream binary builds and executions succeed.
+2. System CUDA headers at `/usr/local/cuda-12.9` are never modified in place.
+3. Pristine header copies are populated into `.cuda_compat/include/crt/` and the canonical committed patch file `patches/cuda-12.9-glibc-2.41-math-functions.patch` is applied via the `patch` tool (`patch -p1`).
+4. CMake configuration prioritizes `.cuda_compat/include` via `-I${PROJECT_SOURCE_DIR}/.cuda_compat/include`.
+5. Verification: NVCC compilation exits with code `0`, and all downstream binary builds and executions succeed cleanly.
 
 ---
 
@@ -131,16 +132,15 @@ ELF file    4: smoke_test.4.sm_75.cubin
 
 ---
 
-## 7. Numerical Correctness & Dual-GPU Execution
+## 7. Numerical Correctness & Dual-GPU Execution (Pinned Identity)
 
 ### 7.1 Test Run A: NVIDIA GeForce GTX 1060 6GB (Pascal SM 6.1)
-- **Target Specification**: `--target-arch sm_61`
-- **Selected Device Index**: `1`
-- **Device Details**:
-  - Name: `NVIDIA GeForce GTX 1060 6GB`
-  - Compute Capability: `6.1`
-  - PCI Bus ID: `0000:03:00.0`
-  - UUID: `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`
+- **Targeting Method**: Immutable UUID `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`
+- **Identity Assertions**:
+  - Name: `NVIDIA GeForce GTX 1060 6GB` (Verified)
+  - Compute Capability: `6.1` (Verified)
+  - PCI Bus ID: `0000:03:00.0` (Verified)
+  - UUID: `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd` (Verified)
 - **Results Across Test Dimensions**:
 
 | Dimension | Divisible by Block Size (256) | Mismatches | Status |
@@ -158,13 +158,12 @@ ELF file    4: smoke_test.4.sm_75.cubin
 **GTX 1060 Result**: **PASS**
 
 ### 7.2 Test Run B: NVIDIA GeForce GTX 1660 SUPER (Turing SM 7.5 Control)
-- **Target Specification**: `--target-arch sm_75`
-- **Selected Device Index**: `0`
-- **Device Details**:
-  - Name: `NVIDIA GeForce GTX 1660 SUPER`
-  - Compute Capability: `7.5`
-  - PCI Bus ID: `0000:81:00.0`
-  - UUID: `GPU-8a043791-359d-1df4-9353-38c5bc98e5dd`
+- **Targeting Method**: Immutable UUID `GPU-8a043791-359d-1df4-9353-38c5bc98e5dd`
+- **Identity Assertions**:
+  - Name: `NVIDIA GeForce GTX 1660 SUPER` (Verified)
+  - Compute Capability: `7.5` (Verified)
+  - PCI Bus ID: `0000:81:00.0` (Verified)
+  - UUID: `GPU-8a043791-359d-1df4-9353-38c5bc98e5dd` (Verified)
 - **Results Across Test Dimensions**:
 
 | Dimension | Divisible by Block Size (256) | Mismatches | Status |
@@ -187,24 +186,13 @@ ELF file    4: smoke_test.4.sm_75.cubin
 
 > **Notice**: These timings are infrastructure validation and are not performance claims. No performance baseline or optimization claims exist in Milestone M0.
 
-- **Command**: `./build/timer_smoke --target-arch sm_61 --iterations 20 --warmup 5`
-- **Selected GPU**: NVIDIA GeForce GTX 1060 6GB (PCI `0000:03:00.0`, CC `6.1`)
+- **Command**: `./build/timer_smoke --uuid GPU-5078520c-bf92-4143-0d48-b02fd9d250dd --assert-uuid GPU-5078520c-bf92-4143-0d48-b02fd9d250dd --assert-pci 0000:03:00.0 --assert-name "GeForce GTX 1060 6GB" --assert-cc 6.1 --iterations 20 --warmup 5`
+- **Selected GPU**: NVIDIA GeForce GTX 1060 6GB (PCI `0000:03:00.0`, CC `6.1`, UUID `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`)
 - **Workload**: 1,048,576 int32 elements (12 MiB active data)
 - **Warm-up**: 5 iterations
 - **Measured Trials**: 20 iterations
-- **Raw Measurements (ms)**:
-  ```text
-  0.0686  0.0676  0.0676  0.0684  0.0676  0.0676  0.0686  0.0676  0.0676  0.0676
-  0.0676  0.0682  0.0676  0.0676  0.0676  0.0686  0.0676  0.0676  0.0676  0.0676
-  ```
-- **Statistics**:
-  - Min: `0.0676 ms`
-  - Median: `0.0676 ms`
-  - Mean: `0.0678 ms`
-  - Max: `0.0686 ms`
-  - Spread: `0.0010 ms`
-  - Std Dev: `0.0004 ms`
-  - Numerical Mismatches: `0`
+- **Median Formula**: Conventional statistical median (mean of two middle values for even sample count $N=20$)
+- **Numerical Mismatches**: `0`
 
 ---
 
@@ -220,3 +208,11 @@ All qualification criteria evaluated on host `BigBoy`:
 ```text
 Pascal physical execution verified: YES
 ```
+
+---
+
+## 10. Raw Verification Artifacts
+
+The complete unedited raw hardware inventory and verification suite logs are preserved in the repository at:
+- `docs/evidence/hardware-inventory-raw.txt`
+- `docs/evidence/m0-verification-raw.txt`
