@@ -8,6 +8,17 @@ out/
 # CUDA compatibility generated overlay directory
 .cuda_compat/
 
+# External dependency source checkouts
+.deps/
+
+# Model files (never commit model weights to git)
+models/
+*.gguf
+*.bin
+*.safetensors
+*.pt
+*.onnx
+
 # Local run logs and temp files
 *.log
 *.tmp
