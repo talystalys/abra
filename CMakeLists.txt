@@ -100,10 +100,11 @@ target_compile_options(dump_m2_occupancy PRIVATE
 )
 
 # =============================================================================
-# Milestone M3: Pascal Q4_K x Q8_1 MMVQ Targets
+# Milestone M3 & M4: Pascal Q4_K x Q8_1 MMVQ & Parameterized Family Targets
 # =============================================================================
 add_library(legacy_q4k STATIC
     kernels/q4k/q4k_q8_mmvq.cu
+    kernels/q4k/q4k_family.cu
     kernels/q4k/upstream_adapter.cu
 )
 set_target_properties(legacy_q4k PROPERTIES
@@ -140,7 +141,7 @@ target_compile_options(q4k_q8_bench PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
 
-# 9. Q4_K x Q8_1 Theoretical Occupancy Extraction Tool
+# 9. Q4_K x Q8_1 M3 Theoretical Occupancy Extraction Tool
 add_executable(dump_m3_occupancy
     tools/dump_m3_occupancy.cu
 )
@@ -150,5 +151,18 @@ set_target_properties(dump_m3_occupancy PROPERTIES
     INSTALL_RPATH "${LLAMA_LIB_DIR}"
 )
 target_compile_options(dump_m3_occupancy PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
+# 10. Q4_K x Q8_1 M4 Parameterized Family Occupancy Extraction Tool
+add_executable(dump_m4_occupancy
+    tools/dump_m4_occupancy.cu
+)
+target_link_libraries(dump_m4_occupancy PRIVATE legacy_q4k legacy_smoke ggml-cuda ggml-base ggml)
+set_target_properties(dump_m4_occupancy PROPERTIES
+    BUILD_RPATH "${LLAMA_LIB_DIR}"
+    INSTALL_RPATH "${LLAMA_LIB_DIR}"
+)
+target_compile_options(dump_m4_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )

@@ -1,0 +1,249 @@
+{
+  "milestone": "M4",
+  "total_candidates": 17,
+  "parameter_space": {
+    "warps_per_row_options": [
+      1,
+      2,
+      4
+    ],
+    "warps_per_block_options": [
+      1,
+      2,
+      4,
+      8,
+      16
+    ],
+    "unroll_factors": [
+      1,
+      2
+    ],
+    "reduction_mechanisms": [
+      "warp_shuffle_zero_smem",
+      "inter_warp_smem"
+    ]
+  },
+  "candidates": [
+    {
+      "candidate_id": 0,
+      "name": "VARIANT_UPSTREAM_MMVQ",
+      "symbol": "ggml_cuda_op_mul_mat_vec_q",
+      "warps_per_row": 4,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 1,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": true,
+      "description": "Exact Pinned Upstream llama.cpp MMVQ (libggml-cuda.so)"
+    },
+    {
+      "candidate_id": 101,
+      "name": "Q4K_PASCAL_WPR1_WPB1",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 1, 1>",
+      "warps_per_row": 1,
+      "warps_per_block": 1,
+      "threads_per_block": 32,
+      "rows_per_block": 1,
+      "unroll_factor": 1,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 1 warp/block (32 threads, 1 row/block, 0 smem, 0 syncthreads)"
+    },
+    {
+      "candidate_id": 102,
+      "name": "Q4K_PASCAL_WPR1_WPB2",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 2, 1>",
+      "warps_per_row": 1,
+      "warps_per_block": 2,
+      "threads_per_block": 64,
+      "rows_per_block": 2,
+      "unroll_factor": 1,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 2 warps/block (64 threads, 2 rows/block, 0 smem, 0 syncthreads)"
+    },
+    {
+      "candidate_id": 104,
+      "name": "Q4K_PASCAL_WPR1_WPB4",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 4, 1>",
+      "warps_per_row": 1,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 4,
+      "unroll_factor": 1,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 4 warps/block (128 threads, 4 rows/block, 0 smem, 0 syncthreads - M3 Variant C)"
+    },
+    {
+      "candidate_id": 108,
+      "name": "Q4K_PASCAL_WPR1_WPB8",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 8, 1>",
+      "warps_per_row": 1,
+      "warps_per_block": 8,
+      "threads_per_block": 256,
+      "rows_per_block": 8,
+      "unroll_factor": 1,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 8 warps/block (256 threads, 8 rows/block, 0 smem, 0 syncthreads)"
+    },
+    {
+      "candidate_id": 116,
+      "name": "Q4K_PASCAL_WPR1_WPB16",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 16, 1>",
+      "warps_per_row": 1,
+      "warps_per_block": 16,
+      "threads_per_block": 512,
+      "rows_per_block": 16,
+      "unroll_factor": 1,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 16 warps/block (512 threads, 16 rows/block, 0 smem, 0 syncthreads)"
+    },
+    {
+      "candidate_id": 202,
+      "name": "Q4K_PASCAL_WPR2_WPB2",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 2, 1>",
+      "warps_per_row": 2,
+      "warps_per_block": 2,
+      "threads_per_block": 64,
+      "rows_per_block": 1,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 2 warps/block (64 threads, 1 row/block, 8 B smem)"
+    },
+    {
+      "candidate_id": 204,
+      "name": "Q4K_PASCAL_WPR2_WPB4",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 4, 1>",
+      "warps_per_row": 2,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 2,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 4 warps/block (128 threads, 2 rows/block, 16 B smem - M3 Variant B)"
+    },
+    {
+      "candidate_id": 208,
+      "name": "Q4K_PASCAL_WPR2_WPB8",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 8, 1>",
+      "warps_per_row": 2,
+      "warps_per_block": 8,
+      "threads_per_block": 256,
+      "rows_per_block": 4,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 8 warps/block (256 threads, 4 rows/block, 32 B smem)"
+    },
+    {
+      "candidate_id": 216,
+      "name": "Q4K_PASCAL_WPR2_WPB16",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 16, 1>",
+      "warps_per_row": 2,
+      "warps_per_block": 16,
+      "threads_per_block": 512,
+      "rows_per_block": 8,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 16 warps/block (512 threads, 8 rows/block, 64 B smem)"
+    },
+    {
+      "candidate_id": 404,
+      "name": "Q4K_PASCAL_WPR4_WPB4",
+      "symbol": "q4k_q8_mmvq_family_kernel<4, 4, 1>",
+      "warps_per_row": 4,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 1,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "4 warps/row, 4 warps/block (128 threads, 1 row/block, 16 B smem - M3 Variant A)"
+    },
+    {
+      "candidate_id": 408,
+      "name": "Q4K_PASCAL_WPR4_WPB8",
+      "symbol": "q4k_q8_mmvq_family_kernel<4, 8, 1>",
+      "warps_per_row": 4,
+      "warps_per_block": 8,
+      "threads_per_block": 256,
+      "rows_per_block": 2,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "4 warps/row, 8 warps/block (256 threads, 2 rows/block, 32 B smem)"
+    },
+    {
+      "candidate_id": 416,
+      "name": "Q4K_PASCAL_WPR4_WPB16",
+      "symbol": "q4k_q8_mmvq_family_kernel<4, 16, 1>",
+      "warps_per_row": 4,
+      "warps_per_block": 16,
+      "threads_per_block": 512,
+      "rows_per_block": 4,
+      "unroll_factor": 1,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "4 warps/row, 16 warps/block (512 threads, 4 rows/block, 64 B smem)"
+    },
+    {
+      "candidate_id": 1042,
+      "name": "Q4K_PASCAL_WPR1_WPB4_U2",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 4, 2>",
+      "warps_per_row": 1,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 4,
+      "unroll_factor": 2,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 4 warps/block, Unroll 2 (128 threads, 4 rows/block, 0 smem)"
+    },
+    {
+      "candidate_id": 2042,
+      "name": "Q4K_PASCAL_WPR2_WPB4_U2",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 4, 2>",
+      "warps_per_row": 2,
+      "warps_per_block": 4,
+      "threads_per_block": 128,
+      "rows_per_block": 2,
+      "unroll_factor": 2,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 4 warps/block, Unroll 2 (128 threads, 2 rows/block, 16 B smem)"
+    },
+    {
+      "candidate_id": 1082,
+      "name": "Q4K_PASCAL_WPR1_WPB8_U2",
+      "symbol": "q4k_q8_mmvq_family_kernel<1, 8, 2>",
+      "warps_per_row": 1,
+      "warps_per_block": 8,
+      "threads_per_block": 256,
+      "rows_per_block": 8,
+      "unroll_factor": 2,
+      "reduction_type": "warp_shuffle_zero_smem",
+      "is_upstream": false,
+      "description": "1 warp/row, 8 warps/block, Unroll 2 (256 threads, 8 rows/block, 0 smem)"
+    },
+    {
+      "candidate_id": 2082,
+      "name": "Q4K_PASCAL_WPR2_WPB8_U2",
+      "symbol": "q4k_q8_mmvq_family_kernel<2, 8, 2>",
+      "warps_per_row": 2,
+      "warps_per_block": 8,
+      "threads_per_block": 256,
+      "rows_per_block": 4,
+      "unroll_factor": 2,
+      "reduction_type": "inter_warp_smem",
+      "is_upstream": false,
+      "description": "2 warps/row, 8 warps/block, Unroll 2 (256 threads, 4 rows/block, 32 B smem)"
+    }
+  ]
+}
