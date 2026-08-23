@@ -1,0 +1,1862 @@
+{
+  "milestone": "M4",
+  "title": "Milestone M4: Pascal Autotuned Kernel Family Characterization & Aggregate Analysis",
+  "primary_qualification_pascal": {
+    "device": {
+      "name": "NVIDIA GeForce GTX 1060 6GB",
+      "compute_capability": "6.1",
+      "pci_bus_id": "0000:03:00.0",
+      "uuid": "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
+    },
+    "shape_analysis": {
+      "attn_q": {
+        "shape_name": "attn_q",
+        "N": 4096,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 61.184,
+          "mean_us": 61.12192,
+          "min_us": 60,
+          "max_us": 65.408,
+          "stddev_us": 0.7544367312201488,
+          "spread_us": 5.408000000000001,
+          "combined_median_us": 64.416
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 54.272,
+          "combined_median_us": 58.144
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 54.272,
+          "combined_median_us": 58.144
+        },
+        "autotuned_selector": {
+          "median_us": 54.944,
+          "mean_us": 54.93600000000001,
+          "min_us": 53.952,
+          "max_us": 62.464,
+          "stddev_us": 0.9479799682493405,
+          "spread_us": 8.512,
+          "gmac_per_sec": 190.8444962143273,
+          "effective_throughput_gbps": 100.30403794003699,
+          "speedup_vs_upstream": 1.1135701805474665,
+          "speedup_vs_best_m3": 0.9877693651718112,
+          "combined_median_us": 58.368,
+          "combined_speedup_vs_upstream": 1.1036184210526314,
+          "combined_speedup_vs_best_m3": 0.9961622807017543
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 61.184,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 63.216,
+            "speedup_vs_upstream": 0.9678562389268539
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 54.272,
+            "speedup_vs_upstream": 1.1273584905660377
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 59.392,
+            "speedup_vs_upstream": 1.0301724137931034
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 60.416,
+            "speedup_vs_upstream": 1.0127118644067796
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 55.296,
+            "speedup_vs_upstream": 1.1064814814814814
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 59.392,
+            "speedup_vs_upstream": 1.0301724137931034
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 62.464,
+            "speedup_vs_upstream": 0.9795081967213115
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 54.944,
+            "speedup_vs_upstream": 1.1135701805474665
+          }
+        }
+      },
+      "attn_kv": {
+        "shape_name": "attn_kv",
+        "N": 1024,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 54,
+        "upstream_mmvq": {
+          "median_us": 18.24,
+          "mean_us": 18.297919999999998,
+          "min_us": 17.376,
+          "max_us": 31.744,
+          "stddev_us": 1.4959194576708945,
+          "spread_us": 14.367999999999999,
+          "combined_median_us": 21.248
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 13.312,
+          "combined_median_us": 16.992
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 13.312,
+          "combined_median_us": 16.992
+        },
+        "autotuned_selector": {
+          "median_us": 13.312,
+          "mean_us": 13.2432,
+          "min_us": 12.288,
+          "max_us": 14.272,
+          "stddev_us": 0.4141778274211122,
+          "spread_us": 1.984,
+          "gmac_per_sec": 196.92307692307693,
+          "effective_throughput_gbps": 103.64993403737363,
+          "speedup_vs_upstream": 1.3701923076923077,
+          "speedup_vs_best_m3": 1.0,
+          "combined_median_us": 16.384,
+          "combined_speedup_vs_upstream": 1.296875,
+          "combined_speedup_vs_best_m3": 1.037109375
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 18.24,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 15.36,
+            "speedup_vs_upstream": 1.1875
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 14.336,
+            "speedup_vs_upstream": 1.2723214285714284
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 13.312,
+            "speedup_vs_upstream": 1.3701923076923077
+          }
+        }
+      },
+      "attn_out": {
+        "shape_name": "attn_out",
+        "N": 2560,
+        "K": 4096,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 59.392,
+          "mean_us": 59.590720000000005,
+          "min_us": 58.368,
+          "max_us": 74.496,
+          "stddev_us": 1.574436888785217,
+          "spread_us": 16.127999999999993,
+          "combined_median_us": 62.464
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 55.936,
+          "combined_median_us": 59.04
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 55.936,
+          "combined_median_us": 59.04
+        },
+        "autotuned_selector": {
+          "median_us": 55.92,
+          "mean_us": 55.83424,
+          "min_us": 54.272,
+          "max_us": 58.368,
+          "stddev_us": 0.6230877351196745,
+          "spread_us": 4.096000000000004,
+          "gmac_per_sec": 187.51359084406295,
+          "effective_throughput_gbps": 98.47983440786643,
+          "speedup_vs_upstream": 1.0620886981402002,
+          "speedup_vs_best_m3": 1.000286123032904,
+          "combined_median_us": 59.104,
+          "combined_speedup_vs_upstream": 1.0568489442338929,
+          "combined_speedup_vs_best_m3": 0.9989171629669734
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 59.392,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 56.111999999999995,
+            "speedup_vs_upstream": 1.058454519532364
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 55.936,
+            "speedup_vs_upstream": 1.0617848970251718
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 57.344,
+            "speedup_vs_upstream": 1.0357142857142858
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 57.344,
+            "speedup_vs_upstream": 1.0357142857142858
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 56.144,
+            "speedup_vs_upstream": 1.0578512396694215
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 64.512,
+            "speedup_vs_upstream": 0.9206349206349207
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 63.072,
+            "speedup_vs_upstream": 0.9416539827498732
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 55.92,
+            "speedup_vs_upstream": 1.0620886981402002
+          }
+        }
+      },
+      "ffn_gate_up": {
+        "shape_name": "ffn_gate_up",
+        "N": 9728,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 72,
+        "upstream_mmvq": {
+          "median_us": 136.01600000000002,
+          "mean_us": 135.95328,
+          "min_us": 135.104,
+          "max_us": 137.216,
+          "stddev_us": 0.6297756227018418,
+          "spread_us": 2.1119999999999948,
+          "combined_median_us": 139.248
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 122.88,
+          "combined_median_us": 125.952
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 122.88,
+          "combined_median_us": 125.952
+        },
+        "autotuned_selector": {
+          "median_us": 123.72800000000001,
+          "mean_us": 123.62464,
+          "min_us": 122.656,
+          "max_us": 125.952,
+          "stddev_us": 0.6380877289989132,
+          "spread_us": 3.2959999999999923,
+          "gmac_per_sec": 201.27764127764127,
+          "effective_throughput_gbps": 105.7576820240837,
+          "speedup_vs_upstream": 1.0993146256304152,
+          "speedup_vs_best_m3": 0.993146256304151,
+          "combined_median_us": 126.768,
+          "combined_speedup_vs_upstream": 1.098447557743279,
+          "combined_speedup_vs_best_m3": 0.993563044301401
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 136.01600000000002,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 145.408,
+            "speedup_vs_upstream": 0.9354093309859157
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 122.88,
+            "speedup_vs_upstream": 1.106901041666667
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 129.872,
+            "speedup_vs_upstream": 1.04730811876309
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 131.072,
+            "speedup_vs_upstream": 1.0377197265625002
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 123.904,
+            "speedup_vs_upstream": 1.097753099173554
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 130.048,
+            "speedup_vs_upstream": 1.0458907480314963
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 141.152,
+            "speedup_vs_upstream": 0.9636136930401272
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 123.72800000000001,
+            "speedup_vs_upstream": 1.0993146256304152
+          }
+        }
+      },
+      "ffn_down": {
+        "shape_name": "ffn_down",
+        "N": 2560,
+        "K": 9728,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 18,
+        "upstream_mmvq": {
+          "median_us": 133.12,
+          "mean_us": 133.21536,
+          "min_us": 131.968,
+          "max_us": 147.456,
+          "stddev_us": 1.6354282392256048,
+          "spread_us": 15.488,
+          "combined_median_us": 136.192
+        },
+        "best_m3_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 126.976,
+          "combined_median_us": 130.688
+        },
+        "best_m4_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 126.976,
+          "combined_median_us": 130.688
+        },
+        "autotuned_selector": {
+          "median_us": 126.976,
+          "mean_us": 127.23616,
+          "min_us": 125.888,
+          "max_us": 141.312,
+          "stddev_us": 1.7248525319486594,
+          "spread_us": 15.424000000000007,
+          "gmac_per_sec": 196.1290322580645,
+          "effective_throughput_gbps": 102.9012867459847,
+          "speedup_vs_upstream": 1.0483870967741935,
+          "speedup_vs_best_m3": 1.0,
+          "combined_median_us": 130.048,
+          "combined_speedup_vs_upstream": 1.0472440944881891,
+          "combined_speedup_vs_best_m3": 1.0049212598425197
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 133.12,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 126.976,
+            "speedup_vs_upstream": 1.0483870967741935
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 129.024,
+            "speedup_vs_upstream": 1.0317460317460319
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 128.992,
+            "speedup_vs_upstream": 1.0320019846192012
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 129.024,
+            "speedup_vs_upstream": 1.0317460317460319
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 130.048,
+            "speedup_vs_upstream": 1.0236220472440944
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 138.24,
+            "speedup_vs_upstream": 0.9629629629629629
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 138.24,
+            "speedup_vs_upstream": 0.9629629629629629
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 126.976,
+            "speedup_vs_upstream": 1.0483870967741935
+          }
+        }
+      },
+      "ffn_down_synth36": {
+        "shape_name": "ffn_down_synth36",
+        "N": 2560,
+        "K": 9728,
+        "classification": "synthetic_m3_comparison",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 132.096,
+          "mean_us": 132.27104,
+          "min_us": 131.072,
+          "max_us": 134.144,
+          "stddev_us": 0.5883384225035277,
+          "spread_us": 3.0720000000000027,
+          "combined_median_us": 135.168
+        },
+        "best_m3_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 126.976,
+          "combined_median_us": 130.048
+        },
+        "best_m4_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 126.976,
+          "combined_median_us": 130.048
+        },
+        "autotuned_selector": {
+          "median_us": 126.976,
+          "mean_us": 127.07647999999999,
+          "min_us": 125.824,
+          "max_us": 140.288,
+          "stddev_us": 1.4548461717426853,
+          "spread_us": 14.464000000000013,
+          "gmac_per_sec": 196.1290322580645,
+          "effective_throughput_gbps": 102.9012867459847,
+          "speedup_vs_upstream": 1.0403225806451613,
+          "speedup_vs_best_m3": 1.0,
+          "combined_median_us": 130.656,
+          "combined_speedup_vs_upstream": 1.0345334313005143,
+          "combined_speedup_vs_best_m3": 0.9953465589027676
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 132.096,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 126.976,
+            "speedup_vs_upstream": 1.0403225806451613
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 129.024,
+            "speedup_vs_upstream": 1.0238095238095237
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 128.64,
+            "speedup_vs_upstream": 1.0268656716417912
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 128.896,
+            "speedup_vs_upstream": 1.0248262164846078
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 130.048,
+            "speedup_vs_upstream": 1.015748031496063
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 138.24,
+            "speedup_vs_upstream": 0.9555555555555555
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 138.848,
+            "speedup_vs_upstream": 0.9513712837059229
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 126.976,
+            "speedup_vs_upstream": 1.0403225806451613
+          }
+        }
+      },
+      "guardrail_small_tail_k": {
+        "shape_name": "guardrail_small_tail_k",
+        "N": 64,
+        "K": 256,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 5.696,
+          "mean_us": 5.6150400000000005,
+          "min_us": 5.12,
+          "max_us": 6.144,
+          "stddev_us": 0.32275036229822623,
+          "spread_us": 1.024,
+          "combined_median_us": 8.416
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 3.952,
+          "combined_median_us": 6.848
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 3.776,
+          "combined_median_us": 6.5120000000000005
+        },
+        "autotuned_selector": {
+          "median_us": 4.096,
+          "mean_us": 4.74432,
+          "min_us": 3.072,
+          "max_us": 19.456,
+          "stddev_us": 3.5575928159417574,
+          "spread_us": 16.384,
+          "gmac_per_sec": 3.9999999999999996,
+          "effective_throughput_gbps": 2.219167072325945,
+          "speedup_vs_upstream": 1.390625,
+          "speedup_vs_best_m3": 0.96484375,
+          "combined_median_us": 7.072,
+          "combined_speedup_vs_upstream": 1.1900452488687783,
+          "combined_speedup_vs_best_m3": 0.9683257918552036
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 5.696,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.032,
+            "speedup_vs_upstream": 1.4126984126984126
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 3.952,
+            "speedup_vs_upstream": 1.4412955465587045
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 3.968,
+            "speedup_vs_upstream": 1.4354838709677418
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 3.904,
+            "speedup_vs_upstream": 1.459016393442623
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 3.872,
+            "speedup_vs_upstream": 1.4710743801652892
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 3.776,
+            "speedup_vs_upstream": 1.5084745762711864
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 3.984,
+            "speedup_vs_upstream": 1.429718875502008
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.390625
+          }
+        }
+      },
+      "guardrail_mid_k_tail": {
+        "shape_name": "guardrail_mid_k_tail",
+        "N": 128,
+        "K": 768,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 6.144,
+          "mean_us": 6.1868799999999995,
+          "min_us": 5.344,
+          "max_us": 6.88,
+          "stddev_us": 0.25144307868418614,
+          "spread_us": 1.5359999999999996,
+          "combined_median_us": 9.216
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 7.4559999999999995
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 7.4559999999999995
+        },
+        "autotuned_selector": {
+          "median_us": 4.096,
+          "mean_us": 4.42336,
+          "min_us": 3.776,
+          "max_us": 5.12,
+          "stddev_us": 0.42036202579118953,
+          "spread_us": 1.3440000000000003,
+          "gmac_per_sec": 24.0,
+          "effective_throughput_gbps": 12.885720934718847,
+          "speedup_vs_upstream": 1.5,
+          "speedup_vs_best_m3": 1.0,
+          "combined_median_us": 7.76,
+          "combined_speedup_vs_upstream": 1.1876288659793814,
+          "combined_speedup_vs_best_m3": 0.9608247422680412
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 6.144,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.912,
+            "speedup_vs_upstream": 1.2508143322475571
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.5
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 4.72,
+            "speedup_vs_upstream": 1.3016949152542374
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 4.72,
+            "speedup_vs_upstream": 1.3016949152542374
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.5
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.5
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.5
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.5
+          }
+        }
+      },
+      "guardrail_large_n_mid_k": {
+        "shape_name": "guardrail_large_n_mid_k",
+        "N": 8192,
+        "K": 1024,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 49.152,
+          "mean_us": 49.319359999999996,
+          "min_us": 48.128,
+          "max_us": 51.2,
+          "stddev_us": 0.5895046288832241,
+          "spread_us": 3.0720000000000027,
+          "combined_median_us": 52.224
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 48.128,
+          "combined_median_us": 51.2
+        },
+        "best_m4_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 48.128,
+          "combined_median_us": 51.2
+        },
+        "autotuned_selector": {
+          "median_us": 48.751999999999995,
+          "mean_us": 48.7296,
+          "min_us": 47.104,
+          "max_us": 62.464,
+          "stddev_us": 1.4771066448987493,
+          "spread_us": 15.36,
+          "gmac_per_sec": 172.06695109944212,
+          "effective_throughput_gbps": 90.78851558358545,
+          "speedup_vs_upstream": 1.0082047915982935,
+          "speedup_vs_best_m3": 0.9872005251066623,
+          "combined_median_us": 51.936,
+          "combined_speedup_vs_upstream": 1.0055452865064693,
+          "combined_speedup_vs_best_m3": 0.9858287122612447
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 49.152,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 68.336,
+            "speedup_vs_upstream": 0.7192694919222665
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 48.128,
+            "speedup_vs_upstream": 1.0212765957446808
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 51.2,
+            "speedup_vs_upstream": 0.96
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 52.0,
+            "speedup_vs_upstream": 0.9452307692307692
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 49.775999999999996,
+            "speedup_vs_upstream": 0.9874638379942142
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 54.912,
+            "speedup_vs_upstream": 0.8951048951048951
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 48.128,
+            "speedup_vs_upstream": 1.0212765957446808
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 48.751999999999995,
+            "speedup_vs_upstream": 1.0082047915982935
+          }
+        }
+      },
+      "guardrail_odd_n_boundary": {
+        "shape_name": "guardrail_odd_n_boundary",
+        "N": 33,
+        "K": 2560,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 5.744,
+          "mean_us": 5.7136000000000005,
+          "min_us": 4.928,
+          "max_us": 19.872,
+          "stddev_us": 1.4923589894979536,
+          "spread_us": 14.943999999999999,
+          "combined_median_us": 8.528
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 7.168
+        },
+        "best_m4_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 7.168
+        },
+        "autotuned_selector": {
+          "median_us": 4.672,
+          "mean_us": 4.53728,
+          "min_us": 4.064,
+          "max_us": 5.12,
+          "stddev_us": 0.43402848856830684,
+          "spread_us": 1.056,
+          "gmac_per_sec": 18.08219178082192,
+          "effective_throughput_gbps": 10.073114798901834,
+          "speedup_vs_upstream": 1.2294520547945205,
+          "speedup_vs_best_m3": 0.8767123287671234,
+          "combined_median_us": 7.808,
+          "combined_speedup_vs_upstream": 1.0922131147540985,
+          "combined_speedup_vs_best_m3": 0.9180327868852459
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 5.744,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.40234375
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.40234375
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 5.792,
+            "speedup_vs_upstream": 0.9917127071823204
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 5.952,
+            "speedup_vs_upstream": 0.9650537634408601
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.40234375
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 4.88,
+            "speedup_vs_upstream": 1.1770491803278689
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 4.864,
+            "speedup_vs_upstream": 1.180921052631579
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.672,
+            "speedup_vs_upstream": 1.2294520547945205
+          }
+        }
+      }
+    },
+    "canonical_model_aggregate": {
+      "total_canonical_q4k_tensors": 216,
+      "mode1_multiply_only": {
+        "total_weighted_upstream_latency_us": 17515.008,
+        "total_weighted_best_m3_latency_us": 15819.264,
+        "total_weighted_autotuned_latency_us": 15903.936000000002,
+        "aggregate_speedup_vs_upstream": 1.1013002064394626,
+        "aggregate_speedup_vs_best_m3": 0.9946760349136212,
+        "aggregate_latency_reduction_vs_upstream_pct": 9.198237305972112,
+        "aggregate_latency_reduction_vs_best_m3_pct": -0.5352461404019904
+      },
+      "mode2_combined_pipeline": {
+        "total_weighted_comb_upstream_latency_us": 18192.384,
+        "total_weighted_comb_best_m3_latency_us": 16557.120000000003,
+        "total_weighted_comb_autotuned_latency_us": 16581.888000000003,
+        "aggregate_speedup_mode2_vs_upstream": 1.097123801583993,
+        "aggregate_speedup_mode2_vs_best_m3": 0.9985063220786439
+      }
+    }
+  },
+  "secondary_control_turing": {
+    "device": {
+      "name": "NVIDIA GeForce GTX 1660 SUPER",
+      "compute_capability": "7.5",
+      "pci_bus_id": "0000:81:00.0",
+      "uuid": "GPU-8a043791-359d-1df4-9353-38c5bc98e5dd"
+    },
+    "shape_analysis": {
+      "attn_q": {
+        "shape_name": "attn_q",
+        "N": 4096,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 35.472,
+          "mean_us": 35.63456,
+          "min_us": 34.816,
+          "max_us": 40.64,
+          "stddev_us": 0.7962764902274131,
+          "spread_us": 5.823999999999998,
+          "combined_median_us": 38.576
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 34.24,
+          "combined_median_us": 36.864
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 33.2,
+          "combined_median_us": 36.208
+        },
+        "autotuned_selector": {
+          "median_us": 36.0,
+          "mean_us": 35.91008,
+          "min_us": 34.816,
+          "max_us": 36.864,
+          "stddev_us": 0.6066067183167932,
+          "spread_us": 2.0479999999999947,
+          "gmac_per_sec": 291.2711111111111,
+          "effective_throughput_gbps": 153.08625168270535,
+          "speedup_vs_upstream": 0.9853333333333334,
+          "speedup_vs_best_m3": 0.9511111111111111,
+          "combined_median_us": 38.864000000000004,
+          "combined_speedup_vs_upstream": 0.9925895430218196,
+          "combined_speedup_vs_best_m3": 0.948538493207081
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 35.472,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 41.728,
+            "speedup_vs_upstream": 0.8500766871165644
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 36.224,
+            "speedup_vs_upstream": 0.9792402826855124
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 34.24,
+            "speedup_vs_upstream": 1.0359813084112148
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 34.544,
+            "speedup_vs_upstream": 1.0268642890226958
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 36.48,
+            "speedup_vs_upstream": 0.9723684210526317
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 33.2,
+            "speedup_vs_upstream": 1.068433734939759
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 35.232,
+            "speedup_vs_upstream": 1.0068119891008176
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 36.0,
+            "speedup_vs_upstream": 0.9853333333333334
+          }
+        }
+      },
+      "attn_kv": {
+        "shape_name": "attn_kv",
+        "N": 1024,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 54,
+        "upstream_mmvq": {
+          "median_us": 12.72,
+          "mean_us": 12.90048,
+          "min_us": 12.288,
+          "max_us": 14.816,
+          "stddev_us": 0.5972297745728719,
+          "spread_us": 2.5280000000000005,
+          "combined_median_us": 16.16
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 12.128,
+          "combined_median_us": 14.992
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 12.064,
+          "combined_median_us": 14.608
+        },
+        "autotuned_selector": {
+          "median_us": 12.144,
+          "mean_us": 12.10208,
+          "min_us": 10.848,
+          "max_us": 13.216,
+          "stddev_us": 0.3728951887839019,
+          "spread_us": 2.3679999999999986,
+          "gmac_per_sec": 215.86297760210806,
+          "effective_throughput_gbps": 113.61890002515791,
+          "speedup_vs_upstream": 1.0474308300395256,
+          "speedup_vs_best_m3": 0.9986824769433466,
+          "combined_median_us": 14.944,
+          "combined_speedup_vs_upstream": 1.0813704496788008,
+          "combined_speedup_vs_best_m3": 1.0032119914346895
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 12.72,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 13.568,
+            "speedup_vs_upstream": 0.9375000000000001
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 12.288,
+            "speedup_vs_upstream": 1.03515625
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 12.128,
+            "speedup_vs_upstream": 1.0488126649076517
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 12.224,
+            "speedup_vs_upstream": 1.0405759162303665
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 12.288,
+            "speedup_vs_upstream": 1.03515625
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 12.064,
+            "speedup_vs_upstream": 1.0543766578249338
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 12.288,
+            "speedup_vs_upstream": 1.03515625
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 12.144,
+            "speedup_vs_upstream": 1.0474308300395256
+          }
+        }
+      },
+      "attn_out": {
+        "shape_name": "attn_out",
+        "N": 2560,
+        "K": 4096,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 34.480000000000004,
+          "mean_us": 34.46976,
+          "min_us": 33.408,
+          "max_us": 49.152,
+          "stddev_us": 1.547006892569185,
+          "spread_us": 15.744,
+          "combined_median_us": 37.216
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 34.816,
+          "combined_median_us": 37.968
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 34.112,
+          "combined_median_us": 36.864
+        },
+        "autotuned_selector": {
+          "median_us": 35.04,
+          "mean_us": 35.19968,
+          "min_us": 34.592,
+          "max_us": 36.192,
+          "stddev_us": 0.432959532949347,
+          "spread_us": 1.6000000000000014,
+          "gmac_per_sec": 299.25114155251146,
+          "effective_throughput_gbps": 157.16302340433478,
+          "speedup_vs_upstream": 0.9840182648401827,
+          "speedup_vs_best_m3": 0.9936073059360732,
+          "combined_median_us": 38.4,
+          "combined_speedup_vs_upstream": 0.9691666666666667,
+          "combined_speedup_vs_best_m3": 0.9887500000000001
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 34.480000000000004,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 36.992,
+            "speedup_vs_upstream": 0.9320934256055365
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 35.04,
+            "speedup_vs_upstream": 0.9840182648401827
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 34.816,
+            "speedup_vs_upstream": 0.9903492647058824
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 34.944,
+            "speedup_vs_upstream": 0.9867216117216118
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 35.088,
+            "speedup_vs_upstream": 0.9826721386228912
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 34.112,
+            "speedup_vs_upstream": 1.0107879924953096
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 34.752,
+            "speedup_vs_upstream": 0.9921731123388582
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 35.04,
+            "speedup_vs_upstream": 0.9840182648401827
+          }
+        }
+      },
+      "ffn_gate_up": {
+        "shape_name": "ffn_gate_up",
+        "N": 9728,
+        "K": 2560,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 72,
+        "upstream_mmvq": {
+          "median_us": 75.168,
+          "mean_us": 75.08512,
+          "min_us": 74.048,
+          "max_us": 76.544,
+          "stddev_us": 0.5408841486143057,
+          "spread_us": 2.495999999999995,
+          "combined_median_us": 77.824
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 73.488,
+          "combined_median_us": 76.128
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 71.84,
+          "combined_median_us": 74.528
+        },
+        "autotuned_selector": {
+          "median_us": 77.824,
+          "mean_us": 77.80864,
+          "min_us": 76.704,
+          "max_us": 79.104,
+          "stddev_us": 0.30762260494103383,
+          "spread_us": 2.4000000000000057,
+          "gmac_per_sec": 320.00000000000006,
+          "effective_throughput_gbps": 168.13818978047686,
+          "speedup_vs_upstream": 0.9658717105263159,
+          "speedup_vs_best_m3": 0.9442845394736842,
+          "combined_median_us": 80.368,
+          "combined_speedup_vs_upstream": 0.9683456101931117,
+          "combined_speedup_vs_best_m3": 0.9472426836551862
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 75.168,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 91.808,
+            "speedup_vs_upstream": 0.8187521784593935
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 77.984,
+            "speedup_vs_upstream": 0.9638900287238409
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 73.488,
+            "speedup_vs_upstream": 1.022860875244938
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 73.44,
+            "speedup_vs_upstream": 1.023529411764706
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 78.048,
+            "speedup_vs_upstream": 0.96309963099631
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 71.84,
+            "speedup_vs_upstream": 1.046325167037862
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 77.19999999999999,
+            "speedup_vs_upstream": 0.9736787564766841
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 77.824,
+            "speedup_vs_upstream": 0.9658717105263159
+          }
+        }
+      },
+      "ffn_down": {
+        "shape_name": "ffn_down",
+        "N": 2560,
+        "K": 9728,
+        "classification": "canonical_q4k_workload",
+        "occurrence_count": 18,
+        "upstream_mmvq": {
+          "median_us": 72.416,
+          "mean_us": 72.51264,
+          "min_us": 71.648,
+          "max_us": 75.52,
+          "stddev_us": 0.6423388375477704,
+          "spread_us": 3.872,
+          "combined_median_us": 75.456
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 75.392,
+          "combined_median_us": 78.47999999999999
+        },
+        "best_m4_candidate": {
+          "candidate_id": 2042,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+          "median_us": 74.03200000000001,
+          "combined_median_us": 77.616
+        },
+        "autotuned_selector": {
+          "median_us": 76.448,
+          "mean_us": 76.69152,
+          "min_us": 75.776,
+          "max_us": 80.192,
+          "stddev_us": 0.8291219218016861,
+          "spread_us": 4.415999999999997,
+          "gmac_per_sec": 325.7597321054835,
+          "effective_throughput_gbps": 170.91348087403406,
+          "speedup_vs_upstream": 0.9472582670573462,
+          "speedup_vs_best_m3": 0.9861866889912098,
+          "combined_median_us": 80.72,
+          "combined_speedup_vs_upstream": 0.9347869177403371,
+          "combined_speedup_vs_best_m3": 0.9722497522299305
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 72.416,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 75.968,
+            "speedup_vs_upstream": 0.9532434709351305
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 75.392,
+            "speedup_vs_upstream": 0.9605263157894737
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 77.472,
+            "speedup_vs_upstream": 0.9347377116893846
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 78.176,
+            "speedup_vs_upstream": 0.9263200982398689
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 75.904,
+            "speedup_vs_upstream": 0.9540472175379426
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 75.072,
+            "speedup_vs_upstream": 0.96462063086104
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 74.03200000000001,
+            "speedup_vs_upstream": 0.9781716014696346
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 76.448,
+            "speedup_vs_upstream": 0.9472582670573462
+          }
+        }
+      },
+      "ffn_down_synth36": {
+        "shape_name": "ffn_down_synth36",
+        "N": 2560,
+        "K": 9728,
+        "classification": "synthetic_m3_comparison",
+        "occurrence_count": 36,
+        "upstream_mmvq": {
+          "median_us": 72.128,
+          "mean_us": 72.39328,
+          "min_us": 71.52,
+          "max_us": 86.368,
+          "stddev_us": 1.5114146566188977,
+          "spread_us": 14.847999999999999,
+          "combined_median_us": 75.296
+        },
+        "best_m3_candidate": {
+          "candidate_id": 204,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+          "median_us": 75.536,
+          "combined_median_us": 78.08
+        },
+        "best_m4_candidate": {
+          "candidate_id": 2042,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+          "median_us": 73.728,
+          "combined_median_us": 76.512
+        },
+        "autotuned_selector": {
+          "median_us": 75.776,
+          "mean_us": 75.83648,
+          "min_us": 74.688,
+          "max_us": 78.176,
+          "stddev_us": 0.3844010027420461,
+          "spread_us": 3.4879999999999995,
+          "gmac_per_sec": 328.6486486486487,
+          "effective_throughput_gbps": 172.42918319597442,
+          "speedup_vs_upstream": 0.9518581081081081,
+          "speedup_vs_best_m3": 0.9968327702702703,
+          "combined_median_us": 78.368,
+          "combined_speedup_vs_upstream": 0.9608003266639447,
+          "combined_speedup_vs_best_m3": 0.9963250306247449
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 72.128,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 76.064,
+            "speedup_vs_upstream": 0.948254101809003
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 75.536,
+            "speedup_vs_upstream": 0.9548824401609828
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 77.504,
+            "speedup_vs_upstream": 0.9306358381502889
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 78.16,
+            "speedup_vs_upstream": 0.9228249744114637
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 75.744,
+            "speedup_vs_upstream": 0.9522602450359104
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 74.496,
+            "speedup_vs_upstream": 0.9682130584192441
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 73.728,
+            "speedup_vs_upstream": 0.9782986111111112
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 75.776,
+            "speedup_vs_upstream": 0.9518581081081081
+          }
+        }
+      },
+      "guardrail_small_tail_k": {
+        "shape_name": "guardrail_small_tail_k",
+        "N": 64,
+        "K": 256,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 5.472,
+          "mean_us": 5.39712,
+          "min_us": 4.288,
+          "max_us": 6.144,
+          "stddev_us": 0.5152466758453634,
+          "spread_us": 1.8559999999999999,
+          "combined_median_us": 8.192
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 6.688
+        },
+        "best_m4_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 4.096,
+          "combined_median_us": 6.688
+        },
+        "autotuned_selector": {
+          "median_us": 4.096,
+          "mean_us": 4.412800000000001,
+          "min_us": 3.136,
+          "max_us": 20.192,
+          "stddev_us": 2.169909480027946,
+          "spread_us": 17.056,
+          "gmac_per_sec": 3.9999999999999996,
+          "effective_throughput_gbps": 2.219167072325945,
+          "speedup_vs_upstream": 1.3359375,
+          "speedup_vs_best_m3": 1.0,
+          "combined_median_us": 7.168,
+          "combined_speedup_vs_upstream": 1.1428571428571428,
+          "combined_speedup_vs_best_m3": 0.9330357142857142
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 5.472,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.128,
+            "speedup_vs_upstream": 1.3255813953488373
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 4.144,
+            "speedup_vs_upstream": 1.3204633204633205
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.3359375
+          }
+        }
+      },
+      "guardrail_mid_k_tail": {
+        "shape_name": "guardrail_mid_k_tail",
+        "N": 128,
+        "K": 768,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 5.552,
+          "mean_us": 5.424639999999999,
+          "min_us": 4.416,
+          "max_us": 6.144,
+          "stddev_us": 0.4818492056335643,
+          "spread_us": 1.7279999999999998,
+          "combined_median_us": 8.192
+        },
+        "best_m3_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 4.176,
+          "combined_median_us": 7.472
+        },
+        "best_m4_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 4.176,
+          "combined_median_us": 7.472
+        },
+        "autotuned_selector": {
+          "median_us": 4.352,
+          "mean_us": 4.5312,
+          "min_us": 3.904,
+          "max_us": 16.32,
+          "stddev_us": 1.2434956267463806,
+          "spread_us": 12.416,
+          "gmac_per_sec": 22.588235294117645,
+          "effective_throughput_gbps": 12.12773735032362,
+          "speedup_vs_upstream": 1.275735294117647,
+          "speedup_vs_best_m3": 0.9595588235294117,
+          "combined_median_us": 7.68,
+          "combined_speedup_vs_upstream": 1.0666666666666667,
+          "combined_speedup_vs_best_m3": 0.9729166666666668
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 5.552,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.176,
+            "speedup_vs_upstream": 1.3295019157088122
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 4.384,
+            "speedup_vs_upstream": 1.2664233576642334
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 4.256,
+            "speedup_vs_upstream": 1.3045112781954886
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 4.32,
+            "speedup_vs_upstream": 1.285185185185185
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 4.384,
+            "speedup_vs_upstream": 1.2664233576642334
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 4.448,
+            "speedup_vs_upstream": 1.2482014388489207
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 4.288,
+            "speedup_vs_upstream": 1.294776119402985
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.352,
+            "speedup_vs_upstream": 1.275735294117647
+          }
+        }
+      },
+      "guardrail_large_n_mid_k": {
+        "shape_name": "guardrail_large_n_mid_k",
+        "N": 8192,
+        "K": 1024,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 28.544,
+          "mean_us": 28.953919999999997,
+          "min_us": 27.328,
+          "max_us": 43.008,
+          "stddev_us": 2.284083140237052,
+          "spread_us": 15.680000000000003,
+          "combined_median_us": 31.584
+        },
+        "best_m3_candidate": {
+          "candidate_id": 104,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+          "median_us": 24.448,
+          "combined_median_us": 27.136
+        },
+        "best_m4_candidate": {
+          "candidate_id": 1042,
+          "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+          "median_us": 24.256,
+          "combined_median_us": 26.832
+        },
+        "autotuned_selector": {
+          "median_us": 28.672,
+          "mean_us": 29.180799999999998,
+          "min_us": 28.288,
+          "max_us": 68.48,
+          "stddev_us": 3.9826110921242504,
+          "spread_us": 40.19200000000001,
+          "gmac_per_sec": 292.5714285714286,
+          "effective_throughput_gbps": 154.37087443258082,
+          "speedup_vs_upstream": 0.9955357142857143,
+          "speedup_vs_best_m3": 0.8526785714285714,
+          "combined_median_us": 31.984,
+          "combined_speedup_vs_upstream": 0.9874937468734366,
+          "combined_speedup_vs_best_m3": 0.848424212106053
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 28.544,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 41.552,
+            "speedup_vs_upstream": 0.6869464767038891
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 28.688000000000002,
+            "speedup_vs_upstream": 0.9949804796430562
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 24.448,
+            "speedup_vs_upstream": 1.1675392670157068
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 24.64,
+            "speedup_vs_upstream": 1.1584415584415584
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 29.712000000000003,
+            "speedup_vs_upstream": 0.9606892837910608
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 24.256,
+            "speedup_vs_upstream": 1.1767810026385224
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 28.896,
+            "speedup_vs_upstream": 0.9878183831672204
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 28.672,
+            "speedup_vs_upstream": 0.9955357142857143
+          }
+        }
+      },
+      "guardrail_odd_n_boundary": {
+        "shape_name": "guardrail_odd_n_boundary",
+        "N": 33,
+        "K": 2560,
+        "classification": "generalization_guardrail",
+        "occurrence_count": 0,
+        "upstream_mmvq": {
+          "median_us": 5.76,
+          "mean_us": 5.9932799999999995,
+          "min_us": 4.288,
+          "max_us": 29.312,
+          "stddev_us": 2.869714680077186,
+          "spread_us": 25.024,
+          "combined_median_us": 8.192
+        },
+        "best_m3_candidate": {
+          "candidate_id": 404,
+          "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+          "median_us": 4.288,
+          "combined_median_us": 7.296
+        },
+        "best_m4_candidate": {
+          "candidate_id": 2042,
+          "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+          "median_us": 4.096,
+          "combined_median_us": 6.944
+        },
+        "autotuned_selector": {
+          "median_us": 4.448,
+          "mean_us": 4.52608,
+          "min_us": 3.744,
+          "max_us": 5.376,
+          "stddev_us": 0.43031939465255503,
+          "spread_us": 1.6320000000000001,
+          "gmac_per_sec": 18.992805755395683,
+          "effective_throughput_gbps": 10.580393961436457,
+          "speedup_vs_upstream": 1.2949640287769784,
+          "speedup_vs_best_m3": 0.9640287769784173,
+          "combined_median_us": 7.536,
+          "combined_speedup_vs_upstream": 1.0870488322717622,
+          "combined_speedup_vs_best_m3": 0.9681528662420383
+        },
+        "all_evaluated_candidates": {
+          "0": {
+            "variant_name": "VARIANT_UPSTREAM_MMVQ",
+            "median_us": 5.76,
+            "speedup_vs_upstream": 1.0
+          },
+          "404": {
+            "variant_name": "Q4K_PASCAL_WPR4_WPB4",
+            "median_us": 4.288,
+            "speedup_vs_upstream": 1.3432835820895521
+          },
+          "204": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4",
+            "median_us": 4.416,
+            "speedup_vs_upstream": 1.3043478260869563
+          },
+          "104": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4",
+            "median_us": 4.592,
+            "speedup_vs_upstream": 1.2543554006968642
+          },
+          "108": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB8",
+            "median_us": 4.8,
+            "speedup_vs_upstream": 1.2
+          },
+          "208": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB8",
+            "median_us": 4.256,
+            "speedup_vs_upstream": 1.3533834586466165
+          },
+          "1042": {
+            "variant_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+            "median_us": 4.496,
+            "speedup_vs_upstream": 1.281138790035587
+          },
+          "2042": {
+            "variant_name": "Q4K_PASCAL_WPR2_WPB4_U2",
+            "median_us": 4.096,
+            "speedup_vs_upstream": 1.40625
+          },
+          "999": {
+            "variant_name": "Q4K_AUTOTUNED_DISPATCH",
+            "median_us": 4.448,
+            "speedup_vs_upstream": 1.2949640287769784
+          }
+        }
+      }
+    },
+    "canonical_model_aggregate": {
+      "total_canonical_q4k_tensors": 216,
+      "mode1_multiply_only": {
+        "total_weighted_upstream_latency_us": 9920.735999999999,
+        "total_weighted_best_m3_latency_us": 9789.12,
+        "total_weighted_autotuned_latency_us": 10192.608,
+        "aggregate_speedup_vs_upstream": 0.9733265519482354,
+        "aggregate_speedup_vs_best_m3": 0.9604136644909723,
+        "aggregate_latency_reduction_vs_upstream_pct": -2.740441838186203,
+        "aggregate_latency_reduction_vs_best_m3_pct": -4.121800529567521
+      },
+      "mode2_combined_pipeline": {
+        "total_weighted_comb_upstream_latency_us": 10562.688,
+        "total_weighted_comb_best_m3_latency_us": 10397.376,
+        "total_weighted_comb_autotuned_latency_us": 10827.935999999998,
+        "aggregate_speedup_mode2_vs_upstream": 0.9755033646301569,
+        "aggregate_speedup_mode2_vs_best_m3": 0.9602361890576377
+      }
+    }
+  }
+}
