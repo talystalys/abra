@@ -34,7 +34,7 @@ def start_telemetry(uuid, output_csv_path):
     cmd = [
         "nvidia-smi",
         f"--id={uuid}",
-        "--query-gpu=timestamp,gpu_name,gpu_uuid,pci.bus_id,pstate,clocks.gr_mhz,clocks.mem_mhz,power.draw,temperature.gpu,utilization.gpu,utilization.memory,memory.used,memory.total",
+        "--query-gpu=timestamp,gpu_name,gpu_uuid,pci.bus_id,pstate,clocks.gr,clocks.mem,power.draw,temperature.gpu,utilization.gpu,utilization.memory,memory.used,memory.total",
         "--format=csv",
         "-lms", "100"
     ]
