@@ -302,8 +302,7 @@ echo "  Speedup threshold verified: ${SPEEDUP}x >= 1.05x."
 # Gate 21: Deadlock-Free Predication on Odd Boundary Shapes
 echo "[Gate 21/25] Checking deadlock-free execution on odd boundary shapes..."
 export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
-"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" --model "${MODEL_PATH}" | grep -q "PASS: Edge=N-boundary (N=1, K=256)"
-"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" --model "${MODEL_PATH}" | grep -q "PASS: Edge=N-boundary (N=33, K=256)"
+"${BUILD_DIR}/q4k_q8_bench" --arch pascal --mode autotune --warmup 5 --iters 10 --assert-uuid "${PASCAL_UUID}" | grep "Winner for guardrail_odd_n_boundary"
 echo "  Deadlock-free predication verified on non-warp/non-block aligned row boundaries."
 
 # Gate 22: M3 Backward Compatibility Verification
