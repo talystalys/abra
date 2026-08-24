@@ -19,8 +19,13 @@ def compute_stats(samples):
     else:
         median_val = (s[n // 2 - 1] + s[n // 2]) / 2.0
         
-    variance = sum((x - mean_val) ** 2 for x in s) / n
-    std_dev = math.sqrt(variance)
+    # Sample standard deviation (Bessel's correction: N - 1 for N > 1)
+    if n > 1:
+        variance = sum((x - mean_val) ** 2 for x in s) / (n - 1)
+        std_dev = math.sqrt(variance)
+    else:
+        variance = 0.0
+        std_dev = 0.0
     
     return {
         "count": n,
@@ -44,7 +49,6 @@ def process_bench_file(file_path):
         return None
 
     results = []
-    # llama-bench outputs a list of benchmark objects
     if isinstance(data, list):
         items = data
     elif isinstance(data, dict) and "results" in data:
@@ -57,14 +61,11 @@ def process_bench_file(file_path):
         n_gen = item.get("n_gen", 0)
         n_depth = item.get("n_depth", 0)
         
-        # Determine test type: pp (prompt processing) or tg (token generation)
         test_type = "pp" if n_prompt > 0 and n_gen == 0 else ("tg" if n_gen > 0 else "unknown")
         
-        # samples_ts is tokens per second array; samples_ns is nanoseconds array
         samples_ts = item.get("samples_ts", [])
         samples_ns = item.get("samples_ns", [])
         
-        # If samples_ts not directly present, compute from samples_ns and token count
         if not samples_ts and samples_ns:
             tokens = n_prompt if test_type == "pp" else n_gen
             samples_ts = [(tokens / (ns / 1e9)) for ns in samples_ns if ns > 0]

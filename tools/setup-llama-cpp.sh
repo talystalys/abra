@@ -41,7 +41,14 @@ if [[ "${ACTUAL_COMMIT}" != "${PINNED_COMMIT}" ]]; then
     exit 1
 fi
 
-echo "Verified llama.cpp at pinned commit: ${ACTUAL_COMMIT}"
+# Verify no tracked modifications exist
+if ! git diff-index --quiet HEAD --; then
+    echo "ERROR: Tracked source files in ${LLAMA_DIR} are modified!" >&2
+    git status --short
+    exit 1
+fi
+
+echo "Verified clean llama.cpp at pinned commit: ${ACTUAL_COMMIT}"
 
 # 1. Build Default Upstream CUDA Configuration
 echo
