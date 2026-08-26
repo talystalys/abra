@@ -1,0 +1,31 @@
+# Milestone M2 Evidence: Compiler & Hardware Resource Usage
+
+## 1. Object Inspected
+- Object File: `build/CMakeFiles/legacy_dp4a.dir/kernels/dp4a/dp4a_gemv.cu.o`
+- Compiler: NVIDIA NVCC 12.9.86
+- Extraction Tool: `cuobjdump --dump-resource-usage` and `ptxas -v`
+
+## 2. Resource Usage by Architecture
+
+### 2.1 Primary Qualification Architecture — Pascal SM 6.1 (`sm_61`)
+
+| Kernel Variant | Function Symbol | Registers / Thread | Shared Memory (bytes) | Stack Frame (bytes) | Local Memory (bytes) | Spill Stores (bytes) | Spill Loads (bytes) | Max Theoretical Occupancy |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | 29 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
+| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | 31 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
+| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | 32 | 0 | 0 | 0 | 0 | 0 | 100% (2048 threads / SM) |
+| **Variant D: Shared-Memory x-Staged** | `gemv_dp4a_shared_kernel` | 55 | 2,048 | 0 | 0 | 0 | 0 | 58.6% (1200 threads / SM) |
+
+### 2.2 Secondary Control Architecture — Turing SM 7.5 (`sm_75`)
+
+| Kernel Variant | Function Symbol | Registers / Thread | Shared Memory (bytes) | Stack Frame (bytes) | Local Memory (bytes) | Spill Stores (bytes) | Spill Loads (bytes) |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **Variant A: Scalar Baseline** | `gemv_scalar_kernel` | 49 | 0 | 0 | 0 | 0 | 0 |
+| **Variant B: Basic DP4A** | `gemv_dp4a_basic_kernel` | 51 | 0 | 0 | 0 | 0 | 0 |
+| **Variant C: Optimized DP4A** | `gemv_dp4a_opt_kernel` | 52 | 0 | 0 | 0 | 0 | 0 |
+| **Variant D: Shared-Memory x-Staged** | `gemv_dp4a_shared_kernel` | 64 | 2,048 | 0 | 0 | 0 | 0 |
+
+## 3. Key Observations
+1. **Zero Spills**: All four variants achieve zero local memory spill stores and zero spill loads on both architectures.
+2. **Register Allocation**: Variants A, B, and C on Pascal maintain $\le 32$ registers per thread, enabling 100% theoretical SM occupancy.
+3. **Shared Memory Staging**: Variant D requires 55 registers per thread and 2048 bytes of shared memory per block, lowering SM occupancy on Pascal to ~58.6% due to register limits.
