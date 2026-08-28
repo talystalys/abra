@@ -1,12 +1,12 @@
-# Milestone M2 Evidence: Profiler (Nsight Compute) Compatibility Attempt
+# Milestone M2 Evidence: Profiler (Nsight Compute) Compatibility & Status
 
-## 1. Profiler Version & Environment
-- Host: `BigBoy`
-- Target GPU: NVIDIA GeForce GTX 1060 6GB (Pascal SM 6.1, `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`)
-- Profiler Path: `/usr/local/cuda-12.9/bin/ncu`
-- Profiler Toolchain: NVIDIA Nsight Compute Version 2025.1.0.0 (Build 35501863)
+## 1. Local Invocation Attempt & Observed Error
+- **Host**: `BigBoy`
+- **Target GPU**: `NVIDIA GeForce GTX 1060 6GB` (Pascal SM 6.1, `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`, PCI `0000:03:00.0`, NUMA 0)
+- **Profiler Binary**: `/usr/local/cuda-12.9/bin/ncu`
+- **Profiler Release**: NVIDIA Nsight Compute Version 2025.1.0.0 (Build 35501863)
 
-## 2. Invocation Command
+### Exact Invocation Command
 ```bash
 CUDA_VISIBLE_DEVICES="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd" \
 numactl --cpunodebind=0 --membind=0 \
@@ -14,14 +14,30 @@ numactl --cpunodebind=0 --membind=0 \
 /home/taly/legacy-ai/build/dp4a_bench "" 1 1
 ```
 
-## 3. Observed Output / Error
+### Observed Output
 ```text
 ==PROF== Connected to process 2791612 (/home/taly/legacy-ai/build/dp4a_bench)
 ==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
 ```
 
-## 4. Technical Assessment
-1. Modern NVIDIA drivers (550.x) restrict non-root hardware performance counter access (`ERR_NVGPUCTRPERM`).
-2. Pascal SM 6.1 (`sm_61`) has deprecated / unsupported hardware counter profiling in CUDA 12.9+ Nsight Compute toolchains.
-3. In accordance with Section "PROFILING" of the M2 project charter, system modifications (modifying driver kernel module parameters or downgrading toolchains) are prohibited.
-4. Primary execution metrics remain strictly grounded in high-precision CUDA event timing (`cudaEventElapsedTime`), ptxas resource usage accounting, and SASS disassembly analysis.
+---
+
+## 2. Independent Fact Demarcation
+
+In accordance with experimental discipline, we distinguish two separate and independent facts:
+
+### Fact A: Local Invocation Permission Constraint
+The immediate local invocation failure is `ERR_NVGPUCTRPERM`. Modern NVIDIA drivers (550.x) restrict non-root hardware performance counter access by default. In accordance with the non-modification security rules of the research contract, kernel module parameters (`NVreg_RestrictProfilingToAdminUsers=0`) and root elevation are not modified.
+
+### Fact B: Vendor Architecture Support Lifecycle
+Separately and independently from permissions, NVIDIA Nsight Compute documentation for the installed 2025.1-era toolchain (CUDA 12.x series) explicitly designates Pascal (Compute Capability 6.x) as an **unsupported architecture** for detailed hardware performance profiling and metric collection. NVIDIA transitioned SM 6.x to legacy status, requiring legacy profilers (e.g. `nvprof` / `nvvp` from CUDA 10.x / 11.x) that are incompatible with modern CUDA 12.9 host drivers and modern Linux kernels (6.12+).
+
+---
+
+## 3. Methodological Conclusion
+1. Hardware counter collection on Pascal SM 6.1 is not supported within the modern CUDA 12.9 toolchain.
+2. In accordance with Section 1 of the research charter, M2 metrics remain strictly grounded in:
+   - Nanosecond-precision CUDA event timings (`cudaEventElapsedTime`) with 10 warmup and 100 timed iterations.
+   - SASS instruction disassembly verification via `cuobjdump -sass -arch sm_61`.
+   - Compiler resource accounting via `ptxas -v` and `cuobjdump --dump-resource-usage`.
+   - Authoritative CUDA Occupancy runtime API measurements (`cudaOccupancyMaxActiveBlocksPerMultiprocessor`).

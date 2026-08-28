@@ -402,5 +402,65 @@ cudaError_t launch_gemv(
     }
 }
 
+KernelOccupancyInfo get_kernel_occupancy_info(KernelVariant variant, int device_id) {
+    cudaSetDevice(device_id);
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, device_id);
+
+    const void* kernel_func = nullptr;
+    dim3 block_dim;
+
+    switch (variant) {
+        case KernelVariant::SCALAR:
+            kernel_func = reinterpret_cast<const void*>(gemv_scalar_kernel);
+            block_dim = dim3(32, 4);
+            break;
+        case KernelVariant::DP4A_BASIC:
+            kernel_func = reinterpret_cast<const void*>(gemv_dp4a_basic_kernel);
+            block_dim = dim3(32, 4);
+            break;
+        case KernelVariant::DP4A_OPT:
+            kernel_func = reinterpret_cast<const void*>(gemv_dp4a_opt_kernel);
+            block_dim = dim3(32, 8);
+            break;
+        case KernelVariant::DP4A_SHARED:
+            kernel_func = reinterpret_cast<const void*>(gemv_dp4a_shared_kernel);
+            block_dim = dim3(32, SHARED_WARPS_PER_BLOCK);
+            break;
+    }
+
+    cudaFuncAttributes attr;
+    cudaFuncGetAttributes(&attr, kernel_func);
+
+    int threads_per_block = block_dim.x * block_dim.y;
+    int active_blocks = 0;
+    cudaOccupancyMaxActiveBlocksPerMultiprocessor(
+        &active_blocks,
+        kernel_func,
+        threads_per_block,
+        0
+    );
+
+    int resident_threads = active_blocks * threads_per_block;
+    int resident_warps = resident_threads / 32;
+    int max_warps = prop.maxThreadsPerMultiProcessor / 32;
+    double occ_pct = (static_cast<double>(resident_threads) / static_cast<double>(prop.maxThreadsPerMultiProcessor)) * 100.0;
+
+    KernelOccupancyInfo info;
+    info.variant_name = get_variant_name(variant);
+    info.block_dim_x = block_dim.x;
+    info.block_dim_y = block_dim.y;
+    info.threads_per_block = threads_per_block;
+    info.registers_per_thread = attr.numRegs;
+    info.static_shared_bytes = attr.sharedSizeBytes;
+    info.active_blocks_per_sm = active_blocks;
+    info.resident_threads_per_sm = resident_threads;
+    info.resident_warps_per_sm = resident_warps;
+    info.max_warps_per_sm = max_warps;
+    info.theoretical_occupancy_pct = occ_pct;
+
+    return info;
+}
+
 } // namespace dp4a
 } // namespace legacy_ai
