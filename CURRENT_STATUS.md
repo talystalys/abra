@@ -1,6 +1,6 @@
 # CURRENT_STATUS.md
 
-Current milestone: M2 (Corrective Pass Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
+Current milestone: M2 (Corrective Documentation Synchronization Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
 Current branch: m2/dp4a-microkernel
 Accepted M1 base commit: 3ef60d1f11ba6d9e867b6108dad33d0c96d2195f
 (Git repository HEAD is authoritative for current commit state)
@@ -42,25 +42,37 @@ glibc: Debian GLIBC 2.41-12+deb13u3 (2.41)
   - Scalar Baseline: $198.66\ \mu\text{s}$ ($52.78\text{ GMAC/s}$, $49.25\text{ GiB/s}$)
   - Basic DP4A: $60.42\ \mu\text{s}$ ($173.56\text{ GMAC/s}$, $161.93\text{ GiB/s}$, **$3.29\times$ speedup**)
   - Optimized DP4A: $60.35\ \mu\text{s}$ ($173.74\text{ GMAC/s}$, $162.10\text{ GiB/s}$, **$3.29\times$ speedup**)
-  - Shared DP4A: $65.30\ \mu\text{s}$ ($160.58\text{ GMAC/s}$, $149.82\text{ GiB/s}$, $3.04\times$ speedup)
+  - Shared DP4A: $65.30\ \mu\text{s}$ ($160.59\text{ GMAC/s}$, $149.83\text{ GiB/s}$, $3.04\times$ speedup)
+- **`attn_kv`** ($1024 \times 2560$):
+  - Scalar Baseline: $53.25\ \mu\text{s}$ ($49.23\text{ GMAC/s}$, $45.97\text{ GiB/s}$)
+  - Basic DP4A: $19.42\ \mu\text{s}$ ($134.96\text{ GMAC/s}$, $126.01\text{ GiB/s}$, **$2.74\times$ speedup**)
+  - Optimized DP4A: $20.48\ \mu\text{s}$ ($128.00\text{ GMAC/s}$, $119.51\text{ GiB/s}$, **$2.60\times$ speedup**)
+  - Shared DP4A: $21.50\ \mu\text{s}$ ($121.90\text{ GMAC/s}$, $113.82\text{ GiB/s}$, $2.48\times$ speedup)
+- **`attn_out`** ($2560 \times 4096$):
+  - Scalar Baseline: $186.37\ \mu\text{s}$ ($56.26\text{ GMAC/s}$, $52.47\text{ GiB/s}$)
+  - Basic DP4A: $61.44\ \mu\text{s}$ ($170.67\text{ GMAC/s}$, $159.16\text{ GiB/s}$, **$3.03\times$ speedup**)
+  - Optimized DP4A: $60.42\ \mu\text{s}$ ($173.56\text{ GMAC/s}$, $161.86\text{ GiB/s}$, **$3.08\times$ speedup**)
+  - Shared DP4A: $60.42\ \mu\text{s}$ ($173.56\text{ GMAC/s}$, $161.86\text{ GiB/s}$, **$3.08\times$ speedup**)
 - **`ffn_gate_up`** ($9728 \times 2560$):
   - Scalar Baseline: $465.92\ \mu\text{s}$ ($53.45\text{ GMAC/s}$, $49.86\text{ GiB/s}$)
-  - Basic DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, $171.88\text{ GiB/s}$, **$3.45\times$ speedup**)
+  - Basic DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, $171.87\text{ GiB/s}$, **$3.45\times$ speedup**)
   - Optimized DP4A: $131.90\ \mu\text{s}$ ($188.80\text{ GMAC/s}$, **$176.13\text{ GiB/s}$ effective bandwidth**, **$3.53\times$ speedup**)
-  - Shared DP4A: $144.38\ \mu\text{s}$ ($172.48\text{ GMAC/s}$, $160.91\text{ GiB/s}$, $3.23\times$ speedup)
+  - Shared DP4A: $144.38\ \mu\text{s}$ ($172.48\text{ GMAC/s}$, $160.90\text{ GiB/s}$, $3.23\times$ speedup)
 - **`ffn_down`** ($2560 \times 9728$):
   - Scalar Baseline: $491.46\ \mu\text{s}$ ($50.67\text{ GMAC/s}$, $47.23\text{ GiB/s}$)
-  - Basic DP4A: $145.41\ \mu\text{s}$ ($171.26\text{ GMAC/s}$, $159.63\text{ GiB/s}$, **$3.38\times$ speedup**)
-  - Optimized DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, **$171.73\text{ GiB/s}$ effective bandwidth**, **$3.63\times$ speedup**)
+  - Basic DP4A: $145.41\ \mu\text{s}$ ($171.27\text{ GMAC/s}$, $159.63\text{ GiB/s}$, **$3.38\times$ speedup**)
+  - Optimized DP4A: $135.17\ \mu\text{s}$ ($184.24\text{ GMAC/s}$, **$171.73\text{ GiB/s}$ effective bandwidth**, **$3.64\times$ speedup**)
   - Shared DP4A: $141.31\ \mu\text{s}$ ($176.23\text{ GMAC/s}$, $164.26\text{ GiB/s}$, $3.48\times$ speedup)
 
 ### Secondary Control GPU (NVIDIA GeForce GTX 1660 SUPER — Turing SM 7.5):
-- `attn_q`: Scalar $52.83\ \mu\text{s}$ vs Optimized DP4A $37.12\ \mu\text{s}$ (**$1.42\times$ speedup**, $257.65\text{ GiB/s}$)
-- `ffn_gate_up`: Scalar $125.79\ \mu\text{s}$ vs Optimized DP4A $88.06\ \mu\text{s}$ (**$1.43\times$ speedup**, $256.24\text{ GiB/s}$)
-- `ffn_down`: Scalar $126.98\ \mu\text{s}$ vs Optimized DP4A $88.58\ \mu\text{s}$ (**$1.43\times$ speedup**, $254.73\text{ GiB/s}$)
+- `attn_q`: Scalar $53.95\ \mu\text{s}$ vs Basic DP4A $36.91\ \mu\text{s}$ (**$1.46\times$ speedup**, $265.04\text{ GiB/s}$) vs Optimized DP4A $37.06\ \mu\text{s}$ (**$1.46\times$ speedup**, $264.01\text{ GiB/s}$)
+- `attn_kv`: Scalar $18.00\ \mu\text{s}$ vs Basic DP4A $12.29\ \mu\text{s}$ (**$1.46\times$ speedup**, $199.19\text{ GiB/s}$) vs Optimized DP4A $12.29\ \mu\text{s}$ (**$1.46\times$ speedup**, $199.19\text{ GiB/s}$)
+- `attn_out`: Scalar $55.73\ \mu\text{s}$ vs Basic DP4A $39.36\ \mu\text{s}$ (**$1.42\times$ speedup**, $248.45\text{ GiB/s}$) vs Optimized DP4A $39.12\ \mu\text{s}$ (**$1.42\times$ speedup**, $249.97\text{ GiB/s}$)
+- `ffn_gate_up`: Scalar $120.32\ \mu\text{s}$ vs Basic DP4A $82.82\ \mu\text{s}$ (**$1.45\times$ speedup**, $280.52\text{ GiB/s}$) vs Optimized DP4A $84.75\ \mu\text{s}$ (**$1.42\times$ speedup**, $274.12\text{ GiB/s}$)
+- `ffn_down`: Scalar $122.88\ \mu\text{s}$ vs Basic DP4A $82.43\ \mu\text{s}$ (**$1.49\times$ speedup**, $281.59\text{ GiB/s}$) vs Optimized DP4A $82.80\ \mu\text{s}$ (**$1.48\times$ speedup**, $280.34\text{ GiB/s}$)
 
 ---
 
 Current meaningful benchmark: DP4A GEMV microbenchmark suite across Qwen3-4B transformer shapes.
 Current blocker: None for M2 implementation.
-Next required action: Technical-lead M2 audit and authorization (DO NOT PROCEED TO M3).
+Next required action: Technical-lead M2 final audit and authorization (DO NOT PROCEED TO M3).

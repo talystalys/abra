@@ -6,21 +6,21 @@ Milestone M2 establishes the low-level microarchitectural baseline for native si
 
 ### Key Empirical Findings
 1. **Speedup Over Compiler-Verified Scalar Integer Arithmetic on Pascal**:
-   - On the primary qualification device (GTX 1060 SM 6.1), hardware DP4A achieves a **$3.08\times$ to $3.63\times$ latency reduction** over a compiler-verified non-DP4A scalar INT8 baseline across standard transformer projection layers (e.g. `ffn_gate_up`: $131.90\ \mu\text{s}$ vs $465.92\ \mu\text{s}$, a $3.53\times$ speedup; `ffn_down`: $135.17\ \mu\text{s}$ vs $491.46\ \mu\text{s}$, a $3.63\times$ speedup).
-2. **Effective Bandwidth vs Theoretical DRAM Peak**:
+   - On the primary qualification device (GTX 1060 SM 6.1), hardware DP4A achieves a **$2.60\times$ to $3.64\times$ latency reduction** over a compiler-verified non-DP4A scalar INT8 baseline across standard transformer projection layers (e.g. `ffn_gate_up`: $131.90\ \mu\text{s}$ vs $465.92\ \mu\text{s}$, a $3.53\times$ speedup; `ffn_down`: $135.17\ \mu\text{s}$ vs $491.46\ \mu\text{s}$, a $3.64\times$ speedup).
+2. **Effective Requested Bandwidth vs Theoretical DRAM Peak**:
    - Batch-1 GEMV ($M=1$) exhibits an arithmetic intensity of $\approx 1\text{ MAC / byte}$.
-   - On Pascal GP106 (theoretical peak memory bandwidth $192.0\text{ GB/s} = 178.81\text{ GiB/s}$), the optimized DP4A kernel achieves an **effective requested bandwidth** of up to **$177.70\text{ GiB/s}$** ($99.38\%$ of the physical DRAM bus theoretical limit, calculated as $(N \cdot K + K + 4N)/\text{median\_time}$).
+   - On Pascal GP106 (theoretical peak memory bandwidth $192.0\text{ GB/s} = 178.81\text{ GiB/s}$), the optimized DP4A kernel achieves an **effective requested bandwidth** of up to **$176.13\text{ GiB/s}$** ($98.50\%$ of the physical DRAM bus theoretical limit, calculated as $(N \cdot K + K + 4N)/\text{median\_time}$).
    - **Methodological Distinction**: This calculation reflects the logical requested throughput of required algorithmic tensor traffic against the manufacturer theoretical ceiling, rather than direct hardware performance counter profiling (which is constrained on Pascal in modern toolchains).
 3. **Impact of 128-Bit Vectorized Global Loads (Variant C vs Variant B)**:
-   - On large transformer projections, vectorizing global memory loads into 128-bit `int4` chunks (`LDG.E.128`) produces modest performance differences ranging from a slight regression to $\sim 5\%$ improvement:
+   - On large transformer projections, vectorizing global memory loads into 128-bit `int4` chunks (`LDG.E.128`) produces modest performance differences ranging from a slight regression to $\sim 8\%$ improvement:
      - `attn_q` ($4096 \times 2560$): $60.35\ \mu\text{s}$ vs $60.42\ \mu\text{s}$ ($1.00\times$, flat)
      - `attn_kv` ($1024 \times 2560$): $20.48\ \mu\text{s}$ vs $19.42\ \mu\text{s}$ ($0.95\times$, slight regression on smaller $N$)
      - `attn_out` ($2560 \times 4096$): $60.42\ \mu\text{s}$ vs $61.44\ \mu\text{s}$ ($1.02\times$ speedup)
      - `ffn_gate_up` ($9728 \times 2560$): $131.90\ \mu\text{s}$ vs $135.17\ \mu\text{s}$ ($1.02\times$ speedup)
-     - `ffn_down` ($2560 \times 9728$): $135.17\ \mu\text{s}$ vs $145.41\ \mu\text{s}$ ($1.07\times$ speedup)
+     - `ffn_down` ($2560 \times 9728$): $135.17\ \mu\text{s}$ vs $145.41\ \mu\text{s}$ ($1.08\times$ speedup)
    - These measurements demonstrate that once native DP4A instructions are utilized to alleviate integer ALU pressure, memory subsystem efficiency dominates, and further instruction-level load tuning yields bounded gains.
 4. **Shared-Memory $x$-Vector Staging Behavior (Variant D)**:
-   - Cooperatively staging the input activation vector $x$ in `__shared__` memory provided a substantial speedup on a small square matrix (`synth_256`: $1.86\ \mu\text{s}$ vs $2.88\ \mu\text{s}$, $+55\%$ speedup), but resulted in lower performance on large transformer projections (`ffn_gate_up`: $144.38\ \mu\text{s}$ vs $131.90\ \mu\text{s}$, $-9\%$).
+   - Cooperatively staging the input activation vector $x$ in `__shared__` memory provided a speedup on medium square shapes (`synth_1024`: $9.01\ \mu\text{s}$ vs $10.08\ \mu\text{s}$, $+12\%$ speedup), but resulted in lower performance on large transformer projections (`ffn_gate_up`: $144.38\ \mu\text{s}$ vs $131.90\ \mu\text{s}$, $-9\%$).
    - Plausible contributing factors include the synchronization overhead of repeated `__syncthreads()` barriers across tile iterations and reduced theoretical occupancy ($50.0\%$ due to 55 registers/thread vs $100.0\%$ for Variants A/B/C).
 5. **Bit-Exact Correctness Across Architectures**:
    - All four kernel variants passed 156/156 automated test cases against a 64-bit accumulation CPU reference oracle across 6 input data distributions, 14 $K$-edge configurations (including tail handling), 14 $N$-boundary configurations, and 5 full-scale Qwen3-4B projection shapes on both physical GPUs.
@@ -153,21 +153,21 @@ All measurements: 10 warmup iterations, 100 timed iterations using CUDA events (
 
 ### 6.1 Required Qwen3-4B Projection Shapes
 
-| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Var C) | Var C vs Var B Ratio | Effective Throughput (Var C) |
+| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Var C) | Var C vs Var B Ratio | Effective Requested Throughput (Var C) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `attn_q` | 4096 | 2560 | 198.66 | 60.42 | **60.35** | 65.30 | **$3.29\times$** | $1.00\times$ | $158.46\text{ GiB/s}$ |
-| `attn_kv` | 1024 | 2560 | 53.25 | **19.42** | 20.48 | 21.50 | **$2.60\times$** | $0.95\times$ | $116.51\text{ GiB/s}$ |
-| `attn_out` | 2560 | 4096 | 186.37 | 61.44 | **60.42** | 60.42 | **$3.08\times$** | $1.02\times$ | $158.33\text{ GiB/s}$ |
-| `ffn_gate_up` | 9728 | 2560 | 465.92 | 135.17 | **131.90** | 144.38 | **$3.53\times$** | $1.02\times$ | $171.07\text{ GiB/s}$ |
-| `ffn_down` | 2560 | 9728 | 491.46 | 145.41 | **135.17** | 141.31 | **$3.63\times$** | $1.07\times$ | $166.93\text{ GiB/s}$ |
+| `attn_q` | 4096 | 2560 | 198.66 | 60.42 | **60.35** | 65.30 | **$3.29\times$** | $1.00\times$ | $162.10\text{ GiB/s}$ |
+| `attn_kv` | 1024 | 2560 | 53.25 | **19.42** | 20.48 | 21.50 | **$2.60\times$** | $0.95\times$ | $119.51\text{ GiB/s}$ |
+| `attn_out` | 2560 | 4096 | 186.37 | 61.44 | **60.42** | 60.42 | **$3.08\times$** | $1.02\times$ | $161.86\text{ GiB/s}$ |
+| `ffn_gate_up` | 9728 | 2560 | 465.92 | 135.17 | **131.90** | 144.38 | **$3.53\times$** | $1.02\times$ | $176.13\text{ GiB/s}$ |
+| `ffn_down` | 2560 | 9728 | 491.46 | 145.41 | **135.17** | 141.31 | **$3.64\times$** | $1.08\times$ | $171.73\text{ GiB/s}$ |
 
 ### 6.2 Secondary Synthetic Scaling Shapes
 
-| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Best) | Effective Throughput (Best) |
+| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Best) | Effective Requested Throughput (Best) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `synth_256` | 256 | 256 | 3.07 | 2.88 | 2.88 | **1.86** | **$1.65\times$** (Var D) | $33.40\text{ GiB/s}$ |
-| `synth_1024` | 1024 | 1024 | 20.48 | 9.22 | **8.19** | 8.19 | **$2.50\times$** (Var C) | $119.53\text{ GiB/s}$ |
-| `synth_4096` | 4096 | 4096 | 309.25 | 92.16 | **90.11** | 90.11 | **$3.43\times$** (Var C) | $173.34\text{ GiB/s}$ |
+| `synth_256` | 256 | 256 | **4.10** | 4.10 | 4.10 | 4.10 | **$1.00\times$** (Var A) | $15.19\text{ GiB/s}$ |
+| `synth_1024` | 1024 | 1024 | 11.26 | 10.08 | 10.98 | **9.01** | **$1.25\times$** (Var D) | $108.94\text{ GiB/s}$ |
+| `synth_4096` | 4096 | 4096 | 282.22 | 93.18 | **89.73** | 91.71 | **$3.15\times$** (Var C) | $174.35\text{ GiB/s}$ |
 
 ---
 
@@ -177,17 +177,25 @@ The GTX 1660 SUPER provides an independent control for architectural comparison 
 
 ### 7.1 Qwen3-4B Real Projection Shapes on Turing
 
-| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Var C) | Effective Throughput (Var C) |
-| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| `attn_q` | 4096 | 2560 | 52.83 | 37.12 | **37.12** | 38.30 | **$1.42\times$** | $257.65\text{ GiB/s}$ |
-| `attn_kv` | 1024 | 2560 | 14.62 | **10.24** | 10.37 | 10.75 | **$1.41\times$** | $230.12\text{ GiB/s}$ |
-| `attn_out` | 2560 | 4096 | 52.93 | 37.28 | **37.25** | 38.11 | **$1.42\times$** | $256.78\text{ GiB/s}$ |
-| `ffn_gate_up` | 9728 | 2560 | 125.79 | 88.06 | **88.06** | 89.98 | **$1.43\times$** | $256.24\text{ GiB/s}$ |
-| `ffn_down` | 2560 | 9728 | 126.98 | 88.48 | **88.58** | 89.92 | **$1.43\times$** | $254.73\text{ GiB/s}$ |
+| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Var C) | Var C vs Var B Ratio | Effective Requested Throughput (Var C) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `attn_q` | 4096 | 2560 | 53.95 | **36.91** | 37.06 | 39.17 | **$1.46\times$** | $1.00\times$ | $264.01\text{ GiB/s}$ |
+| `attn_kv` | 1024 | 2560 | 18.00 | **12.29** | **12.29** | 14.59 | **$1.46\times$** | $1.00\times$ | $199.19\text{ GiB/s}$ |
+| `attn_out` | 2560 | 4096 | 55.73 | 39.36 | **39.12** | 40.96 | **$1.42\times$** | $1.01\times$ | $249.97\text{ GiB/s}$ |
+| `ffn_gate_up` | 9728 | 2560 | 120.32 | **82.82** | 84.75 | 86.85 | **$1.42\times$** | $0.98\times$ | $274.12\text{ GiB/s}$ |
+| `ffn_down` | 2560 | 9728 | 122.88 | **82.43** | 82.80 | 89.73 | **$1.48\times$** | $1.00\times$ | $280.34\text{ GiB/s}$ |
 
-### 7.2 Cross-Architecture Insight
-- On Turing, DP4A provides a consistent **$1.42\times$ to $1.43\times$ speedup** over scalar INT8 arithmetic, and reaches $\approx 257\text{ GiB/s}$ effective bandwidth ($82\%$ of GDDR6 peak).
-- In contrast, on Pascal GP106, DP4A provides a much larger **$3.08\times$ to $3.63\times$ speedup** over scalar INT8 arithmetic. This occurs because Pascal lacks native single-cycle scalar INT8 hardware, forcing scalar INT8 operations through multi-instruction `XMAD` emulations, whereas `IDP.4A` executes as a direct native hardware instruction.
+### 7.2 Secondary Synthetic Scaling Shapes on Turing
+
+| Shape Name | $N$ | $K$ | Variant A: Scalar Median ($\mu\text{s}$) | Variant B: Basic DP4A Median ($\mu\text{s}$) | Variant C: Opt DP4A Median ($\mu\text{s}$) | Variant D: Shared DP4A Median ($\mu\text{s}$) | DP4A Speedup vs Scalar (Best) | Effective Requested Throughput (Best) |
+| :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| `synth_256` | 256 | 256 | 4.13 | **4.10** | 4.10 | 4.38 | **$1.01\times$** (Var B) | $15.19\text{ GiB/s}$ |
+| `synth_1024` | 1024 | 1024 | 9.26 | **6.14** | 6.29 | 7.18 | **$1.51\times$** (Var B) | $159.72\text{ GiB/s}$ |
+| `synth_4096` | 4096 | 4096 | 83.68 | **59.10** | 59.14 | 60.18 | **$1.42\times$** (Var B) | $264.69\text{ GiB/s}$ |
+
+### 7.3 Cross-Architecture Insight
+- On Turing, DP4A provides a consistent **$1.42\times$ to $1.48\times$ speedup** over scalar INT8 arithmetic, reaching up to $\approx 280\text{ GiB/s}$ effective bandwidth ($89\%$ of GDDR6 peak).
+- In contrast, on Pascal GP106, DP4A provides a much larger **$2.60\times$ to $3.64\times$ speedup** over scalar INT8 arithmetic. This occurs because Pascal lacks native single-cycle scalar INT8 hardware, forcing scalar INT8 operations through multi-instruction `XMAD` emulations, whereas `IDP.4A` executes as a direct native hardware instruction.
 
 ---
 
@@ -235,9 +243,9 @@ To ensure experimental integrity:
 ## 11. Architectural Conclusions & Research Note for Milestone M3
 
 1. **Hardware DP4A is the Foundational Compute Engine for Pascal**:
-   - Native DP4A delivers a $3.08\times$ to $3.63\times$ speedup over scalar INT8 emulation on Pascal SM 6.1.
+   - Native DP4A delivers a $2.60\times$ to $3.64\times$ speedup over scalar INT8 emulation on Pascal SM 6.1.
 2. **Effective Bandwidth Bounds Unquantized INT8 Batch-1 GEMV**:
-   - With an arithmetic intensity of $\approx 1\text{ MAC / byte}$, unquantized INT8 GEMV rapidly approaches the physical throughput limit of the GDDR5 bus ($\approx 177\text{ GiB/s}$).
+   - With an arithmetic intensity of $\approx 1\text{ MAC / byte}$, unquantized INT8 GEMV rapidly approaches the physical throughput limit of the GDDR5 bus ($\approx 176.13\text{ GiB/s}$).
 3. **Implications for Quantized Inference (Milestone M3)**:
    - Standard low-bit representations (such as `Q4_K` or `Q4_0`) store weights at 4.5 to 5.0 bits per weight, reducing weight memory footprint by $\approx 45\%\text{--}50\%$ relative to unquantized INT8.
    - However, Pascal SM 6.1 possesses no native INT4 arithmetic instructions; all 4-bit computation must be unpacked into INT8 before executing `IDP.4A`.

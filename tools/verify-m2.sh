@@ -211,7 +211,7 @@ verify_bench_json(
 ' "${RESULTS_DIR}/pascal-dp4a-bench.json" "${RESULTS_DIR}/turing-dp4a-bench.json"
 
 # Step 8: Evidence Files & Manifest Re-generation Check
-echo "[8/8] Verifying evidence files, telemetry traces, and live manifest..."
+echo "[8/9] Verifying evidence files, telemetry traces, and live manifest..."
 test -s "${RESULTS_DIR}/pascal-telemetry.csv"
 test -s "${RESULTS_DIR}/turing-telemetry.csv"
 test -s "${RESULTS_DIR}/analysis-m2-summary.json"
@@ -223,6 +223,10 @@ test -d "${RESULTS_DIR}/original-423ef719"
 test -s "${RESULTS_DIR}/original-423ef719/pascal-dp4a-bench.json"
 
 python3 "${REPO_DIR}/tools/generate-m2-manifest.py" "${RESULTS_DIR}"
+
+# Step 9: Documentation Consistency Gate
+echo "[9/9] Verifying mechanical synchronization between reports and raw benchmark JSON..."
+python3 "${REPO_DIR}/tools/check_m2_documentation_consistency.py" "${REPO_DIR}"
 
 echo "======================================================================"
 echo "MILESTONE M2 QUALIFICATION COMPLETE: ALL HARDENED CHECKS PASSED"

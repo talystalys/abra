@@ -2,7 +2,7 @@
 
 This document outlines the research and engineering roadmap for exploring modern quantized neural-network inference on legacy NVIDIA architectures (specifically NVIDIA Pascal SM 6.1).
 
-> **Important**: Milestone M2 corrective pass is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
+> **Important**: Milestone M2 corrective pass and documentation synchronization is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
 
 ---
 
@@ -19,11 +19,11 @@ This document outlines the research and engineering roadmap for exploring modern
   - Quantified baseline inference performance on legacy hardware using upstream `llama.cpp` MMQ on `Qwen3-4B-Q4_K_M.gguf`.
   - Established hardware offload proofs and telemetry on Pascal (GTX 1060) and Turing (GTX 1660 SUPER).
 
-- **M2: DP4A Microkernel** *(CORRECTIVE PASS COMPLETE — AWAITING TECHNICAL LEAD AUDIT)*
+- **M2: DP4A Microkernel** *(CORRECTIVE DOCUMENTATION SYNCHRONIZATION COMPLETE — AWAITING TECHNICAL LEAD AUDIT)*
   - Implemented signed INT8 $\times$ signed INT8 $\to$ INT32 matrix-vector arithmetic microkernels for Pascal SM 6.1 (`IDP.4A.S8.S8`).
   - Verified 100% bit-exact correctness against CPU 64-bit accumulation reference oracle across 156 test cases on both Pascal and Turing GPUs.
   - SASS disassembly analysis proving 0 `IDP.4A` in scalar baseline and active `IDP.4A.S8.S8` in DP4A variants.
-  - Characterized $3.08\times\text{--}3.63\times$ speedup on Pascal over compiler-verified scalar baseline, achieving up to $176.13\text{ GiB/s}$ effective requested throughput.
+  - Characterized $2.60\times\text{--}3.64\times$ speedup on Pascal over compiler-verified scalar baseline, achieving up to $176.13\text{ GiB/s}$ effective requested throughput.
 
 - **M3: Quantized Weight Microkernel** *(PLANNED — NOT STARTED / NOT AUTHORIZED)*
   - Implement specialized quantized weight kernels (Q4/Q5/Q8) with on-the-fly dequantization and INT32 accumulation.
