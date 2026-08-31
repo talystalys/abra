@@ -1,12 +1,14 @@
 # CURRENT_STATUS.md
 
-Current milestone: M2 (Corrective Documentation Synchronization Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
+Current milestone: M2 (Documentation Hardened & Synchronized — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M3)
 Current branch: m2/dp4a-microkernel
 Accepted M1 base commit: 3ef60d1f11ba6d9e867b6108dad33d0c96d2195f
 (Git repository HEAD is authoritative for current commit state)
 
 Execution host: BigBoy
-OS: Debian GNU/Linux 13 (trixie) (Kernel 6.12.100+deb13-amd64 x86_64)
+OS: Debian GNU/Linux 13 (trixie) (Kernel Linux 6.12.100+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100-1 (2026-07-30) x86_64)
+CPU: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads, 2 NUMA nodes)
+RAM: 62.77 GiB (64278.9 MiB)
 
 Pascal qualification GPU: NVIDIA GeForce GTX 1060 6GB
 Pascal PCI/UUID: PCI 0000:03:00.0 / UUID GPU-5078520c-bf92-4143-0d48-b02fd9d250dd

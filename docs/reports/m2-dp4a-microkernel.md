@@ -18,7 +18,7 @@ Milestone M2 establishes the low-level microarchitectural baseline for native si
      - `attn_out` ($2560 \times 4096$): $60.42\ \mu\text{s}$ vs $61.44\ \mu\text{s}$ ($1.02\times$ speedup)
      - `ffn_gate_up` ($9728 \times 2560$): $131.90\ \mu\text{s}$ vs $135.17\ \mu\text{s}$ ($1.02\times$ speedup)
      - `ffn_down` ($2560 \times 9728$): $135.17\ \mu\text{s}$ vs $145.41\ \mu\text{s}$ ($1.08\times$ speedup)
-   - These measurements demonstrate that once native DP4A instructions are utilized to alleviate integer ALU pressure, memory subsystem efficiency dominates, and further instruction-level load tuning yields bounded gains.
+   - Once native DP4A removes much of the scalar integer execution cost, the small and shape-dependent gains from further DP4A scheduling/load optimization, combined with high effective requested throughput, are consistent with memory-system effects becoming increasingly important. M2 does not directly establish the limiting hardware resource.
 4. **Shared-Memory $x$-Vector Staging Behavior (Variant D)**:
    - Cooperatively staging the input activation vector $x$ in `__shared__` memory provided a speedup on medium square shapes (`synth_1024`: $9.01\ \mu\text{s}$ vs $10.08\ \mu\text{s}$, $+12\%$ speedup), but resulted in lower performance on large transformer projections (`ffn_gate_up`: $144.38\ \mu\text{s}$ vs $131.90\ \mu\text{s}$, $-9\%$).
    - Plausible contributing factors include the synchronization overhead of repeated `__syncthreads()` barriers across tile iterations and reduced theoretical occupancy ($50.0\%$ due to 55 registers/thread vs $100.0\%$ for Variants A/B/C).
@@ -33,18 +33,18 @@ All benchmarks and qualification tests were executed on host `BigBoy` under stri
 
 ### 2.1 Physical Hardware Configuration
 - **Host**: `BigBoy`
-- **CPU**: $2 \times \text{Intel Xeon E5-2690 v4}$ (28 physical cores, 56 logical threads, 2 NUMA nodes)
-- **Host Memory**: $251.81\text{ GiB}$ DDR4 ECC
+- **CPU**: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads, 2 NUMA nodes)
+- **Host Memory**: 62.77 GiB (64278.9 MiB) DDR4 ECC
 - **Primary Qualification GPU (Pascal SM 6.1)**:
   - Device: `NVIDIA GeForce GTX 1060 6GB`
-  - Compute Capability: `sm_61`
+  - Compute Capability: `6.1`
   - PCI Bus ID: `0000:03:00.0`
   - UUID: `GPU-5078520c-bf92-4143-0d48-b02fd9d250dd`
   - Memory: 6 GB GDDR5 (192-bit bus @ 4004 MHz = 192.0 GB/s theoretical peak)
   - NUMA Affinity: Node 0
 - **Secondary Control GPU (Turing SM 7.5)**:
   - Device: `NVIDIA GeForce GTX 1660 SUPER`
-  - Compute Capability: `sm_75`
+  - Compute Capability: `7.5`
   - PCI Bus ID: `0000:81:00.0`
   - UUID: `GPU-8a043791-359d-1df4-9353-38c5bc98e5dd`
   - Memory: 6 GB GDDR6 (192-bit bus @ 7001 MHz = 336.0 GB/s theoretical peak)
@@ -52,13 +52,13 @@ All benchmarks and qualification tests were executed on host `BigBoy` under stri
 
 ### 2.2 Software & Toolchain Provenance
 - **OS**: `Debian GNU/Linux 13 (trixie)`
-- **Kernel**: `Linux 6.12.100+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100-1 (2025-07-28) x86_64`
+- **Kernel**: `Linux 6.12.100+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100-1 (2026-07-30) x86_64`
 - **NVIDIA Driver**: `550.163.01`
 - **CUDA Toolkit**: CUDA 12.9 (`/usr/local/cuda-12.9`)
 - **NVCC**: `Cuda compilation tools, release 12.9, V12.9.86`
 - **Host Compiler**: `gcc (Debian 14.2.0-19) 14.2.0`
 - **glibc**: `Debian GLIBC 2.41-12+deb13u3 (2.41)`
-- **Lineage**: Direct descendant of accepted M1 HEAD `3ef60d1f11ba6d9e867b6108dad33d0c96d2195f`
+- **Base Milestone Lineage**: Accepted M1 HEAD `3ef60d1f11ba6d9e867b6108dad33d0c96d2195f`
 
 ---
 
