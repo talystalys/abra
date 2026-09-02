@@ -83,3 +83,45 @@ target_link_libraries(dump_m2_occupancy PRIVATE legacy_dp4a legacy_smoke)
 target_compile_options(dump_m2_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )
+
+# =============================================================================
+# Milestone M3: Pascal Q4_K x Q8_1 MMVQ Targets
+# =============================================================================
+add_library(legacy_q4k STATIC
+    kernels/q4k/q4k_q8_mmvq.cu
+)
+set_target_properties(legacy_q4k PROPERTIES
+    CUDA_SEPARABLE_COMPILATION OFF
+    POSITION_INDEPENDENT_CODE ON
+)
+target_compile_options(legacy_q4k PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
+# 7. Q4_K x Q8_1 Correctness Test Suite
+add_executable(q4k_q8_test
+    tests/q4k_q8_test.cu
+)
+target_link_libraries(q4k_q8_test PRIVATE legacy_q4k legacy_smoke)
+target_compile_options(q4k_q8_test PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
+# 8. Q4_K x Q8_1 Microbenchmark Harness
+add_executable(q4k_q8_bench
+    bench/micro/q4k_q8_bench.cu
+)
+target_link_libraries(q4k_q8_bench PRIVATE legacy_q4k legacy_smoke)
+target_compile_options(q4k_q8_bench PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
+# 9. Q4_K x Q8_1 Theoretical Occupancy Extraction Tool
+add_executable(dump_m3_occupancy
+    tools/dump_m3_occupancy.cu
+)
+target_link_libraries(dump_m3_occupancy PRIVATE legacy_q4k legacy_smoke)
+target_compile_options(dump_m3_occupancy PRIVATE
+    $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
+)
+
