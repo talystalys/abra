@@ -27,10 +27,11 @@ This document outlines the research and engineering roadmap for exploring modern
 
 - **M3: Pascal Q4_K × Q8_1 Decode Microkernel Characterization** *(COMPLETED — AWAITING TECHNICAL LEAD AUDIT)*
   - Identified actual upstream decode incumbent as MMVQ (`ne11 <= 8`).
+  - Linked directly against pinned `libggml-cuda.so` (`ggml_cuda_op_mul_mat_vec_q`, `quantize_row_q8_1_cuda`) and `libggml-base.so` (`quantize_row_q4_K_ref`).
   - Extracted canonical model tensor map (`Qwen3-4B-Q4_K_M.gguf`, 398 tensors: 216 Q4_K, 37 Q6_K, 145 F32).
   - Implemented custom Q4_K × Q8_1 MMVQ microkernel variants (Variant A: 4-warp control, Variant B: 2-warp split, Variant C: 1-warp row).
-  - Validated 114/114 tests against double-precision reference oracle (max relative error $4.20 \times 10^{-6}$).
-  - Characterized $+43.5\%\text{--}+48.5\%$ speedup on Pascal $K=2560$ shapes by resolving 4-warp $K$-tail idle slot waste.
+  - Validated 168/168 tests (including real model bytes from `Qwen3-4B-Q4_K_M.gguf`) against double-precision reference oracle and pinned upstream comparator.
+  - Characterized $+14.1\%\text{--}+31.1\%$ speedup on Pascal $K=2560$ shapes over actual pinned upstream MMVQ by resolving 4-warp $K$-tail idle slot waste.
 
 - **M4: Autotuned Kernel Family** *(PLANNED — NOT STARTED / NOT AUTHORIZED)*
   - Develop family of parameter-tuned kernels (tile size, warp layout, memory access patterns) for Pascal hardware characteristics.

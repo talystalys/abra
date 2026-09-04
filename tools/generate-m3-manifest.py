@@ -112,7 +112,10 @@ def get_live_gpus():
     return gpus
 
 def main():
-    results_dir = sys.argv[1] if len(sys.argv) > 1 else "bench/results/m3"
+    script_dir = os.path.dirname(os.path.abspath(__file__))
+    repo_dir = os.path.dirname(script_dir)
+    default_results_dir = os.path.join(repo_dir, "bench", "results", "m3")
+    results_dir = sys.argv[1] if len(sys.argv) > 1 else default_results_dir
     pascal_bench_file = os.path.join(results_dir, "pascal-q4k-bench.json")
     turing_bench_file = os.path.join(results_dir, "turing-q4k-bench.json")
     manifest_file = os.path.join(results_dir, "manifest.json")

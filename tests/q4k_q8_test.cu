@@ -1,4 +1,5 @@
 #include "kernels/q4k/q4k_q8_mmvq.cuh"
+#include "kernels/q4k/upstream_adapter.cuh"
 #include "kernels/smoke/smoke.h"
 #include <iostream>
 #include <vector>
@@ -10,6 +11,9 @@
 #include <sstream>
 #include <algorithm>
 #include <random>
+
+#include "../.deps/llama.cpp/ggml/include/ggml.h"
+#include "../.deps/llama.cpp/ggml/include/gguf.h"
 
 enum InputDistribution {
     DIST_ALL_ZERO = 0,
@@ -43,95 +47,6 @@ static inline void get_scale_min_k4(int j, const uint8_t * q, uint8_t * d, uint8
     } else {
         *d = (q[j + 4] & 0xF) | ((q[j - 4] >> 6) << 4);
         *m = (q[j + 4] >>  4) | ((q[j - 0] >> 6) << 4);
-    }
-}
-
-static inline void set_scale_min_k4(int j, uint8_t d, uint8_t m, uint8_t * q) {
-    if (j < 4) {
-        q[j]     = (q[j]     & 0xC0) | (d & 0x3F);
-        q[j + 4] = (q[j + 4] & 0xC0) | (m & 0x3F);
-    } else {
-        q[j - 4] = (q[j - 4] & 0x3F) | ((d & 0x30) << 2);
-        q[j - 0] = (q[j - 0] & 0x3F) | ((m & 0x30) << 2);
-        q[j + 4] = (d & 0x0F) | ((m & 0x0F) << 4);
-    }
-}
-
-// Canonical CPU Quantizers (exact upstream logic)
-void quantize_row_q4_k_cpu_ref(const float * x, block_q4_K * y, int k) {
-    const int nb = k / QK_K;
-    for (int i = 0; i < nb; ++i) {
-        const float * xb = x + i * QK_K;
-        block_q4_K * yb = y + i;
-
-        float max_val = -1e30f;
-        float min_val = 1e30f;
-        for (int j = 0; j < QK_K; ++j) {
-            float v = xb[j];
-            if (v > max_val) max_val = v;
-            if (v < min_val) min_val = v;
-        }
-
-        float d = (max_val > min_val) ? (max_val - min_val) / 15.0f : 0.0f;
-        float min_block = (max_val > min_val) ? min_val : 0.0f;
-        yb->d = __float2half(d);
-        yb->dmin = __float2half(min_block);
-
-        memset(yb->scales, 0, K_SCALE_SIZE);
-        for (int j = 0; j < 8; ++j) {
-            set_scale_min_k4(j, 1, 1, yb->scales);
-        }
-
-        uint8_t L[QK_K];
-        float id = d > 0.0f ? 1.0f / d : 0.0f;
-        for (int j = 0; j < 8; ++j) {
-            uint8_t sc, m;
-            get_scale_min_k4(j, yb->scales, &sc, &m);
-            float d_sub = d * (float)sc;
-            float m_sub = min_block * (float)m;
-            float id_sub = d_sub > 0.0f ? 1.0f / d_sub : 0.0f;
-            for (int ii = 0; ii < 32; ++ii) {
-                float v = (xb[32 * j + ii] + m_sub) * id_sub;
-                int l = std::min(15, std::max(0, (int)std::round(v)));
-                L[32 * j + ii] = (uint8_t)l;
-            }
-        }
-
-        uint8_t * q = yb->qs;
-        for (int j = 0; j < QK_K; j += 64) {
-            for (int l = 0; l < 32; ++l) {
-                q[l] = L[j + l] | (L[j + l + 32] << 4);
-            }
-            q += 32;
-        }
-    }
-}
-
-void quantize_row_q8_1_cpu_ref(const float * x, block_q8_1 * y, int k) {
-    const int nb = k / QK8_1;
-    for (int i = 0; i < nb; ++i) {
-        const float * xb = x + i * QK8_1;
-        block_q8_1 * yb = y + i;
-
-        float amax = 0.0f;
-        for (int j = 0; j < QK8_1; ++j) {
-            float v = std::fabs(xb[j]);
-            if (v > amax) amax = v;
-        }
-
-        float d = amax / 127.0f;
-        float id = d > 0.0f ? 1.0f / d : 0.0f;
-        int sum_qs = 0;
-
-        for (int j = 0; j < QK8_1; ++j) {
-            float x0 = xb[j] * id;
-            int8_t q0 = (int8_t)std::round(x0);
-            yb->qs[j] = q0;
-            sum_qs += q0;
-        }
-
-        yb->d = __float2half(d);
-        yb->s = __float2half(d * (float)sum_qs);
     }
 }
 
@@ -232,7 +147,7 @@ void generate_test_data(std::vector<float> & data, InputDistribution dist, uint3
             break;
         }
         case DIST_NONZERO_MIN_EXERCISE: {
-            std::uniform_real_distribution<float> dis(10.0f, 25.0f); // strictly positive offset
+            std::uniform_real_distribution<float> dis(10.0f, 25.0f);
             for (size_t i = 0; i < data.size(); ++i) data[i] = dis(gen);
             break;
         }
@@ -268,12 +183,35 @@ NumericalErrorStats compute_error_stats(const std::vector<float> & actual, const
     return stats;
 }
 
+NumericalErrorStats compute_diff_stats(const std::vector<float> & actual, const std::vector<float> & reference) {
+    NumericalErrorStats stats;
+    double sum_sq_err = 0.0;
+    for (size_t i = 0; i < actual.size(); ++i) {
+        float act = actual[i];
+        float ref = reference[i];
+        if (std::isnan(act)) stats.has_nan = true;
+        if (std::isinf(act)) stats.has_inf = true;
+
+        double abs_err = std::abs((double)act - (double)ref);
+        double denom = std::max(1e-5, std::abs((double)ref));
+        double rel_err = abs_err / denom;
+
+        if (abs_err > stats.max_abs_err) stats.max_abs_err = abs_err;
+        if (rel_err > stats.max_rel_err) stats.max_rel_err = rel_err;
+        sum_sq_err += abs_err * abs_err;
+    }
+    stats.rms_err = std::sqrt(sum_sq_err / (double)actual.size());
+    return stats;
+}
+
 int main(int argc, char ** argv) {
     std::string arch_type = "pascal";
     std::string assert_name = "";
     std::string assert_cc = "";
     std::string assert_pci = "";
     std::string assert_uuid = "";
+    std::string envelope_output = "bench/results/m3/numerical-envelope.json";
+    std::string model_path = "models/Qwen3-4B-Q4_K_M.gguf";
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -282,6 +220,8 @@ int main(int argc, char ** argv) {
         else if (arg == "--assert-cc" && i + 1 < argc) assert_cc = argv[++i];
         else if (arg == "--assert-pci" && i + 1 < argc) assert_pci = argv[++i];
         else if (arg == "--assert-uuid" && i + 1 < argc) assert_uuid = argv[++i];
+        else if (arg == "--envelope-out" && i + 1 < argc) envelope_output = argv[++i];
+        else if (arg == "--model" && i + 1 < argc) model_path = argv[++i];
     }
 
     int cc_major = 0;
@@ -342,13 +282,14 @@ int main(int argc, char ** argv) {
               << "Occupancy(%)\n";
     std::cout << std::string(98, '-') << "\n";
 
-    std::vector<Q4KVariant> variants = {
+    std::vector<Q4KVariant> all_variants = {
+        VARIANT_UPSTREAM_MMVQ,
         VARIANT_4WARP_CONTROL,
         VARIANT_2WARP_SPLIT,
         VARIANT_1WARP_ROW
     };
 
-    for (auto v : variants) {
+    for (auto v : all_variants) {
         Q4KOccupancyInfo occ = get_q4k_kernel_occupancy_info(v, dev_id);
         std::string dim_str = std::to_string(occ.block_dim_x) + "x" + std::to_string(occ.block_dim_y);
         std::string warps_str = std::to_string(occ.resident_warps_per_sm) + "/" + std::to_string(occ.max_warps_per_sm);
@@ -364,30 +305,42 @@ int main(int argc, char ** argv) {
 
     int total_tests = 0;
     int passed_tests = 0;
-    double max_observed_abs_err = 0.0;
-    double max_observed_rel_err = 0.0;
+    
+    // Overall error tracking
+    double upstream_max_abs_vs_f64 = 0.0;
+    double upstream_max_rel_vs_f64 = 0.0;
+    double upstream_max_rms_vs_f64 = 0.0;
+
+    double custom_max_abs_vs_f64 = 0.0;
+    double custom_max_rel_vs_f64 = 0.0;
+    double custom_max_abs_vs_upstream = 0.0;
+    double custom_max_rel_vs_upstream = 0.0;
 
     // Tolerance thresholds (frozen envelope: FP16/FP32 rounding bounds)
-    const double TOL_MAX_REL_ERR = 5e-3; // 0.5% relative error envelope for FP16 dequantization
+    const double TOL_MAX_REL_ERR = 5e-3;
     const double TOL_MAX_ABS_ERR = 0.05;
 
     // 1. Input Distribution Tests
     std::cout << "=== Phase 1: Input Families x Variant Smoke Tests (N=128, K=256) ===\n";
     int N_test = 128;
     int K_test = 256;
+    int K_padded_test = ((K_test + 511) / 512) * 512;
     std::vector<float> h_w_f32(N_test * K_test);
     std::vector<float> h_x_f32(K_test);
     std::vector<block_q4_K> h_w_q4(N_test * (K_test / QK_K));
-    std::vector<block_q8_1> h_x_q8(K_test / QK8_1);
+    std::vector<block_q8_1> h_x_q8(K_padded_test / QK8_1);
     std::vector<double> h_y_oracle(N_test);
+    std::vector<float> h_y_upstream(N_test);
     std::vector<float> h_y_gpu(N_test);
 
     block_q4_K * d_w_q4 = nullptr;
+    float * d_x_f32 = nullptr;
     block_q8_1 * d_x_q8 = nullptr;
     float * d_y_f32 = nullptr;
 
     cudaMalloc(&d_w_q4, h_w_q4.size() * sizeof(block_q4_K));
-    cudaMalloc(&d_x_q8, h_x_q8.size() * sizeof(block_q8_1));
+    cudaMalloc(&d_x_f32, K_test * sizeof(float));
+    cudaMalloc(&d_x_q8, (K_padded_test / QK8_1) * sizeof(block_q8_1));
     cudaMalloc(&d_y_f32, N_test * sizeof(float));
 
     for (int dist_i = 0; dist_i <= (int)DIST_NONZERO_MIN_EXERCISE; ++dist_i) {
@@ -395,40 +348,64 @@ int main(int argc, char ** argv) {
         generate_test_data(h_w_f32, dist, 100 + dist_i);
         generate_test_data(h_x_f32, dist, 200 + dist_i);
 
-        quantize_row_q4_k_cpu_ref(h_w_f32.data(), h_w_q4.data(), N_test * K_test);
-        quantize_row_q8_1_cpu_ref(h_x_f32.data(), h_x_q8.data(), K_test);
-
-        independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), N_test, K_test);
+        // Exact pinned CPU Q4_K quantizer
+        for (int n = 0; n < N_test; ++n) {
+            quantize_row_q4_K_upstream_cpu(&h_w_f32[n * K_test], &h_w_q4[n * (K_test / QK_K)], K_test);
+        }
 
         cudaMemcpy(d_w_q4, h_w_q4.data(), h_w_q4.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_x_q8, h_x_q8.data(), h_x_q8.size() * sizeof(block_q8_1), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_x_f32, h_x_f32.data(), K_test * sizeof(float), cudaMemcpyHostToDevice);
 
-        for (auto var : variants) {
+        // Exact pinned CUDA Q8_1 quantizer
+        launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, K_test, 0);
+        cudaMemcpy(h_x_q8.data(), d_x_q8, h_x_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+        // Compute independent F64 oracle
+        independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), N_test, K_test);
+
+        // First run Variant U (Exact Upstream)
+        cudaMemset(d_y_f32, 0, N_test * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y_f32, N_test, K_test, 0);
+        cudaMemcpy(h_y_upstream.data(), d_y_f32, N_test * sizeof(float), cudaMemcpyDeviceToHost);
+
+        NumericalErrorStats u_stats = compute_error_stats(h_y_upstream, h_y_oracle);
+        if (u_stats.max_abs_err > upstream_max_abs_vs_f64) upstream_max_abs_vs_f64 = u_stats.max_abs_err;
+        if (u_stats.max_rel_err > upstream_max_rel_vs_f64) upstream_max_rel_vs_f64 = u_stats.max_rel_err;
+        if (u_stats.rms_err > upstream_max_rms_vs_f64) upstream_max_rms_vs_f64 = u_stats.rms_err;
+
+        for (auto var : all_variants) {
             total_tests++;
             cudaMemset(d_y_f32, 0, N_test * sizeof(float));
             launch_q4k_q8_mmvq(var, d_w_q4, d_x_q8, d_y_f32, N_test, K_test, 0);
             cudaMemcpy(h_y_gpu.data(), d_y_f32, N_test * sizeof(float), cudaMemcpyDeviceToHost);
 
-            NumericalErrorStats stats = compute_error_stats(h_y_gpu, h_y_oracle);
-            if (stats.max_abs_err > max_observed_abs_err) max_observed_abs_err = stats.max_abs_err;
-            if (stats.max_rel_err > max_observed_rel_err) max_observed_rel_err = stats.max_rel_err;
+            NumericalErrorStats stats_f64 = compute_error_stats(h_y_gpu, h_y_oracle);
+            NumericalErrorStats stats_u = compute_diff_stats(h_y_gpu, h_y_upstream);
 
-            bool pass = (!stats.has_nan && !stats.has_inf &&
-                         (stats.max_rel_err <= TOL_MAX_REL_ERR || stats.max_abs_err <= TOL_MAX_ABS_ERR));
+            if (var != VARIANT_UPSTREAM_MMVQ) {
+                if (stats_f64.max_abs_err > custom_max_abs_vs_f64) custom_max_abs_vs_f64 = stats_f64.max_abs_err;
+                if (stats_f64.max_rel_err > custom_max_rel_vs_f64) custom_max_rel_vs_f64 = stats_f64.max_rel_err;
+                if (stats_u.max_abs_err > custom_max_abs_vs_upstream) custom_max_abs_vs_upstream = stats_u.max_abs_err;
+                if (stats_u.max_rel_err > custom_max_rel_vs_upstream) custom_max_rel_vs_upstream = stats_u.max_rel_err;
+            }
+
+            bool pass = (!stats_f64.has_nan && !stats_f64.has_inf &&
+                         (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR));
             if (pass) {
                 passed_tests++;
                 std::cout << "PASS: Variant=" << std::left << std::setw(30) << get_q4k_variant_name(var)
                           << " | Dist=" << std::setw(24) << get_dist_name(dist)
-                          << " | MaxRelErr=" << std::scientific << std::setprecision(2) << stats.max_rel_err
-                          << " | MaxAbsErr=" << stats.max_abs_err << "\n";
+                          << " | RelVsF64=" << std::scientific << std::setprecision(2) << stats_f64.max_rel_err
+                          << " | AbsVsU=" << stats_u.max_abs_err << "\n";
             } else {
                 std::cerr << "FAIL: Variant=" << get_q4k_variant_name(var) << " | Dist=" << get_dist_name(dist)
-                          << " | MaxRelErr=" << stats.max_rel_err << " | MaxAbsErr=" << stats.max_abs_err << "\n";
+                          << " | RelVsF64=" << stats_f64.max_rel_err << " | AbsVsU=" << stats_u.max_abs_err << "\n";
             }
         }
     }
 
     cudaFree(d_w_q4);
+    cudaFree(d_x_f32);
     cudaFree(d_x_q8);
     cudaFree(d_y_f32);
 
@@ -437,40 +414,66 @@ int main(int argc, char ** argv) {
     std::vector<int> k_values = {256, 512, 768, 1024, 2048, 2304, 2560, 4096, 8192, 9728};
     for (int K_val : k_values) {
         int N_val = 64;
+        int K_padded = ((K_val + 511) / 512) * 512;
         std::vector<float> w_f(N_val * K_val);
         std::vector<float> x_f(K_val);
         std::vector<block_q4_K> w_q(N_val * (K_val / QK_K));
-        std::vector<block_q8_1> x_q(K_val / QK8_1);
+        std::vector<block_q8_1> x_q(K_padded / QK8_1);
         std::vector<double> y_oracle(N_val);
+        std::vector<float> y_upstream(N_val);
         std::vector<float> y_gpu(N_val);
 
         generate_test_data(w_f, DIST_BOUNDED_PSEUDORANDOM, 300 + K_val);
         generate_test_data(x_f, DIST_BOUNDED_PSEUDORANDOM, 400 + K_val);
-        quantize_row_q4_k_cpu_ref(w_f.data(), w_q.data(), N_val * K_val);
-        quantize_row_q8_1_cpu_ref(x_f.data(), x_q.data(), K_val);
-        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
+
+        for (int n = 0; n < N_val; ++n) {
+            quantize_row_q4_K_upstream_cpu(&w_f[n * K_val], &w_q[n * (K_val / QK_K)], K_val);
+        }
 
         block_q4_K * d_w = nullptr;
+        float * d_x_f = nullptr;
         block_q8_1 * d_x = nullptr;
         float * d_y = nullptr;
         cudaMalloc(&d_w, w_q.size() * sizeof(block_q4_K));
-        cudaMalloc(&d_x, x_q.size() * sizeof(block_q8_1));
+        cudaMalloc(&d_x_f, K_val * sizeof(float));
+        cudaMalloc(&d_x, (K_padded / QK8_1) * sizeof(block_q8_1));
         cudaMalloc(&d_y, N_val * sizeof(float));
 
         cudaMemcpy(d_w, w_q.data(), w_q.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_x, x_q.data(), x_q.size() * sizeof(block_q8_1), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_x_f, x_f.data(), K_val * sizeof(float), cudaMemcpyHostToDevice);
 
-        for (auto var : variants) {
+        launch_quantize_f32_to_q8_1(d_x_f, d_x, K_val, 0);
+        cudaMemcpy(x_q.data(), d_x, x_q.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
+
+        // Run Upstream
+        cudaMemset(d_y, 0, N_val * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w, d_x, d_y, N_val, K_val, 0);
+        cudaMemcpy(y_upstream.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
+
+        NumericalErrorStats u_stats = compute_error_stats(y_upstream, y_oracle);
+        if (u_stats.max_abs_err > upstream_max_abs_vs_f64) upstream_max_abs_vs_f64 = u_stats.max_abs_err;
+        if (u_stats.max_rel_err > upstream_max_rel_vs_f64) upstream_max_rel_vs_f64 = u_stats.max_rel_err;
+        if (u_stats.rms_err > upstream_max_rms_vs_f64) upstream_max_rms_vs_f64 = u_stats.rms_err;
+
+        for (auto var : all_variants) {
             total_tests++;
             cudaMemset(d_y, 0, N_val * sizeof(float));
             launch_q4k_q8_mmvq(var, d_w, d_x, d_y, N_val, K_val, 0);
             cudaMemcpy(y_gpu.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
 
-            NumericalErrorStats stats = compute_error_stats(y_gpu, y_oracle);
-            if (stats.max_abs_err > max_observed_abs_err) max_observed_abs_err = stats.max_abs_err;
-            if (stats.max_rel_err > max_observed_rel_err) max_observed_rel_err = stats.max_rel_err;
+            NumericalErrorStats stats_f64 = compute_error_stats(y_gpu, y_oracle);
+            NumericalErrorStats stats_u = compute_diff_stats(y_gpu, y_upstream);
 
-            if (!stats.has_nan && !stats.has_inf && (stats.max_rel_err <= TOL_MAX_REL_ERR || stats.max_abs_err <= TOL_MAX_ABS_ERR)) {
+            if (var != VARIANT_UPSTREAM_MMVQ) {
+                if (stats_f64.max_abs_err > custom_max_abs_vs_f64) custom_max_abs_vs_f64 = stats_f64.max_abs_err;
+                if (stats_f64.max_rel_err > custom_max_rel_vs_f64) custom_max_rel_vs_f64 = stats_f64.max_rel_err;
+                if (stats_u.max_abs_err > custom_max_abs_vs_upstream) custom_max_abs_vs_upstream = stats_u.max_abs_err;
+                if (stats_u.max_rel_err > custom_max_rel_vs_upstream) custom_max_rel_vs_upstream = stats_u.max_rel_err;
+            }
+
+            if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
                 passed_tests++;
             } else {
                 std::cerr << "FAIL: K-edge K=" << K_val << " Variant=" << get_q4k_variant_name(var) << "\n";
@@ -478,50 +481,77 @@ int main(int argc, char ** argv) {
         }
 
         cudaFree(d_w);
+        cudaFree(d_x_f);
         cudaFree(d_x);
         cudaFree(d_y);
     }
-    std::cout << "K-edge coverage tests passed: " << k_values.size() << " K values across " << variants.size() << " variants.\n";
+    std::cout << "K-edge coverage tests passed: " << k_values.size() << " K values across " << all_variants.size() << " variants.\n";
 
     // 3. N-Boundary Coverage Suite
     std::cout << "\n=== Phase 3: N-Boundary Coverage Suite (K=256, various N) ===\n";
     std::vector<int> n_values = {1, 2, 3, 4, 5, 31, 32, 33, 127, 128, 129, 1024, 2560, 4096, 9728};
     for (int N_val : n_values) {
         int K_val = 256;
+        int K_padded = ((K_val + 511) / 512) * 512;
         std::vector<float> w_f(N_val * K_val);
         std::vector<float> x_f(K_val);
         std::vector<block_q4_K> w_q(N_val * (K_val / QK_K));
-        std::vector<block_q8_1> x_q(K_val / QK8_1);
+        std::vector<block_q8_1> x_q(K_padded / QK8_1);
         std::vector<double> y_oracle(N_val);
+        std::vector<float> y_upstream(N_val);
         std::vector<float> y_gpu(N_val);
 
         generate_test_data(w_f, DIST_BOUNDED_PSEUDORANDOM, 500 + N_val);
         generate_test_data(x_f, DIST_BOUNDED_PSEUDORANDOM, 600 + N_val);
-        quantize_row_q4_k_cpu_ref(w_f.data(), w_q.data(), N_val * K_val);
-        quantize_row_q8_1_cpu_ref(x_f.data(), x_q.data(), K_val);
-        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
+
+        for (int n = 0; n < N_val; ++n) {
+            quantize_row_q4_K_upstream_cpu(&w_f[n * K_val], &w_q[n * (K_val / QK_K)], K_val);
+        }
 
         block_q4_K * d_w = nullptr;
+        float * d_x_f = nullptr;
         block_q8_1 * d_x = nullptr;
         float * d_y = nullptr;
         cudaMalloc(&d_w, w_q.size() * sizeof(block_q4_K));
-        cudaMalloc(&d_x, x_q.size() * sizeof(block_q8_1));
+        cudaMalloc(&d_x_f, K_val * sizeof(float));
+        cudaMalloc(&d_x, (K_padded / QK8_1) * sizeof(block_q8_1));
         cudaMalloc(&d_y, N_val * sizeof(float));
 
         cudaMemcpy(d_w, w_q.data(), w_q.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_x, x_q.data(), x_q.size() * sizeof(block_q8_1), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_x_f, x_f.data(), K_val * sizeof(float), cudaMemcpyHostToDevice);
 
-        for (auto var : variants) {
+        launch_quantize_f32_to_q8_1(d_x_f, d_x, K_val, 0);
+        cudaMemcpy(x_q.data(), d_x, x_q.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
+
+        // Run Upstream
+        cudaMemset(d_y, 0, N_val * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w, d_x, d_y, N_val, K_val, 0);
+        cudaMemcpy(y_upstream.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
+
+        NumericalErrorStats u_stats = compute_error_stats(y_upstream, y_oracle);
+        if (u_stats.max_abs_err > upstream_max_abs_vs_f64) upstream_max_abs_vs_f64 = u_stats.max_abs_err;
+        if (u_stats.max_rel_err > upstream_max_rel_vs_f64) upstream_max_rel_vs_f64 = u_stats.max_rel_err;
+        if (u_stats.rms_err > upstream_max_rms_vs_f64) upstream_max_rms_vs_f64 = u_stats.rms_err;
+
+        for (auto var : all_variants) {
             total_tests++;
             cudaMemset(d_y, 0, N_val * sizeof(float));
             launch_q4k_q8_mmvq(var, d_w, d_x, d_y, N_val, K_val, 0);
             cudaMemcpy(y_gpu.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
 
-            NumericalErrorStats stats = compute_error_stats(y_gpu, y_oracle);
-            if (stats.max_abs_err > max_observed_abs_err) max_observed_abs_err = stats.max_abs_err;
-            if (stats.max_rel_err > max_observed_rel_err) max_observed_rel_err = stats.max_rel_err;
+            NumericalErrorStats stats_f64 = compute_error_stats(y_gpu, y_oracle);
+            NumericalErrorStats stats_u = compute_diff_stats(y_gpu, y_upstream);
 
-            if (!stats.has_nan && !stats.has_inf && (stats.max_rel_err <= TOL_MAX_REL_ERR || stats.max_abs_err <= TOL_MAX_ABS_ERR)) {
+            if (var != VARIANT_UPSTREAM_MMVQ) {
+                if (stats_f64.max_abs_err > custom_max_abs_vs_f64) custom_max_abs_vs_f64 = stats_f64.max_abs_err;
+                if (stats_f64.max_rel_err > custom_max_rel_vs_f64) custom_max_rel_vs_f64 = stats_f64.max_rel_err;
+                if (stats_u.max_abs_err > custom_max_abs_vs_upstream) custom_max_abs_vs_upstream = stats_u.max_abs_err;
+                if (stats_u.max_rel_err > custom_max_rel_vs_upstream) custom_max_rel_vs_upstream = stats_u.max_rel_err;
+            }
+
+            if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
                 passed_tests++;
             } else {
                 std::cerr << "FAIL: N-boundary N=" << N_val << " Variant=" << get_q4k_variant_name(var) << "\n";
@@ -529,13 +559,14 @@ int main(int argc, char ** argv) {
         }
 
         cudaFree(d_w);
+        cudaFree(d_x_f);
         cudaFree(d_x);
         cudaFree(d_y);
     }
-    std::cout << "N-boundary tests passed: " << n_values.size() << " N values across " << variants.size() << " variants.\n";
+    std::cout << "N-boundary tests passed: " << n_values.size() << " N values across " << all_variants.size() << " variants.\n";
 
-    // 4. Qwen3-4B Real Shapes Suite
-    std::cout << "\n=== Phase 4: Qwen3-4B Real Model Shapes Coverage Suite ===\n";
+    // 4. Qwen3-Derived Synthetic Shape Suite
+    std::cout << "\n=== Phase 4: Qwen3-Derived Synthetic Shape Suite ===\n";
     struct ShapeDef { std::string name; int N; int K; };
     std::vector<ShapeDef> qwen_shapes = {
         {"attn_q", 4096, 2560},
@@ -546,59 +577,215 @@ int main(int argc, char ** argv) {
     };
 
     for (const auto & s : qwen_shapes) {
+        int K_padded = ((s.K + 511) / 512) * 512;
         std::vector<float> w_f(s.N * s.K);
         std::vector<float> x_f(s.K);
         std::vector<block_q4_K> w_q(s.N * (s.K / QK_K));
-        std::vector<block_q8_1> x_q(s.K / QK8_1);
+        std::vector<block_q8_1> x_q(K_padded / QK8_1);
         std::vector<double> y_oracle(s.N);
+        std::vector<float> y_upstream(s.N);
         std::vector<float> y_gpu(s.N);
 
         generate_test_data(w_f, DIST_BOUNDED_PSEUDORANDOM, 700 + s.N + s.K);
         generate_test_data(x_f, DIST_BOUNDED_PSEUDORANDOM, 800 + s.N + s.K);
-        quantize_row_q4_k_cpu_ref(w_f.data(), w_q.data(), s.N * s.K);
-        quantize_row_q8_1_cpu_ref(x_f.data(), x_q.data(), s.K);
-        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), s.N, s.K);
+
+        for (int n = 0; n < s.N; ++n) {
+            quantize_row_q4_K_upstream_cpu(&w_f[n * s.K], &w_q[n * (s.K / QK_K)], s.K);
+        }
 
         block_q4_K * d_w = nullptr;
+        float * d_x_f = nullptr;
         block_q8_1 * d_x = nullptr;
         float * d_y = nullptr;
         cudaMalloc(&d_w, w_q.size() * sizeof(block_q4_K));
-        cudaMalloc(&d_x, x_q.size() * sizeof(block_q8_1));
+        cudaMalloc(&d_x_f, s.K * sizeof(float));
+        cudaMalloc(&d_x, (K_padded / QK8_1) * sizeof(block_q8_1));
         cudaMalloc(&d_y, s.N * sizeof(float));
 
         cudaMemcpy(d_w, w_q.data(), w_q.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
-        cudaMemcpy(d_x, x_q.data(), x_q.size() * sizeof(block_q8_1), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_x_f, x_f.data(), s.K * sizeof(float), cudaMemcpyHostToDevice);
 
-        for (auto var : variants) {
+        launch_quantize_f32_to_q8_1(d_x_f, d_x, s.K, 0);
+        cudaMemcpy(x_q.data(), d_x, x_q.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+        independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), s.N, s.K);
+
+        // Run Upstream
+        cudaMemset(d_y, 0, s.N * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w, d_x, d_y, s.N, s.K, 0);
+        cudaMemcpy(y_upstream.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
+
+        NumericalErrorStats u_stats = compute_error_stats(y_upstream, y_oracle);
+        if (u_stats.max_abs_err > upstream_max_abs_vs_f64) upstream_max_abs_vs_f64 = u_stats.max_abs_err;
+        if (u_stats.max_rel_err > upstream_max_rel_vs_f64) upstream_max_rel_vs_f64 = u_stats.max_rel_err;
+        if (u_stats.rms_err > upstream_max_rms_vs_f64) upstream_max_rms_vs_f64 = u_stats.rms_err;
+
+        for (auto var : all_variants) {
             total_tests++;
             cudaMemset(d_y, 0, s.N * sizeof(float));
             launch_q4k_q8_mmvq(var, d_w, d_x, d_y, s.N, s.K, 0);
             cudaMemcpy(y_gpu.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
 
-            NumericalErrorStats stats = compute_error_stats(y_gpu, y_oracle);
-            if (stats.max_abs_err > max_observed_abs_err) max_observed_abs_err = stats.max_abs_err;
-            if (stats.max_rel_err > max_observed_rel_err) max_observed_rel_err = stats.max_rel_err;
+            NumericalErrorStats stats_f64 = compute_error_stats(y_gpu, y_oracle);
+            NumericalErrorStats stats_u = compute_diff_stats(y_gpu, y_upstream);
 
-            if (!stats.has_nan && !stats.has_inf && (stats.max_rel_err <= TOL_MAX_REL_ERR || stats.max_abs_err <= TOL_MAX_ABS_ERR)) {
+            if (var != VARIANT_UPSTREAM_MMVQ) {
+                if (stats_f64.max_abs_err > custom_max_abs_vs_f64) custom_max_abs_vs_f64 = stats_f64.max_abs_err;
+                if (stats_f64.max_rel_err > custom_max_rel_vs_f64) custom_max_rel_vs_f64 = stats_f64.max_rel_err;
+                if (stats_u.max_abs_err > custom_max_abs_vs_upstream) custom_max_abs_vs_upstream = stats_u.max_abs_err;
+                if (stats_u.max_rel_err > custom_max_rel_vs_upstream) custom_max_rel_vs_upstream = stats_u.max_rel_err;
+            }
+
+            if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
                 passed_tests++;
                 std::cout << "PASS: Shape=" << std::left << std::setw(14) << s.name
                           << " | Variant=" << std::setw(30) << get_q4k_variant_name(var)
-                          << " | MaxRelErr=" << std::scientific << std::setprecision(2) << stats.max_rel_err
-                          << " | MaxAbsErr=" << stats.max_abs_err << "\n";
+                          << " | RelVsF64=" << std::scientific << std::setprecision(2) << stats_f64.max_rel_err
+                          << " | AbsVsU=" << stats_u.max_abs_err << "\n";
             } else {
                 std::cerr << "FAIL: Shape=" << s.name << " Variant=" << get_q4k_variant_name(var) << "\n";
             }
         }
 
         cudaFree(d_w);
+        cudaFree(d_x_f);
         cudaFree(d_x);
         cudaFree(d_y);
     }
 
+    // 5. Real Model-Byte Sanity Suite
+    std::cout << "\n=== Phase 5: Real Model-Byte Sanity Suite (from " << model_path << ") ===\n";
+    struct gguf_init_params gparams = { false, nullptr };
+    struct gguf_context * gctx = gguf_init_from_file(model_path.c_str(), gparams);
+    if (!gctx) {
+        std::cerr << "WARNING: Could not open GGUF model file for real-byte sanity check at: " << model_path << "\n";
+    } else {
+        FILE * gf = fopen(model_path.c_str(), "rb");
+        if (gf) {
+            size_t data_offset = gguf_get_data_offset(gctx);
+            const char * real_tensors[] = {
+                "blk.0.attn_q.weight",
+                "blk.0.attn_output.weight",
+                "blk.0.ffn_gate.weight",
+                "blk.0.ffn_up.weight"
+            };
+
+            for (const char * tname : real_tensors) {
+                int tid = gguf_find_tensor(gctx, tname);
+                if (tid < 0) continue;
+
+                const int64_t * ne = gguf_get_tensor_ne(gctx, tid);
+                int64_t K_real = ne[0];
+                int64_t N_real = std::min((int64_t)16, ne[1]); // Test 16 actual model rows
+                int64_t K_padded_real = ((K_real + 511) / 512) * 512;
+                size_t tensor_offset = gguf_get_tensor_offset(gctx, tid);
+
+                std::vector<block_q4_K> w_real(N_real * (K_real / QK_K));
+                std::vector<float> x_real_f32(K_real);
+                std::vector<block_q8_1> x_real_q8(K_padded_real / QK8_1);
+                std::vector<double> y_real_oracle(N_real);
+                std::vector<float> y_real_u(N_real);
+                std::vector<float> y_real_gpu(N_real);
+
+                fseek(gf, data_offset + tensor_offset, SEEK_SET);
+                fread(w_real.data(), sizeof(block_q4_K), w_real.size(), gf);
+
+                generate_test_data(x_real_f32, DIST_BOUNDED_PSEUDORANDOM, 999);
+
+                block_q4_K * d_w_r = nullptr;
+                float * d_x_r_f = nullptr;
+                block_q8_1 * d_x_r_q = nullptr;
+                float * d_y_r = nullptr;
+
+                cudaMalloc(&d_w_r, w_real.size() * sizeof(block_q4_K));
+                cudaMalloc(&d_x_r_f, K_real * sizeof(float));
+                cudaMalloc(&d_x_r_q, (K_padded_real / QK8_1) * sizeof(block_q8_1));
+                cudaMalloc(&d_y_r, N_real * sizeof(float));
+
+                cudaMemcpy(d_w_r, w_real.data(), w_real.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
+                cudaMemcpy(d_x_r_f, x_real_f32.data(), K_real * sizeof(float), cudaMemcpyHostToDevice);
+
+                launch_quantize_f32_to_q8_1(d_x_r_f, d_x_r_q, K_real, 0);
+                cudaMemcpy(x_real_q8.data(), d_x_r_q, x_real_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+                independent_q4k_q8_oracle_f64(w_real.data(), x_real_q8.data(), y_real_oracle.data(), N_real, K_real);
+
+                // Run Upstream
+                cudaMemset(d_y_r, 0, N_real * sizeof(float));
+                launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
+                cudaMemcpy(y_real_u.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
+
+                for (auto var : all_variants) {
+                    total_tests++;
+                    cudaMemset(d_y_r, 0, N_real * sizeof(float));
+                    launch_q4k_q8_mmvq(var, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
+                    cudaMemcpy(y_real_gpu.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
+
+                    NumericalErrorStats stats_f64 = compute_error_stats(y_real_gpu, y_real_oracle);
+                    NumericalErrorStats stats_u = compute_diff_stats(y_real_gpu, y_real_u);
+
+                    if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
+                        passed_tests++;
+                        std::cout << "PASS: RealTensor=" << std::left << std::setw(26) << tname
+                                  << " | Variant=" << std::setw(30) << get_q4k_variant_name(var)
+                                  << " | RelVsF64=" << std::scientific << std::setprecision(2) << stats_f64.max_rel_err
+                                  << " | AbsVsU=" << stats_u.max_abs_err << "\n";
+                    } else {
+                        std::cerr << "FAIL: RealTensor=" << tname << " Variant=" << get_q4k_variant_name(var) << "\n";
+                    }
+                }
+
+                cudaFree(d_w_r);
+                cudaFree(d_x_r_f);
+                cudaFree(d_x_r_q);
+                cudaFree(d_y_r);
+            }
+            fclose(gf);
+        }
+        gguf_free(gctx);
+    }
+
+    // Step B: Write frozen numerical envelope JSON
+    std::ofstream env_f(envelope_output);
+    if (env_f.is_open()) {
+        env_f << "{\n";
+        env_f << "  \"device\": {\n";
+        env_f << "    \"name\": \"" << prop.name << "\",\n";
+        env_f << "    \"compute_capability\": \"" << prop.major << "." << prop.minor << "\",\n";
+        env_f << "    \"pci_bus_id\": \"" << assert_pci << "\",\n";
+        env_f << "    \"uuid\": \"" << assert_uuid << "\"\n";
+        env_f << "  },\n";
+        env_f << "  \"upstream_vs_f64_oracle\": {\n";
+        env_f << "    \"max_abs_error\": " << upstream_max_abs_vs_f64 << ",\n";
+        env_f << "    \"max_rel_error\": " << upstream_max_rel_vs_f64 << ",\n";
+        env_f << "    \"max_rms_error\": " << upstream_max_rms_vs_f64 << "\n";
+        env_f << "  },\n";
+        env_f << "  \"frozen_acceptance_envelope\": {\n";
+        env_f << "    \"max_rel_tolerance\": " << TOL_MAX_REL_ERR << ",\n";
+        env_f << "    \"max_abs_tolerance\": " << TOL_MAX_ABS_ERR << ",\n";
+        env_f << "    \"justification\": \"Frozen based on measured upstream vs F64 error bounds plus FP16 rounding margin\"\n";
+        env_f << "  },\n";
+        env_f << "  \"custom_variants_vs_upstream\": {\n";
+        env_f << "    \"max_abs_diff_vs_upstream\": " << custom_max_abs_vs_upstream << ",\n";
+        env_f << "    \"max_rel_diff_vs_upstream\": " << custom_max_rel_vs_upstream << "\n";
+        env_f << "  },\n";
+        env_f << "  \"custom_variants_vs_f64_oracle\": {\n";
+        env_f << "    \"max_abs_error\": " << custom_max_abs_vs_f64 << ",\n";
+        env_f << "    \"max_rel_error\": " << custom_max_rel_vs_f64 << "\n";
+        env_f << "  },\n";
+        env_f << "  \"total_tests\": " << total_tests << ",\n";
+        env_f << "  \"passed_tests\": " << passed_tests << "\n";
+        env_f << "}\n";
+        env_f.close();
+        std::cout << "Wrote frozen numerical envelope to: " << envelope_output << "\n";
+    }
+
     std::cout << "\n============================================================\n";
     std::cout << "Q4_K x Q8_1 Test Summary: " << passed_tests << " / " << total_tests << " Tests PASSED\n";
-    std::cout << "Max Observed Relative Error vs F64: " << std::scientific << std::setprecision(4) << max_observed_rel_err << "\n";
-    std::cout << "Max Observed Absolute Error vs F64: " << std::scientific << std::setprecision(4) << max_observed_abs_err << "\n";
+    std::cout << "Upstream vs F64 Max Rel Error: " << std::scientific << std::setprecision(4) << upstream_max_rel_vs_f64 << "\n";
+    std::cout << "Upstream vs F64 Max Abs Error: " << std::scientific << std::setprecision(4) << upstream_max_abs_vs_f64 << "\n";
+    std::cout << "Custom vs Upstream Max Abs Diff: " << std::scientific << std::setprecision(4) << custom_max_abs_vs_upstream << "\n";
+    std::cout << "Custom vs F64 Max Rel Error:   " << std::scientific << std::setprecision(4) << custom_max_rel_vs_f64 << "\n";
     std::cout << "============================================================\n";
 
     return (passed_tests == total_tests) ? 0 : 1;

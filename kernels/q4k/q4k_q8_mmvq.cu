@@ -1,4 +1,5 @@
 #include "q4k_q8_mmvq.cuh"
+#include "upstream_adapter.cuh"
 #include <cstdio>
 #include <cstdlib>
 #include <stdexcept>
@@ -89,7 +90,7 @@ static __device__ __forceinline__ float vec_dot_q4_K_q8_1(
 }
 
 // =============================================================================
-// Variant A — Custom 4-Warp Control Kernel
+// Variant A — Custom 4-Warp Control Kernel (Frozen Source)
 // (128 threads/block = 4 warps/row, 1 output row per block)
 // =============================================================================
 __global__ void q4k_q8_mmvq_4warp_kernel(
@@ -144,7 +145,7 @@ __global__ void q4k_q8_mmvq_4warp_kernel(
 }
 
 // =============================================================================
-// Variant B — Custom 2-Warp per Row Kernel
+// Variant B — Custom 2-Warp per Row Kernel (Frozen Source)
 // (128 threads/block = 2 independent 2-warp groups = 2 output rows per block)
 // =============================================================================
 __global__ void q4k_q8_mmvq_2warp_kernel(
@@ -195,7 +196,7 @@ __global__ void q4k_q8_mmvq_2warp_kernel(
 }
 
 // =============================================================================
-// Variant C — Custom 1-Warp per Row Kernel
+// Variant C — Custom 1-Warp per Row Kernel (Frozen Source)
 // (128 threads/block = 4 independent warps = 4 output rows per block, zero smem)
 // =============================================================================
 __global__ void q4k_q8_mmvq_1warp_kernel(
@@ -236,9 +237,10 @@ __global__ void q4k_q8_mmvq_1warp_kernel(
 }
 
 // =============================================================================
-// Upstream CUDA Activation Quantization (F32 -> Q8_1)
+// Standalone Custom Reference Activation Quantizer
+// (Retained for development/smoke checks only, NOT used for canonical Mode 2)
 // =============================================================================
-__global__ void quantize_q8_1_standalone_kernel(
+__global__ void CUSTOM_REFERENCE_Q8_1_QUANTIZER(
     const float * __restrict__ x,
     block_q8_1 * __restrict__ y,
     const int k
@@ -272,31 +274,6 @@ __global__ void quantize_q8_1_standalone_kernel(
     y_block->s = __float2half(d * (float)sum_qs);
 }
 
-// Forward declaration of upstream MMVQ operator from libggml-cuda
-extern "C" void ggml_cuda_op_mul_mat_vec_q_dispatch_raw(
-    const void * src0_q4k,
-    const void * src1_q81,
-    float * dst_f32,
-    int64_t ne00,
-    int64_t row_diff,
-    cudaStream_t stream
-);
-
-// Fallback exact upstream MMVQ launcher
-void launch_upstream_mmvq_internal(
-    const block_q4_K * d_w,
-    const block_q8_1 * d_x,
-    float * d_y,
-    int N,
-    int K,
-    cudaStream_t stream
-) {
-    // Upstream 4-warp generic parameter table launch configuration
-    dim3 block_dims(32, 4);
-    dim3 grid_dims(N, 1, 1);
-    q4k_q8_mmvq_4warp_kernel<<<grid_dims, block_dims, 0, stream>>>(d_w, d_x, d_y, N, K);
-}
-
 void launch_q4k_q8_mmvq(
     Q4KVariant variant,
     const block_q4_K * d_w,
@@ -312,7 +289,15 @@ void launch_q4k_q8_mmvq(
 
     switch (variant) {
         case VARIANT_UPSTREAM_MMVQ: {
-            launch_upstream_mmvq_internal(d_w, d_x, d_y, N, K, stream);
+            // Invokes actual compiled pinned llama.cpp MMVQ in libggml-cuda.so
+            launch_pinned_upstream_mmvq(
+                (const void *)d_w,
+                (const void *)d_x,
+                d_y,
+                N,
+                K,
+                stream
+            );
             break;
         }
         case VARIANT_4WARP_CONTROL: {
@@ -347,11 +332,24 @@ void launch_quantize_f32_to_q8_1(
     if (K % QK8_1 != 0) {
         throw std::invalid_argument("K must be a multiple of QK8_1=32");
     }
+    // Invokes actual compiled pinned llama.cpp CUDA quantizer in libggml-cuda.so
+    launch_pinned_upstream_q8_1_quantize(d_x_f32, (void *)d_x_q8, K, stream);
+}
+
+void launch_custom_reference_q8_1_quantizer(
+    const float * d_x_f32,
+    block_q8_1 * d_x_q8,
+    int K,
+    cudaStream_t stream
+) {
+    if (K % QK8_1 != 0) {
+        throw std::invalid_argument("K must be a multiple of QK8_1=32");
+    }
     const int num_blocks = K / QK8_1;
     const int threads_per_block = 256;
     const int grid_blocks = (num_blocks + threads_per_block - 1) / threads_per_block;
 
-    quantize_q8_1_standalone_kernel<<<grid_blocks, threads_per_block, 0, stream>>>(d_x_f32, d_x_q8, K);
+    CUSTOM_REFERENCE_Q8_1_QUANTIZER<<<grid_blocks, threads_per_block, 0, stream>>>(d_x_f32, d_x_q8, K);
 }
 
 void launch_q4k_q8_combined_pipeline(
@@ -364,13 +362,14 @@ void launch_q4k_q8_combined_pipeline(
     int K,
     cudaStream_t stream
 ) {
+    // Canonical Mode 2 pipeline: Exact pinned CUDA activation quantization + selected multiply
     launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8_scratch, K, stream);
     launch_q4k_q8_mmvq(variant, d_w, d_x_q8_scratch, d_y, N, K, stream);
 }
 
 const char * get_q4k_variant_name(Q4KVariant variant) {
     switch (variant) {
-        case VARIANT_UPSTREAM_MMVQ: return "Variant U: Exact Pinned Upstream MMVQ (4-Warp Generic)";
+        case VARIANT_UPSTREAM_MMVQ: return "Variant U: Exact Pinned Upstream MMVQ";
         case VARIANT_4WARP_CONTROL: return "Variant A: Custom 4-Warp Control (1 Row/Block)";
         case VARIANT_2WARP_SPLIT:   return "Variant B: Custom 2-Warp Split (2 Rows/Block)";
         case VARIANT_1WARP_ROW:     return "Variant C: Custom 1-Warp Row (4 Rows/Block, Zero SMem)";

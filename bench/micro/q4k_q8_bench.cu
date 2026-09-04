@@ -1,4 +1,5 @@
 #include "kernels/q4k/q4k_q8_mmvq.cuh"
+#include "kernels/q4k/upstream_adapter.cuh"
 #include "kernels/smoke/smoke.h"
 #include <iostream>
 #include <vector>
@@ -61,64 +62,59 @@ static inline void get_scale_min_k4(int j, const uint8_t * q, uint8_t * d, uint8
     }
 }
 
-static inline void set_scale_min_k4(int j, uint8_t d, uint8_t m, uint8_t * q) {
-    if (j < 4) {
-        q[j]     = (q[j]     & 0xC0) | (d & 0x3F);
-        q[j + 4] = (q[j + 4] & 0xC0) | (m & 0x3F);
-    } else {
-        q[j - 4] = (q[j - 4] & 0x3F) | ((d & 0x30) << 2);
-        q[j - 0] = (q[j - 0] & 0x3F) | ((m & 0x30) << 2);
-        q[j + 4] = (d & 0x0F) | ((m & 0x0F) << 4);
-    }
-}
+// Independent Reference: High-precision double oracle directly from quantized blocks
+void independent_q4k_q8_oracle_f64(
+    const block_q4_K * w_q4,
+    const block_q8_1 * x_q8,
+    double * y_f64,
+    int N,
+    int K
+) {
+    const int blocks_per_row = K / QK_K;
+    for (int n = 0; n < N; ++n) {
+        double row_sum = 0.0;
+        const block_q4_K * row_w = w_q4 + n * blocks_per_row;
 
-// Canonical CPU Quantizers for benchmarking
-void quantize_q4k_bench(const float * x, block_q4_K * y, int k) {
-    const int nb = k / QK_K;
-    for (int i = 0; i < nb; ++i) {
-        const float * xb = x + i * QK_K;
-        block_q4_K * yb = y + i;
+        for (int b = 0; b < blocks_per_row; ++b) {
+            const block_q4_K * bq4 = row_w + b;
+            const block_q8_1 * bq8_base = x_q8 + b * 8;
 
-        float max_val = -1e30f;
-        float min_val = 1e30f;
-        for (int j = 0; j < QK_K; ++j) {
-            float v = xb[j];
-            if (v > max_val) max_val = v;
-            if (v < min_val) min_val = v;
-        }
+            float d4 = __half2float(bq4->d);
+            float dmin4 = __half2float(bq4->dmin);
 
-        float d = (max_val > min_val) ? (max_val - min_val) / 15.0f : 0.0f;
-        float min_block = (max_val > min_val) ? min_val : 0.0f;
-        yb->d = __float2half(d);
-        yb->dmin = __float2half(min_block);
+            const uint8_t * q = bq4->qs;
+            int is = 0;
 
-        memset(yb->scales, 0, K_SCALE_SIZE);
-        for (int j = 0; j < 8; ++j) {
-            set_scale_min_k4(j, 1, 1, yb->scales);
-        }
+            for (int j = 0; j < QK_K; j += 64) {
+                uint8_t sc0, m0, sc1, m1;
+                get_scale_min_k4(is + 0, bq4->scales, &sc0, &m0);
+                get_scale_min_k4(is + 1, bq4->scales, &sc1, &m1);
 
-        uint8_t L[QK_K];
-        float id = d > 0.0f ? 1.0f / d : 0.0f;
-        for (int j = 0; j < 8; ++j) {
-            uint8_t sc, m;
-            get_scale_min_k4(j, yb->scales, &sc, &m);
-            float d_sub = d * (float)sc;
-            float m_sub = min_block * (float)m;
-            float id_sub = d_sub > 0.0f ? 1.0f / d_sub : 0.0f;
-            for (int ii = 0; ii < 32; ++ii) {
-                float v = (xb[32 * j + ii] + m_sub) * id_sub;
-                int l = std::min(15, std::max(0, (int)std::round(v)));
-                L[32 * j + ii] = (uint8_t)l;
+                double d1 = (double)d4 * (double)sc0;
+                double m_val1 = (double)dmin4 * (double)m0;
+                double d2 = (double)d4 * (double)sc1;
+                double m_val2 = (double)dmin4 * (double)m1;
+
+                const block_q8_1 * bq8_0 = bq8_base + is + 0;
+                const block_q8_1 * bq8_1 = bq8_base + is + 1;
+                double d8_0 = (double)__half2float(bq8_0->d);
+                double d8_1 = (double)__half2float(bq8_1->d);
+
+                for (int l = 0; l < 32; ++l) {
+                    int q0 = q[l] & 0xF;
+                    int q1 = (q[l] >> 4) & 0xF;
+                    double w0 = d1 * (double)q0 - m_val1;
+                    double w1 = d2 * (double)q1 - m_val2;
+                    double x0 = d8_0 * (double)bq8_0->qs[l];
+                    double x1 = d8_1 * (double)bq8_1->qs[l];
+                    row_sum += w0 * x0 + w1 * x1;
+                }
+
+                q += 32;
+                is += 2;
             }
         }
-
-        uint8_t * q = yb->qs;
-        for (int j = 0; j < QK_K; j += 64) {
-            for (int l = 0; l < 32; ++l) {
-                q[l] = L[j + l] | (L[j + l + 32] << 4);
-            }
-            q += 32;
-        }
+        y_f64[n] = row_sum;
     }
 }
 
@@ -223,17 +219,24 @@ int main(int argc, char ** argv) {
     for (const auto & s : shapes) {
         std::cout << "Benchmarking shape: " << s.shape_name << " (N=" << s.N << ", K=" << s.K << ")...\n";
 
+        int K_padded = ((s.K + 511) / 512) * 512;
         std::vector<float> h_w_f(s.N * s.K);
         std::vector<float> h_x_f(s.K);
         std::vector<block_q4_K> h_w_q4(s.N * (s.K / QK_K));
-        std::vector<block_q8_1> h_x_q8(s.K / QK8_1);
+        std::vector<block_q8_1> h_x_q8(K_padded / QK8_1);
+        std::vector<double> h_y_oracle(s.N);
+        std::vector<float> h_y_upstream(s.N);
+        std::vector<float> h_y_check(s.N);
 
         std::mt19937 rng(42 + s.N + s.K);
         std::uniform_real_distribution<float> dis(-1.0f, 1.0f);
         for (size_t i = 0; i < h_w_f.size(); ++i) h_w_f[i] = dis(rng);
         for (size_t i = 0; i < h_x_f.size(); ++i) h_x_f[i] = dis(rng);
 
-        quantize_q4k_bench(h_w_f.data(), h_w_q4.data(), s.N * s.K);
+        // Exact pinned CPU Q4_K quantizer
+        for (int n = 0; n < s.N; ++n) {
+            quantize_row_q4_K_upstream_cpu(&h_w_f[n * s.K], &h_w_q4[n * (s.K / QK_K)], s.K);
+        }
 
         block_q4_K * d_w_q4 = nullptr;
         block_q8_1 * d_x_q8 = nullptr;
@@ -241,18 +244,27 @@ int main(int argc, char ** argv) {
         float * d_y = nullptr;
 
         cudaMalloc(&d_w_q4, h_w_q4.size() * sizeof(block_q4_K));
-        cudaMalloc(&d_x_q8, (s.K / QK8_1) * sizeof(block_q8_1));
+        cudaMalloc(&d_x_q8, (K_padded / QK8_1) * sizeof(block_q8_1));
         cudaMalloc(&d_x_f32, s.K * sizeof(float));
         cudaMalloc(&d_y, s.N * sizeof(float));
 
         cudaMemcpy(d_w_q4, h_w_q4.data(), h_w_q4.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
         cudaMemcpy(d_x_f32, h_x_f.data(), s.K * sizeof(float), cudaMemcpyHostToDevice);
 
-        // Pre-quantize activation vector on GPU for multiply-only mode
+        // Pre-quantize activation vector on GPU via exact pinned CUDA quantizer
         launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, s.K, 0);
         cudaDeviceSynchronize();
+        cudaMemcpy(h_x_q8.data(), d_x_q8, h_x_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
 
-        // Measure standalone quantization latency
+        // Compute independent F64 CPU oracle
+        independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), s.N, s.K);
+
+        // Measure reference Variant U output on GPU for direct cross-variant error checking
+        cudaMemset(d_y, 0, s.N * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
+        cudaMemcpy(h_y_upstream.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
+
+        // Measure standalone quantization latency (Mode 2 quantizer component)
         std::vector<float> quantize_only_lats(timed_iters);
         for (int w = 0; w < warmup_iters; ++w) {
             launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, s.K, 0);
@@ -295,6 +307,34 @@ int main(int argc, char ** argv) {
             }
             TimingStats mul_stats = compute_timing_stats(mul_lats);
 
+            // Copy output to host and verify correctness live against oracle & upstream
+            cudaMemcpy(h_y_check.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
+
+            double max_abs_vs_oracle = 0.0;
+            double max_rel_vs_oracle = 0.0;
+            double max_abs_vs_upstream = 0.0;
+            bool has_nan = false;
+            bool has_inf = false;
+
+            for (int n = 0; n < s.N; ++n) {
+                float act = h_y_check[n];
+                double exp = h_y_oracle[n];
+                float u_val = h_y_upstream[n];
+
+                if (std::isnan(act)) has_nan = true;
+                if (std::isinf(act)) has_inf = true;
+
+                double abs_err_orc = std::abs((double)act - exp);
+                double rel_err_orc = abs_err_orc / std::max(1e-5, std::abs(exp));
+                double abs_err_u = std::abs((double)act - (double)u_val);
+
+                if (abs_err_orc > max_abs_vs_oracle) max_abs_vs_oracle = abs_err_orc;
+                if (rel_err_orc > max_rel_vs_oracle) max_rel_vs_oracle = rel_err_orc;
+                if (abs_err_u > max_abs_vs_upstream) max_abs_vs_upstream = abs_err_u;
+            }
+
+            bool is_verified = (!has_nan && !has_inf && (max_rel_vs_oracle <= 5e-3 || max_abs_vs_oracle <= 0.05));
+
             // Timing Mode 2: Combined Quantize + Multiply Pipeline
             for (int w = 0; w < warmup_iters; ++w) {
                 launch_q4k_q8_combined_pipeline(var, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
@@ -320,7 +360,8 @@ int main(int argc, char ** argv) {
                       << " | Mul Med: " << std::fixed << std::setprecision(2) << std::setw(7) << mul_stats.median_us << " us"
                       << " | Comb Med: " << std::setw(7) << comb_stats.median_us << " us"
                       << " | GMAC/s: " << std::setw(7) << gmac_s
-                      << " | Eff: " << std::setw(6) << eff_gbps << " GiB/s\n";
+                      << " | Eff: " << std::setw(6) << eff_gbps << " GiB/s"
+                      << " | Verified: " << (is_verified ? "PASS" : "FAIL") << "\n";
 
             if (!first_json_entry) json_results << ",\n";
             first_json_entry = false;
@@ -348,6 +389,13 @@ int main(int argc, char ** argv) {
                          << "      \"combined_max_us\": " << comb_stats.max_us << ",\n"
                          << "      \"combined_stddev_us\": " << comb_stats.stddev_us << ",\n"
                          << "      \"combined_spread_us\": " << comb_stats.spread_us << ",\n"
+                         << "      \"verification\": {\n"
+                         << "        \"verified\": " << (is_verified ? "true" : "false") << ",\n"
+                         << "        \"max_abs_vs_oracle\": " << max_abs_vs_oracle << ",\n"
+                         << "        \"max_rel_vs_oracle\": " << max_rel_vs_oracle << ",\n"
+                         << "        \"max_abs_vs_upstream\": " << max_abs_vs_upstream << "\n"
+                         << "      },\n"
+                         << "      \"verified_correct\": " << (is_verified ? "true" : "false") << ",\n"
                          << "      \"latencies_us\": [";
             for (size_t li = 0; li < mul_stats.latencies_us.size(); ++li) {
                 if (li > 0) json_results << ", ";
@@ -359,8 +407,7 @@ int main(int argc, char ** argv) {
                 if (li > 0) json_results << ", ";
                 json_results << std::setprecision(3) << comb_stats.latencies_us[li];
             }
-            json_results << "],\n"
-                         << "      \"verified_correct\": true\n"
+            json_results << "]\n"
                          << "    }";
         }
 
