@@ -5,41 +5,106 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BUILD_DIR="${REPO_DIR}/build"
 RESULTS_DIR="${REPO_DIR}/bench/results/m3"
-PRE_REPAIR_DIR="${RESULTS_DIR}/pre-repair"
+PRE_M3R2_DIR="${RESULTS_DIR}/pre-m3r2"
 EVIDENCE_DIR="${REPO_DIR}/docs/evidence"
-LLAMA_LIB_DIR="${REPO_DIR}/.deps/llama.cpp/build-default/bin"
+DEPS_DIR="${REPO_DIR}/.deps"
+LLAMA_DIR="${DEPS_DIR}/llama.cpp"
+LLAMA_LIB_DIR="${LLAMA_DIR}/build-default/bin"
 MODEL_PATH="${REPO_DIR}/models/Qwen3-4B-Q4_K_M.gguf"
 
+PINNED_LLAMA_COMMIT="169e4a7ff201e666c2325bcd35afb64573e39d09"
 PASCAL_UUID="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
 PASCAL_PCI="0000:03:00.0"
 TURING_UUID="GPU-8a043791-359d-1df4-9353-38c5bc98e5dd"
 TURING_PCI="0000:81:00.0"
 
-mkdir -p "${RESULTS_DIR}" "${PRE_REPAIR_DIR}" "${EVIDENCE_DIR}"
+mkdir -p "${RESULTS_DIR}" "${PRE_M3R2_DIR}" "${EVIDENCE_DIR}"
 
 echo "======================================================================"
-echo "Milestone M3R1: Pascal Q4_K x Q8_1 MMVQ Benchmark & Qualification Suite"
+echo "Milestone M3R2: Pascal Q4_K x Q8_1 Benchmark & Qualification Suite"
 echo "======================================================================"
 
-# Step 0: Preserve previous 8f0290d evidence if present
-if [[ -f "${RESULTS_DIR}/pascal-q4k-bench.json" ]] && [[ ! -f "${PRE_REPAIR_DIR}/pascal-q4k-bench.json" ]]; then
-    echo "[0/7] Preserving pre-repair 8f0290d benchmark evidence in ${PRE_REPAIR_DIR}..."
-    cp "${RESULTS_DIR}/"*.json "${PRE_REPAIR_DIR}/" 2>/dev/null || true
-    cp "${RESULTS_DIR}/"*.csv "${PRE_REPAIR_DIR}/" 2>/dev/null || true
+# Step 0: Verify Pinned llama.cpp Repository Integrity
+echo "[0/9] Verifying mandatory pinned llama.cpp repository..."
+if [[ ! -d "${LLAMA_DIR}" ]] || [[ ! -d "${LLAMA_DIR}/.git" ]]; then
+    echo "FATAL: Pinned llama.cpp directory does not exist at ${LLAMA_DIR}!" >&2
+    exit 1
 fi
 
-# Step 1: Ensure build is up to date
-echo "[1/7] Building all M3R1 targets with pinned ggml-cuda linking..."
-cd "${BUILD_DIR}"
-make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m3_occupancy
+OBS_LLAMA_SHA=$(git -C "${LLAMA_DIR}" rev-parse HEAD)
+if [[ "${OBS_LLAMA_SHA}" != "${PINNED_LLAMA_COMMIT}" ]]; then
+    echo "FATAL: llama.cpp commit mismatch! Expected ${PINNED_LLAMA_COMMIT}, got ${OBS_LLAMA_SHA}" >&2
+    exit 1
+fi
 
-# Step 2: Dump theoretical occupancy and resource usage evidence
-echo "[2/7] Generating occupancy and resource usage evidence..."
+if ! git -C "${LLAMA_DIR}" diff-index --quiet HEAD --; then
+    echo "FATAL: llama.cpp worktree has uncommitted modifications!" >&2
+    git -C "${LLAMA_DIR}" status --short >&2
+    exit 1
+fi
+echo "  Pinned llama.cpp verified: ${OBS_LLAMA_SHA} (clean worktree)."
+
+# Step 1: Preserve previous 2e28b42 evidence
+if [[ -f "${RESULTS_DIR}/pascal-q4k-bench.json" ]] && [[ ! -f "${PRE_M3R2_DIR}/pascal-q4k-bench.json" ]]; then
+    echo "[1/9] Preserving pre-m3r2 2e28b42 benchmark evidence in ${PRE_M3R2_DIR}..."
+    cp "${RESULTS_DIR}/"*.json "${PRE_M3R2_DIR}/" 2>/dev/null || true
+    cp "${RESULTS_DIR}/"*.csv "${PRE_M3R2_DIR}/" 2>/dev/null || true
+fi
+
+# Step 2: Rebuild Pinned llama.cpp Libraries and Record Provenance
+echo "[2/9] Rebuilding pinned upstream libraries and recording provenance..."
+source "${REPO_DIR}/tools/setup-cuda-compat.sh"
+COMPAT_INC="${REPO_DIR}/.cuda_compat/include"
+NVCC_BIN="$(which nvcc 2>/dev/null || echo /usr/local/cuda-12.9/bin/nvcc)"
+
+mkdir -p "${LLAMA_DIR}/build-default"
+CUDAFLAGS="-I${COMPAT_INC} -Wno-deprecated-gpu-targets" \
+cmake -S "${LLAMA_DIR}" -B "${LLAMA_DIR}/build-default" \
+    -DGGML_CUDA=ON \
+    -DCMAKE_CUDA_ARCHITECTURES="61;75" \
+    -DCMAKE_CUDA_COMPILER="${NVCC_BIN}" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DGGML_CUDA_FORCE_MMQ=OFF \
+    -DGGML_CUDA_FORCE_CUBLAS=OFF
+
+cmake --build "${LLAMA_DIR}/build-default" --config Release --target ggml-cuda ggml-base ggml llama-bench llama-cli --parallel "$(nproc)"
+
+# Generate library provenance evidence
+PROV_FILE="${EVIDENCE_DIR}/m3r2-upstream-library-provenance.txt"
+{
+    echo "=== Milestone M3R2 Upstream Library Provenance ==="
+    echo "Generated: $(date -u)"
+    echo "Pinned llama.cpp Source SHA: ${PINNED_LLAMA_COMMIT}"
+    echo "Worktree Status: Clean (git diff-index --quiet HEAD -- returned 0)"
+    echo "Build Command: cmake -S ${LLAMA_DIR} -B ${LLAMA_DIR}/build-default -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES=\"61;75\" -DCMAKE_BUILD_TYPE=Release"
+    echo ""
+    echo "--- Compiled Dynamic Libraries & SHA256 ---"
+    for libname in libggml-cuda.so libggml-base.so libggml.so; do
+        target_path="${LLAMA_LIB_DIR}/${libname}"
+        real_path=$(readlink -f "${target_path}" || echo "${target_path}")
+        sha=$(sha256sum "${real_path}" | awk '{print $1}')
+        echo "Library: ${libname}"
+        echo "  Symlink: ${target_path}"
+        echo "  Real Path: ${real_path}"
+        echo "  SHA256: ${sha}"
+    done
+} > "${PROV_FILE}"
+echo "  Wrote library provenance: ${PROV_FILE}"
+
+# Step 3: Build M3 targets
+echo "[3/9] Building all M3R2 targets with real pinned ggml-cuda linking..."
+mkdir -p "${BUILD_DIR}"
+cd "${BUILD_DIR}"
+cmake "${REPO_DIR}"
+make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m3_occupancy legacy_q4k
+
+# Step 4: Dump theoretical occupancy and resource usage evidence
+echo "[4/9] Generating occupancy and resource usage evidence..."
 "${BUILD_DIR}/dump_m3_occupancy" > "${EVIDENCE_DIR}/m3-resource-usage.txt"
 echo "  Wrote ${EVIDENCE_DIR}/m3-resource-usage.txt"
 
-# Step 3: Extract SASS disassembly evidence
-echo "[3/7] Extracting SASS disassembly evidence..."
+# Step 5: Extract SASS disassembly evidence
+echo "[5/9] Extracting SASS disassembly evidence..."
 CUOBJDUMP_BIN="$(which cuobjdump 2>/dev/null || echo /usr/local/cuda-12.9/bin/cuobjdump)"
 
 # Custom kernel SASS
@@ -58,8 +123,8 @@ for line in sys.stdin:
 ' > "${EVIDENCE_DIR}/m3r1-upstream-sass.txt"
 echo "  Wrote upstream kernel SASS: ${EVIDENCE_DIR}/m3r1-upstream-sass.txt"
 
-# Step 4: Extract link proof evidence
-echo "[4/7] Generating binary link proof evidence..."
+# Step 6: Extract link proof evidence
+echo "[6/9] Generating binary link proof evidence..."
 {
     echo "=== Pinned ggml-cuda Binary Link Proof ==="
     echo "Target Binary: ${BUILD_DIR}/q4k_q8_bench"
@@ -79,8 +144,8 @@ echo "[4/7] Generating binary link proof evidence..."
 } > "${EVIDENCE_DIR}/m3r1-upstream-link-proof.txt"
 echo "  Wrote link proof: ${EVIDENCE_DIR}/m3r1-upstream-link-proof.txt"
 
-# Step 5: Run Pascal (SM 6.1, GTX 1060) Test Suite & Benchmarks (NUMA Node 0)
-echo "[5/7] Executing Pascal GPU Qualification (GTX 1060 6GB, CC 6.1, PCI ${PASCAL_PCI}, NUMA 0)..."
+# Step 7: Run Pascal (SM 6.1, GTX 1060) Test Suite & Benchmarks (NUMA Node 0)
+echo "[7/9] Executing Pascal GPU Qualification (GTX 1060 6GB, CC 6.1, PCI ${PASCAL_PCI}, NUMA 0)..."
 export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
 
 echo "  Running correctness test suite and generating numerical envelope on Pascal..."
@@ -112,8 +177,8 @@ wait "${TELEM_PID}" 2>/dev/null || true
 echo "  Wrote Pascal benchmark results to: ${PASCAL_JSON}"
 echo "  Wrote Pascal telemetry to: ${PASCAL_TELEM_CSV}"
 
-# Step 6: Run Turing (SM 7.5, GTX 1660 SUPER) Control Benchmarks (NUMA Node 1)
-echo "[6/7] Executing Turing GPU Control Benchmark (GTX 1660 SUPER, CC 7.5, PCI ${TURING_PCI}, NUMA 1)..."
+# Step 8: Run Turing (SM 7.5, GTX 1660 SUPER) Control Benchmarks (NUMA Node 1)
+echo "[8/9] Executing Turing GPU Control Benchmark (GTX 1660 SUPER, CC 7.5, PCI ${TURING_PCI}, NUMA 1)..."
 export CUDA_VISIBLE_DEVICES="${TURING_UUID}"
 
 echo "  Running correctness test suite on Turing..."
@@ -144,8 +209,8 @@ wait "${TELEM_PID}" 2>/dev/null || true
 echo "  Wrote Turing benchmark results to: ${TURING_JSON}"
 echo "  Wrote Turing telemetry to: ${TURING_TELEM_CSV}"
 
-# Step 7: Upstream MMVQ Dispatch & Contract Proof
-echo "[7/7] Capturing Upstream MMVQ Dispatch Proof..."
+# Step 9: Upstream MMVQ Dispatch & Manifest / Summary Synchronization
+echo "[9/9] Generating Manifest, Summary, and Synchronizing Documentation..."
 cat << 'EOF_DISPATCH' > "${EVIDENCE_DIR}/m3-upstream-mmvq-dispatch.txt"
 === Upstream llama.cpp MMVQ Dispatch Contract Proof ===
 Pinned llama.cpp Commit: 169e4a7ff201e666c2325bcd35afb64573e39d09
@@ -177,6 +242,11 @@ Pinned llama.cpp Commit: 169e4a7ff201e666c2325bcd35afb64573e39d09
 EOF_DISPATCH
 echo "  Wrote ${EVIDENCE_DIR}/m3-upstream-mmvq-dispatch.txt"
 
+python3 "${SCRIPT_DIR}/generate-m3-manifest.py" "${RESULTS_DIR}"
+python3 "${SCRIPT_DIR}/generate_m3_summary.py"
+python3 "${SCRIPT_DIR}/update_m3_documentation.py"
+python3 "${SCRIPT_DIR}/check_m3_documentation_consistency.py" "${REPO_DIR}"
+
 echo "======================================================================"
-echo "M3R1 Benchmarking Complete!"
+echo "M3R2 Benchmarking & Documentation Synchronization Complete!"
 echo "======================================================================"

@@ -6,9 +6,9 @@ Accepted M2 base commit: f10ead5fa94925e0a36980b1f3bdaa4a6998aa84
 (Git repository HEAD is authoritative for current commit state)
 
 Execution host: BigBoy
-OS: Debian GNU/Linux 13 (trixie) (Kernel Linux 6.12.100+bpo-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100~bpo12+1 (2025-05-24) x86_64)
-CPU: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads, 2 NUMA nodes)
-RAM: 62.77 GiB Total (65,820,952 KiB)
+OS: Debian GNU/Linux 13 (trixie) (Kernel Linux 6.12.100+deb13-amd64 #1 SMP PREEMPT_DYNAMIC Debian 6.12.100-1 (2026-07-30) x86_64)
+CPU: 2 x Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz (32 physical cores, 64 logical threads) (2 NUMA nodes)
+RAM: 62.77 GiB Total (65,821,544 KiB)
 
 Pascal qualification GPU: NVIDIA GeForce GTX 1060 6GB
 Pascal PCI/UUID: PCI 0000:03:00.0 / UUID GPU-5078520c-bf92-4143-0d48-b02fd9d250dd
@@ -20,9 +20,13 @@ Control compute capability: 7.5 (NUMA node 1)
 
 NVIDIA driver: 550.163.01
 CUDA toolkit: CUDA 12.9 (/usr/local/cuda-12.9)
-NVCC: 12.9.86
-Host compiler: gcc 14.2.0 (Debian 14.2.0-19)
-glibc: Debian GLIBC 2.41-3 (2.41)
+NVCC: nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Tue_May_27_02:21:03_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.86
+Build cuda_12.9.r12.9/compiler.36037853_0
+Host compiler: gcc (Debian 14.2.0-19) 14.2.0
+glibc: ldd (Debian GLIBC 2.41-12+deb13u3) 2.41
 
 ---
 
@@ -38,32 +42,32 @@ glibc: Debian GLIBC 2.41-3 (2.41)
 ### Primary Qualification GPU (NVIDIA GeForce GTX 1060 6GB — Pascal SM 6.1):
 - **`attn_q`** ($4096 \times 2560$):
   - Upstream MMVQ (4-warp Generic): $71.30\ \mu\text{s}$ ($147.00\text{ GMAC/s}$, $77.30\text{ GiB/s}$)
-  - Custom 4-Warp Control: $90.90\ \mu\text{s}$ ($115.00\text{ GMAC/s}$, $60.60\text{ GiB/s}$, **$0.784\times$ vs U**)
-  - Custom 2-Warp Split: $62.50\ \mu\text{s}$ ($168.00\text{ GMAC/s}$, $88.20\text{ GiB/s}$, **$1.141\times$ vs U**, **+14.1%**)
+  - Custom 4-Warp Control: $90.80\ \mu\text{s}$ ($115.00\text{ GMAC/s}$, $60.70\text{ GiB/s}$, **$0.785\times$ vs U**)
+  - Custom 2-Warp Split: $61.30\ \mu\text{s}$ ($171.00\text{ GMAC/s}$, $90.00\text{ GiB/s}$, **$1.163\times$ vs U**, **+16.3%**)
   - Custom 1-Warp Row: $66.60\ \mu\text{s}$ ($158.00\text{ GMAC/s}$, $82.80\text{ GiB/s}$, **$1.071\times$ vs U**, **+7.1%**)
 - **`attn_kv`** ($1024 \times 2560$):
   - Upstream MMVQ: $21.50\ \mu\text{s}$ ($122.00\text{ GMAC/s}$, $64.20\text{ GiB/s}$)
   - Custom 2-Warp Split: $16.40\ \mu\text{s}$ ($160.00\text{ GMAC/s}$, $84.20\text{ GiB/s}$, **$1.311\times$ vs U**, **+31.1%**)
-  - Custom 1-Warp Row: $16.10\ \mu\text{s}$ ($162.00\text{ GMAC/s}$, $85.50\text{ GiB/s}$, **$1.335\times$ vs U**, **+33.5%**)
+  - Custom 1-Warp Row: $16.40\ \mu\text{s}$ ($160.00\text{ GMAC/s}$, $84.20\text{ GiB/s}$, **$1.311\times$ vs U**, **+31.1%**)
 - **`attn_out`** ($2560 \times 4096$):
-  - Upstream MMVQ: $65.30\ \mu\text{s}$ ($161.00\text{ GMAC/s}$, $84.40\text{ GiB/s}$)
-  - Custom 2-Warp Split: $62.00\ \mu\text{s}$ ($169.00\text{ GMAC/s}$, $88.80\text{ GiB/s}$, **$1.053\times$ vs U**, **+5.3%**)
-  - Custom 1-Warp Row: $64.20\ \mu\text{s}$ ($163.00\text{ GMAC/s}$, $85.70\text{ GiB/s}$, **$1.017\times$ vs U**, **+1.7%**)
+  - Upstream MMVQ: $64.60\ \mu\text{s}$ ($162.00\text{ GMAC/s}$, $85.30\text{ GiB/s}$)
+  - Custom 2-Warp Split: $61.40\ \mu\text{s}$ ($171.00\text{ GMAC/s}$, $89.60\text{ GiB/s}$, **$1.052\times$ vs U**, **+5.2%**)
+  - Custom 1-Warp Row: $63.40\ \mu\text{s}$ ($165.00\text{ GMAC/s}$, $86.80\text{ GiB/s}$, **$1.019\times$ vs U**, **+1.9%**)
 - **`ffn_gate_up`** ($9728 \times 2560$):
   - Upstream MMVQ: $161.00\ \mu\text{s}$ ($155.00\text{ GMAC/s}$, $81.40\text{ GiB/s}$)
-  - Custom 2-Warp Split: $141.00\ \mu\text{s}$ ($176.00\text{ GMAC/s}$, $92.70\text{ GiB/s}$, **$1.142\times$ vs U**, **+14.2%**)
-  - Custom 1-Warp Row: $147.00\ \mu\text{s}$ ($170.00\text{ GMAC/s}$, $89.10\text{ GiB/s}$, **$1.095\times$ vs U**, **+9.5%**)
+  - Custom 2-Warp Split: $138.00\ \mu\text{s}$ ($180.00\text{ GMAC/s}$, $94.70\text{ GiB/s}$, **$1.167\times$ vs U**, **+16.7%**)
+  - Custom 1-Warp Row: $135.00\ \mu\text{s}$ ($185.00\text{ GMAC/s}$, $97.00\text{ GiB/s}$, **$1.193\times$ vs U**, **+19.3%**)
 - **`ffn_down`** ($2560 \times 9728$):
-  - Upstream MMVQ: $145.00\ \mu\text{s}$ ($171.00\text{ GMAC/s}$, $89.90\text{ GiB/s}$)
-  - Custom 2-Warp Split: $141.00\ \mu\text{s}$ ($176.00\text{ GMAC/s}$, $92.60\text{ GiB/s}$, **$1.028\times$ vs U**, **+2.8%**)
-  - Custom 1-Warp Row: $141.00\ \mu\text{s}$ ($176.00\text{ GMAC/s}$, $92.50\text{ GiB/s}$, **$1.028\times$ vs U**, **+2.8%**)
+  - Upstream MMVQ: $145.00\ \mu\text{s}$ ($172.00\text{ GMAC/s}$, $90.10\text{ GiB/s}$)
+  - Custom 2-Warp Split: $141.00\ \mu\text{s}$ ($177.00\text{ GMAC/s}$, $92.90\text{ GiB/s}$, **$1.028\times$ vs U**, **+2.8%**)
+  - Custom 1-Warp Row: $140.00\ \mu\text{s}$ ($177.00\text{ GMAC/s}$, $93.10\text{ GiB/s}$, **$1.036\times$ vs U**, **+3.6%**)
 
 ### Secondary Control GPU (NVIDIA GeForce GTX 1660 SUPER — Turing SM 7.5):
-- `attn_q`: Upstream MMVQ $38.40\ \mu\text{s}$ vs Custom 2-Warp $38.80\ \mu\text{s}$ (**$0.990\times$ vs U**) vs Custom 1-Warp $36.80\ \mu\text{s}$ (**$1.043\times$ vs U**)
-- `attn_kv`: Upstream MMVQ $14.10\ \mu\text{s}$ vs Custom 2-Warp $12.30\ \mu\text{s}$ (**$1.146\times$ vs U**) vs Custom 1-Warp $12.20\ \mu\text{s}$ (**$1.156\times$ vs U**)
-- `attn_out`: Upstream MMVQ $35.20\ \mu\text{s}$ vs Custom 2-Warp $37.50\ \mu\text{s}$ (**$0.939\times$ vs U**) vs Custom 1-Warp $36.90\ \mu\text{s}$ (**$0.954\times$ vs U**)
-- `ffn_gate_up`: Upstream MMVQ $77.70\ \mu\text{s}$ vs Custom 2-Warp $78.50\ \mu\text{s}$ (**$0.990\times$ vs U**) vs Custom 1-Warp $75.40\ \mu\text{s}$ (**$1.031\times$ vs U**)
-- `ffn_down`: Upstream MMVQ $74.50\ \mu\text{s}$ vs Custom 2-Warp $77.70\ \mu\text{s}$ (**$0.959\times$ vs U**) vs Custom 1-Warp $78.40\ \mu\text{s}$ (**$0.950\times$ vs U**)
+- `attn_q`: Upstream MMVQ $37.10\ \mu\text{s}$ vs Custom 2-Warp $38.80\ \mu\text{s}$ (**$0.956\times$ vs U**) vs Custom 1-Warp $36.70\ \mu\text{s}$ (**$1.011\times$ vs U**)
+- `attn_kv`: Upstream MMVQ $12.60\ \mu\text{s}$ vs Custom 2-Warp $12.20\ \mu\text{s}$ (**$1.033\times$ vs U**) vs Custom 1-Warp $12.10\ \mu\text{s}$ (**$1.041\times$ vs U**)
+- `attn_out`: Upstream MMVQ $36.80\ \mu\text{s}$ vs Custom 2-Warp $37.20\ \mu\text{s}$ (**$0.989\times$ vs U**) vs Custom 1-Warp $36.90\ \mu\text{s}$ (**$0.997\times$ vs U**)
+- `ffn_gate_up`: Upstream MMVQ $76.80\ \mu\text{s}$ vs Custom 2-Warp $78.50\ \mu\text{s}$ (**$0.978\times$ vs U**) vs Custom 1-Warp $73.40\ \mu\text{s}$ (**$1.046\times$ vs U**)
+- `ffn_down`: Upstream MMVQ $73.80\ \mu\text{s}$ vs Custom 2-Warp $77.80\ \mu\text{s}$ (**$0.949\times$ vs U**) vs Custom 1-Warp $76.60\ \mu\text{s}$ (**$0.963\times$ vs U**)
 
 ---
 

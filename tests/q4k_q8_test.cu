@@ -658,92 +658,122 @@ int main(int argc, char ** argv) {
     struct gguf_init_params gparams = { false, nullptr };
     struct gguf_context * gctx = gguf_init_from_file(model_path.c_str(), gparams);
     if (!gctx) {
-        std::cerr << "WARNING: Could not open GGUF model file for real-byte sanity check at: " << model_path << "\n";
-    } else {
-        FILE * gf = fopen(model_path.c_str(), "rb");
-        if (gf) {
-            size_t data_offset = gguf_get_data_offset(gctx);
-            const char * real_tensors[] = {
-                "blk.0.attn_q.weight",
-                "blk.0.attn_output.weight",
-                "blk.0.ffn_gate.weight",
-                "blk.0.ffn_up.weight"
-            };
-
-            for (const char * tname : real_tensors) {
-                int tid = gguf_find_tensor(gctx, tname);
-                if (tid < 0) continue;
-
-                const int64_t * ne = gguf_get_tensor_ne(gctx, tid);
-                int64_t K_real = ne[0];
-                int64_t N_real = std::min((int64_t)16, ne[1]); // Test 16 actual model rows
-                int64_t K_padded_real = ((K_real + 511) / 512) * 512;
-                size_t tensor_offset = gguf_get_tensor_offset(gctx, tid);
-
-                std::vector<block_q4_K> w_real(N_real * (K_real / QK_K));
-                std::vector<float> x_real_f32(K_real);
-                std::vector<block_q8_1> x_real_q8(K_padded_real / QK8_1);
-                std::vector<double> y_real_oracle(N_real);
-                std::vector<float> y_real_u(N_real);
-                std::vector<float> y_real_gpu(N_real);
-
-                fseek(gf, data_offset + tensor_offset, SEEK_SET);
-                fread(w_real.data(), sizeof(block_q4_K), w_real.size(), gf);
-
-                generate_test_data(x_real_f32, DIST_BOUNDED_PSEUDORANDOM, 999);
-
-                block_q4_K * d_w_r = nullptr;
-                float * d_x_r_f = nullptr;
-                block_q8_1 * d_x_r_q = nullptr;
-                float * d_y_r = nullptr;
-
-                cudaMalloc(&d_w_r, w_real.size() * sizeof(block_q4_K));
-                cudaMalloc(&d_x_r_f, K_real * sizeof(float));
-                cudaMalloc(&d_x_r_q, (K_padded_real / QK8_1) * sizeof(block_q8_1));
-                cudaMalloc(&d_y_r, N_real * sizeof(float));
-
-                cudaMemcpy(d_w_r, w_real.data(), w_real.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
-                cudaMemcpy(d_x_r_f, x_real_f32.data(), K_real * sizeof(float), cudaMemcpyHostToDevice);
-
-                launch_quantize_f32_to_q8_1(d_x_r_f, d_x_r_q, K_real, 0);
-                cudaMemcpy(x_real_q8.data(), d_x_r_q, x_real_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
-
-                independent_q4k_q8_oracle_f64(w_real.data(), x_real_q8.data(), y_real_oracle.data(), N_real, K_real);
-
-                // Run Upstream
-                cudaMemset(d_y_r, 0, N_real * sizeof(float));
-                launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
-                cudaMemcpy(y_real_u.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
-
-                for (auto var : all_variants) {
-                    total_tests++;
-                    cudaMemset(d_y_r, 0, N_real * sizeof(float));
-                    launch_q4k_q8_mmvq(var, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
-                    cudaMemcpy(y_real_gpu.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
-
-                    NumericalErrorStats stats_f64 = compute_error_stats(y_real_gpu, y_real_oracle);
-                    NumericalErrorStats stats_u = compute_diff_stats(y_real_gpu, y_real_u);
-
-                    if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
-                        passed_tests++;
-                        std::cout << "PASS: RealTensor=" << std::left << std::setw(26) << tname
-                                  << " | Variant=" << std::setw(30) << get_q4k_variant_name(var)
-                                  << " | RelVsF64=" << std::scientific << std::setprecision(2) << stats_f64.max_rel_err
-                                  << " | AbsVsU=" << stats_u.max_abs_err << "\n";
-                    } else {
-                        std::cerr << "FAIL: RealTensor=" << tname << " Variant=" << get_q4k_variant_name(var) << "\n";
-                    }
-                }
-
-                cudaFree(d_w_r);
-                cudaFree(d_x_r_f);
-                cudaFree(d_x_r_q);
-                cudaFree(d_y_r);
-            }
-            fclose(gf);
-        }
-        gguf_free(gctx);
+        std::cerr << "FATAL: Could not open GGUF model file for real-byte sanity check at: " << model_path << "\n";
+        return 1;
     }
+    FILE * gf = fopen(model_path.c_str(), "rb");
+    if (!gf) {
+        std::cerr << "FATAL: Could not open GGUF file binary handle at: " << model_path << "\n";
+        gguf_free(gctx);
+        return 1;
+    }
+
+    size_t data_offset = gguf_get_data_offset(gctx);
+    const char * real_tensors[] = {
+        "blk.0.attn_q.weight",
+        "blk.0.attn_output.weight",
+        "blk.0.ffn_gate.weight",
+        "blk.0.ffn_up.weight"
+    };
+
+    for (const char * tname : real_tensors) {
+        int tid = gguf_find_tensor(gctx, tname);
+        if (tid < 0) {
+            std::cerr << "FATAL: Could not find required tensor " << tname << " in GGUF model!\n";
+            fclose(gf);
+            gguf_free(gctx);
+            return 1;
+        }
+
+        enum ggml_type ttype = gguf_get_tensor_type(gctx, tid);
+        if (ttype != GGML_TYPE_Q4_K) {
+            std::cerr << "FATAL: Tensor " << tname << " has type " << ttype
+                      << " (expected GGML_TYPE_Q4_K = " << GGML_TYPE_Q4_K << ")!\n";
+            fclose(gf);
+            gguf_free(gctx);
+            return 1;
+        }
+
+        const int64_t * ne = gguf_get_tensor_ne(gctx, tid);
+        int64_t K_real = ne[0];
+        int64_t N_real = std::min((int64_t)16, ne[1]); // Test 16 actual model rows
+        int64_t K_padded_real = ((K_real + 511) / 512) * 512;
+        size_t tensor_offset = gguf_get_tensor_offset(gctx, tid);
+
+        std::vector<block_q4_K> w_real(N_real * (K_real / QK_K));
+        std::vector<float> x_real_f32(K_real);
+        std::vector<block_q8_1> x_real_q8(K_padded_real / QK8_1);
+        std::vector<double> y_real_oracle(N_real);
+        std::vector<float> y_real_u(N_real);
+        std::vector<float> y_real_gpu(N_real);
+
+        if (fseek(gf, data_offset + tensor_offset, SEEK_SET) != 0) {
+            std::cerr << "FATAL: fseek failed for tensor " << tname << " offset=" << (data_offset + tensor_offset) << "\n";
+            fclose(gf);
+            gguf_free(gctx);
+            return 1;
+        }
+        size_t read_blocks = fread(w_real.data(), sizeof(block_q4_K), w_real.size(), gf);
+        if (read_blocks != w_real.size()) {
+            std::cerr << "FATAL: fread failed for tensor " << tname << ": expected " << w_real.size()
+                      << " blocks, got " << read_blocks << "\n";
+            fclose(gf);
+            gguf_free(gctx);
+            return 1;
+        }
+
+        generate_test_data(x_real_f32, DIST_BOUNDED_PSEUDORANDOM, 999);
+
+        block_q4_K * d_w_r = nullptr;
+        float * d_x_r_f = nullptr;
+        block_q8_1 * d_x_r_q = nullptr;
+        float * d_y_r = nullptr;
+
+        cudaMalloc(&d_w_r, w_real.size() * sizeof(block_q4_K));
+        cudaMalloc(&d_x_r_f, K_real * sizeof(float));
+        cudaMalloc(&d_x_r_q, (K_padded_real / QK8_1) * sizeof(block_q8_1));
+        cudaMalloc(&d_y_r, N_real * sizeof(float));
+
+        cudaMemcpy(d_w_r, w_real.data(), w_real.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
+        cudaMemcpy(d_x_r_f, x_real_f32.data(), K_real * sizeof(float), cudaMemcpyHostToDevice);
+
+        launch_quantize_f32_to_q8_1(d_x_r_f, d_x_r_q, K_real, 0);
+        cudaMemcpy(x_real_q8.data(), d_x_r_q, x_real_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
+
+        independent_q4k_q8_oracle_f64(w_real.data(), x_real_q8.data(), y_real_oracle.data(), N_real, K_real);
+
+        // Run Upstream
+        cudaMemset(d_y_r, 0, N_real * sizeof(float));
+        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
+        cudaMemcpy(y_real_u.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
+
+        for (auto var : all_variants) {
+            total_tests++;
+            cudaMemset(d_y_r, 0, N_real * sizeof(float));
+            launch_q4k_q8_mmvq(var, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
+            cudaMemcpy(y_real_gpu.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
+
+            NumericalErrorStats stats_f64 = compute_error_stats(y_real_gpu, y_real_oracle);
+            NumericalErrorStats stats_u = compute_diff_stats(y_real_gpu, y_real_u);
+
+            if (!stats_f64.has_nan && !stats_f64.has_inf && (stats_f64.max_rel_err <= TOL_MAX_REL_ERR || stats_f64.max_abs_err <= TOL_MAX_ABS_ERR)) {
+                passed_tests++;
+                std::cout << "PASS: RealTensor=" << std::left << std::setw(26) << tname
+                          << " | Variant=" << std::setw(30) << get_q4k_variant_name(var)
+                          << " | RelVsF64=" << std::scientific << std::setprecision(2) << stats_f64.max_rel_err
+                          << " | AbsVsU=" << stats_u.max_abs_err << "\n";
+            } else {
+                std::cerr << "FAIL: RealTensor=" << tname << " Variant=" << get_q4k_variant_name(var) << "\n";
+            }
+        }
+
+        cudaFree(d_w_r);
+        cudaFree(d_x_r_f);
+        cudaFree(d_x_r_q);
+        cudaFree(d_y_r);
+    }
+    fclose(gf);
+    gguf_free(gctx);
 
     // Step B: Write frozen numerical envelope JSON
     std::ofstream env_f(envelope_output);
