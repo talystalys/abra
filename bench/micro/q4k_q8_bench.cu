@@ -1,4 +1,5 @@
 #include "kernels/q4k/q4k_q8_mmvq.cuh"
+#include "kernels/q4k/q4k_family.cuh"
 #include "kernels/q4k/upstream_adapter.cuh"
 #include "kernels/smoke/smoke.h"
 #include <iostream>
@@ -11,11 +12,14 @@
 #include <sstream>
 #include <algorithm>
 #include <random>
+#include <map>
 
 struct BenchConfig {
     std::string shape_name;
     int N;
     int K;
+    std::string classification;
+    int occurrence_count;
 };
 
 struct TimingStats {
@@ -120,17 +124,20 @@ void independent_q4k_q8_oracle_f64(
 
 int main(int argc, char ** argv) {
     std::string arch_type = "pascal";
+    std::string bench_mode = "m4-final"; // "m3", "autotune", "m4-final", "custom"
     std::string output_json_path = "";
     std::string assert_name = "";
     std::string assert_cc = "";
     std::string assert_pci = "";
     std::string assert_uuid = "";
-    int warmup_iters = 10;
+    int warmup_iters = 20;
     int timed_iters = 100;
+    int arch_cc_int = 61;
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
         if (arg == "--arch" && i + 1 < argc) arch_type = argv[++i];
+        else if (arg == "--mode" && i + 1 < argc) bench_mode = argv[++i];
         else if (arg == "--output" && i + 1 < argc) output_json_path = argv[++i];
         else if (arg == "--assert-name" && i + 1 < argc) assert_name = argv[++i];
         else if (arg == "--assert-cc" && i + 1 < argc) assert_cc = argv[++i];
@@ -149,12 +156,14 @@ int main(int argc, char ** argv) {
             cc_minor = 1;
             assert_pci = "0000:03:00.0";
             assert_uuid = "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd";
+            arch_cc_int = 61;
         } else if (arch_type == "turing") {
             assert_name = "NVIDIA GeForce GTX 1660 SUPER";
             cc_major = 7;
             cc_minor = 5;
             assert_pci = "0000:81:00.0";
             assert_uuid = "GPU-8a043791-359d-1df4-9353-38c5bc98e5dd";
+            arch_cc_int = 75;
         }
     } else {
         if (!assert_cc.empty()) {
@@ -162,6 +171,7 @@ int main(int argc, char ** argv) {
             if (dot_pos != std::string::npos) {
                 cc_major = std::stoi(assert_cc.substr(0, dot_pos));
                 cc_minor = std::stoi(assert_cc.substr(dot_pos + 1));
+                arch_cc_int = cc_major * 10 + cc_minor;
             }
         }
     }
@@ -180,33 +190,68 @@ int main(int argc, char ** argv) {
     cudaGetDeviceProperties(&prop, dev_id);
 
     std::cout << "============================================================\n";
-    std::cout << "Milestone M3: Pascal Q4_K x Q8_1 MMVQ Microbenchmark Suite\n";
+    std::cout << "Milestone M4: Pascal Q4_K x Q8_1 Autotune & Microbenchmark Suite\n";
     std::cout << "Device: " << prop.name << "\n";
     std::cout << "Compute Capability: " << prop.major << "." << prop.minor << "\n";
     std::cout << "PCI Bus ID: " << assert_pci << "\n";
     std::cout << "UUID: " << assert_uuid << "\n";
+    std::cout << "Benchmark Mode: " << bench_mode << "\n";
     std::cout << "Warmup iterations: " << warmup_iters << "\n";
     std::cout << "Measured iterations: " << timed_iters << "\n";
     std::cout << "============================================================\n";
     std::cout << "PASS: Physical GPU identity assertions verified successfully.\n\n";
 
-    std::vector<BenchConfig> shapes = {
-        {"attn_q", 4096, 2560},
-        {"attn_kv", 1024, 2560},
-        {"attn_out", 2560, 4096},
-        {"ffn_gate_up", 9728, 2560},
-        {"ffn_down", 2560, 9728},
-        {"synth_256", 256, 256},
-        {"synth_1024", 1024, 1024},
-        {"synth_4096", 4096, 4096}
-    };
+    std::vector<BenchConfig> shapes;
+    if (bench_mode == "m3") {
+        shapes = {
+            {"attn_q", 4096, 2560, "canonical_q4k_workload", 36},
+            {"attn_kv", 1024, 2560, "canonical_q4k_workload", 54},
+            {"attn_out", 2560, 4096, "canonical_q4k_workload", 36},
+            {"ffn_gate_up", 9728, 2560, "canonical_q4k_workload", 72},
+            {"ffn_down", 2560, 9728, "canonical_q4k_workload", 18},
+            {"synth_256", 256, 256, "synthetic", 0},
+            {"synth_1024", 1024, 1024, "synthetic", 0},
+            {"synth_4096", 4096, 4096, "synthetic", 0}
+        };
+    } else {
+        // M4 canonical and guardrail workload shapes
+        shapes = {
+            {"attn_q", 4096, 2560, "canonical_q4k_workload", 36},
+            {"attn_kv", 1024, 2560, "canonical_q4k_workload", 54},
+            {"attn_out", 2560, 4096, "canonical_q4k_workload", 36},
+            {"ffn_gate_up", 9728, 2560, "canonical_q4k_workload", 72},
+            {"ffn_down", 2560, 9728, "canonical_q4k_workload", 18},
+            {"ffn_down_synth36", 2560, 9728, "synthetic_m3_comparison", 36},
+            {"guardrail_small_tail_k", 64, 256, "generalization_guardrail", 0},
+            {"guardrail_mid_k_tail", 128, 768, "generalization_guardrail", 0},
+            {"guardrail_large_n_mid_k", 8192, 1024, "generalization_guardrail", 0},
+            {"guardrail_odd_n_boundary", 33, 2560, "generalization_guardrail", 0}
+        };
+    }
 
-    std::vector<Q4KVariant> variants = {
-        VARIANT_UPSTREAM_MMVQ,
-        VARIANT_4WARP_CONTROL,
-        VARIANT_2WARP_SPLIT,
-        VARIANT_1WARP_ROW
-    };
+    std::vector<Q4KCandidateID> candidates_to_bench;
+    if (bench_mode == "m3") {
+        candidates_to_bench = {
+            CANDIDATE_UPSTREAM_MMVQ,
+            CANDIDATE_WPR4_WPB4,
+            CANDIDATE_WPR2_WPB4,
+            CANDIDATE_WPR1_WPB4
+        };
+    } else if (bench_mode == "autotune") {
+        candidates_to_bench = get_all_candidate_ids();
+    } else if (bench_mode == "m4-final") {
+        candidates_to_bench = {
+            CANDIDATE_UPSTREAM_MMVQ,
+            CANDIDATE_WPR4_WPB4,     // M3 Variant A
+            CANDIDATE_WPR2_WPB4,     // M3 Variant B
+            CANDIDATE_WPR1_WPB4,     // M3 Variant C
+            CANDIDATE_WPR1_WPB8,
+            CANDIDATE_WPR2_WPB8,
+            CANDIDATE_WPR1_WPB4_U2,
+            CANDIDATE_WPR2_WPB4_U2,
+            CANDIDATE_AUTOTUNED_DISPATCH // M4 dynamic shape-aware autotuned selector
+        };
+    }
 
     cudaEvent_t start_event, stop_event;
     cudaEventCreate(&start_event);
@@ -216,8 +261,15 @@ int main(int argc, char ** argv) {
     json_results << "[\n";
     bool first_json_entry = true;
 
+    // Track winning candidates for each shape
+    std::map<std::string, std::pair<Q4KCandidateID, double>> shape_winners;
+    std::map<std::string, double> shape_upstream_meds;
+
     for (const auto & s : shapes) {
-        std::cout << "Benchmarking shape: " << s.shape_name << " (N=" << s.N << ", K=" << s.K << ")...\n";
+        std::cout << "============================================================\n";
+        std::cout << "Benchmarking Shape: " << s.shape_name << " (N=" << s.N << ", K=" << s.K
+                  << ", Class=" << s.classification << ", Weight=" << s.occurrence_count << ")\n";
+        std::cout << "============================================================\n";
 
         int K_padded = ((s.K + 511) / 512) * 512;
         std::vector<float> h_w_f(s.N * s.K);
@@ -233,7 +285,6 @@ int main(int argc, char ** argv) {
         for (size_t i = 0; i < h_w_f.size(); ++i) h_w_f[i] = dis(rng);
         for (size_t i = 0; i < h_x_f.size(); ++i) h_x_f[i] = dis(rng);
 
-        // Exact pinned CPU Q4_K quantizer
         for (int n = 0; n < s.N; ++n) {
             quantize_row_q4_K_upstream_cpu(&h_w_f[n * s.K], &h_w_q4[n * (s.K / QK_K)], s.K);
         }
@@ -251,20 +302,18 @@ int main(int argc, char ** argv) {
         cudaMemcpy(d_w_q4, h_w_q4.data(), h_w_q4.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
         cudaMemcpy(d_x_f32, h_x_f.data(), s.K * sizeof(float), cudaMemcpyHostToDevice);
 
-        // Pre-quantize activation vector on GPU via exact pinned CUDA quantizer
         launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, s.K, 0);
         cudaDeviceSynchronize();
         cudaMemcpy(h_x_q8.data(), d_x_q8, h_x_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
 
-        // Compute independent F64 CPU oracle
         independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), s.N, s.K);
 
-        // Measure reference Variant U output on GPU for direct cross-variant error checking
+        // Run Upstream MMVQ baseline reference
         cudaMemset(d_y, 0, s.N * sizeof(float));
-        launch_q4k_q8_mmvq(VARIANT_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
+        launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
         cudaMemcpy(h_y_upstream.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
 
-        // Measure standalone quantization latency (Mode 2 quantizer component)
+        // Quantize-only benchmark
         std::vector<float> quantize_only_lats(timed_iters);
         for (int w = 0; w < warmup_iters; ++w) {
             launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, s.K, 0);
@@ -278,27 +327,29 @@ int main(int argc, char ** argv) {
             cudaEventSynchronize(stop_event);
             float ms = 0.0f;
             cudaEventElapsedTime(&ms, start_event, stop_event);
-            quantize_only_lats[it] = ms * 1000.0f; // microseconds
+            quantize_only_lats[it] = ms * 1000.0f;
         }
         TimingStats q_stats = compute_timing_stats(quantize_only_lats);
 
-        // Logical tensor byte accounting
         double q4_bytes = (double)s.N * ((double)s.K / 256.0) * (double)sizeof(block_q4_K);
         double q8_bytes = ((double)s.K / 32.0) * (double)sizeof(block_q8_1);
         double out_bytes = (double)s.N * sizeof(float);
         double total_tensor_bytes = q4_bytes + q8_bytes + out_bytes;
 
-        for (auto var : variants) {
-            // Timing Mode 1: Multiply Only
+        double best_cand_med = 1e9;
+        Q4KCandidateID best_cand_id = CANDIDATE_UPSTREAM_MMVQ;
+
+        for (auto cand : candidates_to_bench) {
+            // Warmup
             for (int w = 0; w < warmup_iters; ++w) {
-                launch_q4k_q8_mmvq(var, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
+                launch_q4k_candidate(cand, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
             }
             cudaDeviceSynchronize();
 
             std::vector<float> mul_lats(timed_iters);
             for (int it = 0; it < timed_iters; ++it) {
                 cudaEventRecord(start_event, 0);
-                launch_q4k_q8_mmvq(var, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
+                launch_q4k_candidate(cand, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
                 cudaEventRecord(stop_event, 0);
                 cudaEventSynchronize(stop_event);
                 float ms = 0.0f;
@@ -307,7 +358,18 @@ int main(int argc, char ** argv) {
             }
             TimingStats mul_stats = compute_timing_stats(mul_lats);
 
-            // Copy output to host and verify correctness live against oracle & upstream
+            if (cand != CANDIDATE_AUTOTUNED_DISPATCH) {
+                if (mul_stats.median_us < best_cand_med) {
+                    best_cand_med = mul_stats.median_us;
+                    best_cand_id = cand;
+                }
+            }
+
+            if (cand == CANDIDATE_UPSTREAM_MMVQ) {
+                shape_upstream_meds[s.shape_name] = mul_stats.median_us;
+            }
+
+            // Verify correctness
             cudaMemcpy(h_y_check.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
 
             double max_abs_vs_oracle = 0.0;
@@ -335,16 +397,16 @@ int main(int argc, char ** argv) {
 
             bool is_verified = (!has_nan && !has_inf && (max_rel_vs_oracle <= 5e-3 || max_abs_vs_oracle <= 0.05));
 
-            // Timing Mode 2: Combined Quantize + Multiply Pipeline
+            // Combined pipeline timing
             for (int w = 0; w < warmup_iters; ++w) {
-                launch_q4k_q8_combined_pipeline(var, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
+                launch_q4k_candidate_combined_pipeline(cand, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
             }
             cudaDeviceSynchronize();
 
             std::vector<float> comb_lats(timed_iters);
             for (int it = 0; it < timed_iters; ++it) {
                 cudaEventRecord(start_event, 0);
-                launch_q4k_q8_combined_pipeline(var, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
+                launch_q4k_candidate_combined_pipeline(cand, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
                 cudaEventRecord(stop_event, 0);
                 cudaEventSynchronize(stop_event);
                 float ms = 0.0f;
@@ -354,62 +416,74 @@ int main(int argc, char ** argv) {
             TimingStats comb_stats = compute_timing_stats(comb_lats);
 
             double gmac_s = ((double)s.N * (double)s.K) / (mul_stats.median_us * 1e-6) / 1e9;
-            double eff_gbps = (total_tensor_bytes / (mul_stats.median_us * 1e-6)) / (1024.0 * 1024.0 * 1024.0);
+            double eff_gbps = total_tensor_bytes / (mul_stats.median_us * 1e-6) / (1024.0 * 1024.0 * 1024.0);
 
-            std::cout << "  " << std::left << std::setw(32) << get_q4k_variant_name(var)
-                      << " | Mul Med: " << std::fixed << std::setprecision(2) << std::setw(7) << mul_stats.median_us << " us"
-                      << " | Comb Med: " << std::setw(7) << comb_stats.median_us << " us"
-                      << " | GMAC/s: " << std::setw(7) << gmac_s
-                      << " | Eff: " << std::setw(6) << eff_gbps << " GiB/s"
-                      << " | Verified: " << (is_verified ? "PASS" : "FAIL") << "\n";
+            std::cout << "  " << std::left << std::setw(28) << get_candidate_name(cand)
+                      << " | Med=" << std::fixed << std::setprecision(2) << std::setw(7) << mul_stats.median_us << " us"
+                      << " | Mean=" << std::setw(7) << mul_stats.mean_us << " us"
+                      << " | Min=" << std::setw(7) << mul_stats.min_us << " us"
+                      << " | Max=" << std::setw(7) << mul_stats.max_us << " us"
+                      << " | Spread=" << std::setw(6) << mul_stats.spread_us << " us"
+                      << " | GMAC/s=" << std::setw(7) << gmac_s
+                      << " | Eff=" << std::setw(6) << eff_gbps << " GiB/s"
+                      << " | CombMed=" << std::setw(7) << comb_stats.median_us << " us"
+                      << " | " << (is_verified ? "VERIFIED" : "FAIL") << "\n";
 
             if (!first_json_entry) json_results << ",\n";
             first_json_entry = false;
 
-            json_results << "    {\n"
-                         << "      \"shape_name\": \"" << s.shape_name << "\",\n"
-                         << "      \"N\": " << s.N << ",\n"
-                         << "      \"K\": " << s.K << ",\n"
-                         << "      \"variant_id\": " << (int)var << ",\n"
-                         << "      \"variant_name\": \"" << get_q4k_variant_name(var) << "\",\n"
-                         << "      \"warmup_iterations\": " << warmup_iters << ",\n"
-                         << "      \"measured_iterations\": " << timed_iters << ",\n"
-                         << "      \"median_us\": " << std::setprecision(3) << mul_stats.median_us << ",\n"
-                         << "      \"mean_us\": " << mul_stats.mean_us << ",\n"
-                         << "      \"min_us\": " << mul_stats.min_us << ",\n"
-                         << "      \"max_us\": " << mul_stats.max_us << ",\n"
-                         << "      \"stddev_us\": " << mul_stats.stddev_us << ",\n"
-                         << "      \"spread_us\": " << mul_stats.spread_us << ",\n"
-                         << "      \"gmac_per_sec\": " << gmac_s << ",\n"
-                         << "      \"effective_throughput_gbps\": " << eff_gbps << ",\n"
-                         << "      \"quantize_only_median_us\": " << q_stats.median_us << ",\n"
-                         << "      \"combined_median_us\": " << comb_stats.median_us << ",\n"
-                         << "      \"combined_mean_us\": " << comb_stats.mean_us << ",\n"
-                         << "      \"combined_min_us\": " << comb_stats.min_us << ",\n"
-                         << "      \"combined_max_us\": " << comb_stats.max_us << ",\n"
-                         << "      \"combined_stddev_us\": " << comb_stats.stddev_us << ",\n"
-                         << "      \"combined_spread_us\": " << comb_stats.spread_us << ",\n"
-                         << "      \"verification\": {\n"
-                         << "        \"verified\": " << (is_verified ? "true" : "false") << ",\n"
-                         << "        \"max_abs_vs_oracle\": " << max_abs_vs_oracle << ",\n"
-                         << "        \"max_rel_vs_oracle\": " << max_rel_vs_oracle << ",\n"
-                         << "        \"max_abs_vs_upstream\": " << max_abs_vs_upstream << "\n"
-                         << "      },\n"
-                         << "      \"verified_correct\": " << (is_verified ? "true" : "false") << ",\n"
-                         << "      \"latencies_us\": [";
-            for (size_t li = 0; li < mul_stats.latencies_us.size(); ++li) {
-                if (li > 0) json_results << ", ";
-                json_results << std::setprecision(3) << mul_stats.latencies_us[li];
+            json_results << "    {\n";
+            json_results << "      \"shape_name\": \"" << s.shape_name << "\",\n";
+            json_results << "      \"N\": " << s.N << ",\n";
+            json_results << "      \"K\": " << s.K << ",\n";
+            json_results << "      \"classification\": \"" << s.classification << "\",\n";
+            json_results << "      \"occurrence_count\": " << s.occurrence_count << ",\n";
+            json_results << "      \"candidate_id\": " << (int)cand << ",\n";
+            json_results << "      \"variant_id\": " << (int)cand << ",\n"; // Backwards compatibility with M3
+            json_results << "      \"variant_name\": \"" << get_candidate_name(cand) << "\",\n";
+            json_results << "      \"median_us\": " << mul_stats.median_us << ",\n";
+            json_results << "      \"mean_us\": " << mul_stats.mean_us << ",\n";
+            json_results << "      \"min_us\": " << mul_stats.min_us << ",\n";
+            json_results << "      \"max_us\": " << mul_stats.max_us << ",\n";
+            json_results << "      \"stddev_us\": " << mul_stats.stddev_us << ",\n";
+            json_results << "      \"spread_us\": " << mul_stats.spread_us << ",\n";
+            json_results << "      \"gmac_per_sec\": " << gmac_s << ",\n";
+            json_results << "      \"effective_throughput_gbps\": " << eff_gbps << ",\n";
+            json_results << "      \"quantize_only_median_us\": " << q_stats.median_us << ",\n";
+            json_results << "      \"combined_median_us\": " << comb_stats.median_us << ",\n";
+            json_results << "      \"combined_mean_us\": " << comb_stats.mean_us << ",\n";
+            json_results << "      \"combined_min_us\": " << comb_stats.min_us << ",\n";
+            json_results << "      \"combined_max_us\": " << comb_stats.max_us << ",\n";
+            json_results << "      \"combined_spread_us\": " << comb_stats.spread_us << ",\n";
+            json_results << "      \"verified_correct\": " << (is_verified ? "true" : "false") << ",\n";
+            json_results << "      \"verification\": {\n";
+            json_results << "        \"verified\": " << (is_verified ? "true" : "false") << ",\n";
+            json_results << "        \"max_abs_diff_vs_oracle\": " << max_abs_vs_oracle << ",\n";
+            json_results << "        \"max_rel_diff_vs_oracle\": " << max_rel_vs_oracle << ",\n";
+            json_results << "        \"max_abs_diff_vs_upstream\": " << max_abs_vs_upstream << ",\n";
+            json_results << "        \"has_nan\": " << (has_nan ? "true" : "false") << ",\n";
+            json_results << "        \"has_inf\": " << (has_inf ? "true" : "false") << "\n";
+            json_results << "      },\n";
+            json_results << "      \"latencies_us\": [";
+            for (size_t i = 0; i < mul_stats.latencies_us.size(); ++i) {
+                json_results << mul_stats.latencies_us[i] << (i + 1 < mul_stats.latencies_us.size() ? ", " : "");
             }
-            json_results << "],\n"
-                         << "      \"combined_latencies_us\": [";
-            for (size_t li = 0; li < comb_stats.latencies_us.size(); ++li) {
-                if (li > 0) json_results << ", ";
-                json_results << std::setprecision(3) << comb_stats.latencies_us[li];
+            json_results << "],\n";
+            json_results << "      \"combined_latencies_us\": [";
+            for (size_t i = 0; i < comb_stats.latencies_us.size(); ++i) {
+                json_results << comb_stats.latencies_us[i] << (i + 1 < comb_stats.latencies_us.size() ? ", " : "");
             }
-            json_results << "]\n"
-                         << "    }";
+            json_results << "]\n";
+            json_results << "    }";
         }
+
+        shape_winners[s.shape_name] = {best_cand_id, best_cand_med};
+        double u_med = shape_upstream_meds[s.shape_name];
+        double sp = (u_med > 0 && best_cand_med > 0) ? u_med / best_cand_med : 1.0;
+        std::cout << ">>> Winner for " << s.shape_name << ": " << get_candidate_name(best_cand_id)
+                  << " (" << best_cand_med << " us, " << sp << "x vs Upstream)\n\n";
+
+        register_autotuned_table_entry(s.N, s.K, arch_cc_int, best_cand_id, best_cand_med, u_med);
 
         cudaFree(d_w_q4);
         cudaFree(d_x_q8);
@@ -418,26 +492,23 @@ int main(int argc, char ** argv) {
     }
     json_results << "\n  ]";
 
-    cudaEventDestroy(start_event);
-    cudaEventDestroy(stop_event);
-
     if (!output_json_path.empty()) {
-        std::ofstream ofs(output_json_path);
-        ofs << "{\n"
-            << "  \"benchmark\": \"pascal_q4k_q8_mmvq_characterization\",\n"
-            << "  \"milestone\": \"M3\",\n"
-            << "  \"arch\": \"" << arch_type << "\",\n"
-            << "  \"device\": {\n"
-            << "    \"name\": \"" << prop.name << "\",\n"
-            << "    \"compute_capability\": \"" << prop.major << "." << prop.minor << "\",\n"
-            << "    \"pci_bus_id\": \"" << assert_pci << "\",\n"
-            << "    \"uuid\": \"" << assert_uuid << "\",\n"
-            << "    \"total_vram_bytes\": " << prop.totalGlobalMem << "\n"
-            << "  },\n"
-            << "  \"results\": " << json_results.str() << "\n"
-            << "}\n";
-        ofs.close();
-        std::cout << "\nWrote canonical benchmark results to: " << output_json_path << "\n";
+        std::ofstream out_f(output_json_path);
+        if (out_f.is_open()) {
+            out_f << "{\n";
+            out_f << "  \"milestone\": \"M4\",\n";
+            out_f << "  \"bench_mode\": \"" << bench_mode << "\",\n";
+            out_f << "  \"device\": {\n";
+            out_f << "    \"name\": \"" << prop.name << "\",\n";
+            out_f << "    \"compute_capability\": \"" << prop.major << "." << prop.minor << "\",\n";
+            out_f << "    \"pci_bus_id\": \"" << assert_pci << "\",\n";
+            out_f << "    \"uuid\": \"" << assert_uuid << "\"\n";
+            out_f << "  },\n";
+            out_f << "  \"results\": " << json_results.str() << "\n";
+            out_f << "}\n";
+            out_f.close();
+            std::cout << "Wrote benchmark results to: " << output_json_path << "\n";
+        }
     }
 
     return 0;

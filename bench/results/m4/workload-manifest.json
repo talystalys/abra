@@ -1,0 +1,117 @@
+{
+  "milestone": "M4",
+  "model_provenance": {
+    "model_path": "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+    "sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+    "total_tensors": 398,
+    "q4_k_tensors_in_model": 216,
+    "q6_k_tensors_in_model": 37,
+    "f32_tensors_in_model": 145
+  },
+  "total_canonical_q4k_tensors_covered": 216,
+  "weighting_rule": "Canonical model-weighted aggregate is computed using actual Q4_K occurrence counts (attn_q:36, attn_kv:54, attn_out:36, ffn_gate_up:72, ffn_down:18). Non-Q4_K layers (e.g. Q6_K ffn_down/attn_v) and synthetic shapes are strictly excluded from the canonical model aggregate.",
+  "canonical_workloads": [
+    {
+      "shape_name": "attn_q",
+      "N": 4096,
+      "K": 2560,
+      "source_tensor_class": "attn_q",
+      "actual_model_quantization": "Q4_K",
+      "occurrence_count": 36,
+      "classification": "canonical_q4k_workload",
+      "description": "Query projection across all 36 decoder layers (36 Q4_K tensors)"
+    },
+    {
+      "shape_name": "attn_kv",
+      "N": 1024,
+      "K": 2560,
+      "source_tensor_class": "attn_k (36) + attn_v (18)",
+      "actual_model_quantization": "Q4_K",
+      "occurrence_count": 54,
+      "classification": "canonical_q4k_workload",
+      "description": "Key and Value projections across decoder layers (36 Q4_K attn_k + 18 Q4_K attn_v = 54 Q4_K tensors; 18 Q6_K attn_v excluded from Q4_K weight)"
+    },
+    {
+      "shape_name": "attn_out",
+      "N": 2560,
+      "K": 4096,
+      "source_tensor_class": "attn_output",
+      "actual_model_quantization": "Q4_K",
+      "occurrence_count": 36,
+      "classification": "canonical_q4k_workload",
+      "description": "Self-attention output projection across all 36 decoder layers (36 Q4_K tensors)"
+    },
+    {
+      "shape_name": "ffn_gate_up",
+      "N": 9728,
+      "K": 2560,
+      "source_tensor_class": "ffn_gate (36) + ffn_up (36)",
+      "actual_model_quantization": "Q4_K",
+      "occurrence_count": 72,
+      "classification": "canonical_q4k_workload",
+      "description": "MLP Gate and Up projections across all 36 decoder layers (36 ffn_gate + 36 ffn_up = 72 Q4_K tensors)"
+    },
+    {
+      "shape_name": "ffn_down",
+      "N": 2560,
+      "K": 9728,
+      "source_tensor_class": "ffn_down",
+      "actual_model_quantization": "Q4_K",
+      "occurrence_count": 18,
+      "classification": "canonical_q4k_workload",
+      "description": "MLP Down projection for layers with Q4_K quantization (18 Q4_K tensors; 18 Q6_K tensors excluded from Q4_K weight)"
+    }
+  ],
+  "synthetic_guardrail_workloads": [
+    {
+      "shape_name": "ffn_down_synth36",
+      "N": 2560,
+      "K": 9728,
+      "source_tensor_class": "ffn_down_synthetic_full_layer",
+      "actual_model_quantization": "synthetic_q4k_eval_for_m3_comparison",
+      "occurrence_count": 36,
+      "classification": "synthetic_m3_comparison",
+      "description": "Evaluates ffn_down under synthetic 36-occurrence assumption for cross-milestone M3 comparator preservation"
+    },
+    {
+      "shape_name": "guardrail_small_tail_k",
+      "N": 64,
+      "K": 256,
+      "source_tensor_class": "guardrail",
+      "actual_model_quantization": "synthetic",
+      "occurrence_count": 0,
+      "classification": "generalization_guardrail",
+      "description": "1 superblock K=256 boundary test"
+    },
+    {
+      "shape_name": "guardrail_mid_k_tail",
+      "N": 128,
+      "K": 768,
+      "source_tensor_class": "guardrail",
+      "actual_model_quantization": "synthetic",
+      "occurrence_count": 0,
+      "classification": "generalization_guardrail",
+      "description": "3 superblocks K=768 non-power-of-2 test"
+    },
+    {
+      "shape_name": "guardrail_large_n_mid_k",
+      "N": 8192,
+      "K": 1024,
+      "source_tensor_class": "guardrail",
+      "actual_model_quantization": "synthetic",
+      "occurrence_count": 0,
+      "classification": "generalization_guardrail",
+      "description": "High row-count N=8192, 4 superblocks test"
+    },
+    {
+      "shape_name": "guardrail_odd_n_boundary",
+      "N": 33,
+      "K": 2560,
+      "source_tensor_class": "guardrail",
+      "actual_model_quantization": "synthetic",
+      "occurrence_count": 0,
+      "classification": "generalization_guardrail",
+      "description": "Odd row-count N=33, 10 superblocks test"
+    }
+  ]
+}
