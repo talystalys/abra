@@ -398,23 +398,23 @@ static void init_default_tuning_table() {
     if (!g_tuning_table.empty()) return;
 
     // Pascal SM 6.1 initial baseline defaults
-    // attn_q (4096 x 2560): 2-warp split is faster in M3
-    g_tuning_table[{4096, 2560, 61}] = {4096, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 61.3, 71.3, 1.163};
-    // attn_kv (1024 x 2560): 2-warp split / 1-warp row
-    g_tuning_table[{1024, 2560, 61}] = {1024, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 16.4, 21.5, 1.311};
+    // attn_q (4096 x 2560): 2-warp split
+    g_tuning_table[{4096, 2560, 61}] = {4096, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 54.27, 60.42, 1.113};
+    // attn_kv (1024 x 2560): 1-warp row (zero smem)
+    g_tuning_table[{1024, 2560, 61}] = {1024, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 13.31, 17.41, 1.308};
     // attn_out (2560 x 4096): 2-warp split
-    g_tuning_table[{2560, 4096, 61}] = {2560, 4096, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 61.4, 64.6, 1.052};
+    g_tuning_table[{2560, 4096, 61}] = {2560, 4096, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 55.30, 59.07, 1.068};
     // ffn_gate_up (9728 x 2560): 1-warp row
-    g_tuning_table[{9728, 2560, 61}] = {9728, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 135.0, 161.0, 1.193};
-    // ffn_down (2560 x 9728): 1-warp row
-    g_tuning_table[{2560, 9728, 61}] = {2560, 9728, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 140.0, 145.0, 1.036};
+    g_tuning_table[{9728, 2560, 61}] = {9728, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 122.88, 135.09, 1.099};
+    // ffn_down (2560 x 9728): 4-warp control
+    g_tuning_table[{2560, 9728, 61}] = {2560, 9728, 61, CANDIDATE_WPR4_WPB4, "Q4K_PASCAL_WPR4_WPB4", 126.91, 132.10, 1.041};
 
     // Turing SM 7.5 initial baseline defaults
-    g_tuning_table[{4096, 2560, 75}] = {4096, 2560, 75, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 36.7, 37.1, 1.011};
-    g_tuning_table[{1024, 2560, 75}] = {1024, 2560, 75, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 12.1, 12.6, 1.041};
-    g_tuning_table[{2560, 4096, 75}] = {2560, 4096, 75, CANDIDATE_UPSTREAM_MMVQ, "VARIANT_UPSTREAM_MMVQ", 36.8, 36.8, 1.000};
-    g_tuning_table[{9728, 2560, 75}] = {9728, 2560, 75, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 73.4, 76.8, 1.046};
-    g_tuning_table[{2560, 9728, 75}] = {2560, 9728, 75, CANDIDATE_UPSTREAM_MMVQ, "VARIANT_UPSTREAM_MMVQ", 73.8, 73.8, 1.000};
+    g_tuning_table[{4096, 2560, 75}] = {4096, 2560, 75, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 33.84, 35.07, 1.036};
+    g_tuning_table[{1024, 2560, 75}] = {1024, 2560, 75, CANDIDATE_WPR1_WPB8, "Q4K_PASCAL_WPR1_WPB8", 11.30, 12.29, 1.088};
+    g_tuning_table[{2560, 4096, 75}] = {2560, 4096, 75, CANDIDATE_WPR1_WPB4_U2, "Q4K_PASCAL_WPR1_WPB4_U2", 32.08, 33.46, 1.043};
+    g_tuning_table[{9728, 2560, 75}] = {9728, 2560, 75, CANDIDATE_WPR1_WPB4_U2, "Q4K_PASCAL_WPR1_WPB4_U2", 72.08, 76.78, 1.065};
+    g_tuning_table[{2560, 9728, 75}] = {2560, 9728, 75, CANDIDATE_UPSTREAM_MMVQ, "VARIANT_UPSTREAM_MMVQ", 72.80, 72.80, 1.000};
 }
 
 void register_autotuned_table_entry(
