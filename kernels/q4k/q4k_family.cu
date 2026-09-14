@@ -191,6 +191,9 @@ Q4KCandidateSpec get_candidate_spec(Q4KCandidateID id) {
         case CANDIDATE_WPR2_WPB8_U2:
             return {CANDIDATE_WPR2_WPB8_U2, "Q4K_PASCAL_WPR2_WPB8_U2", "q4k_q8_mmvq_family_kernel<2, 8, 2>", 2, 8, 256, 4, 2, "inter_warp_smem", 32, false};
 
+        case CANDIDATE_AUTOTUNED_DISPATCH:
+            return {CANDIDATE_AUTOTUNED_DISPATCH, "Q4K_AUTOTUNED_DISPATCH", "launch_q4k_autotuned", 0, 0, 0, 0, 0, "autotuned_dispatch", 0, false};
+
         default:
             return {id, "UNKNOWN_CANDIDATE", "unknown", 0, 0, 0, 0, 0, "unknown", 0, false};
     }
@@ -404,8 +407,8 @@ static void init_default_tuning_table() {
     g_tuning_table[{1024, 2560, 61}] = {1024, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 13.31, 17.41, 1.308};
     // attn_out (2560 x 4096): 2-warp split
     g_tuning_table[{2560, 4096, 61}] = {2560, 4096, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 55.30, 59.07, 1.068};
-    // ffn_gate_up (9728 x 2560): 1-warp row
-    g_tuning_table[{9728, 2560, 61}] = {9728, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 122.88, 135.09, 1.099};
+    // ffn_gate_up (9728 x 2560): 2-warp split
+    g_tuning_table[{9728, 2560, 61}] = {9728, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 122.88, 135.09, 1.099};
     // ffn_down (2560 x 9728): 4-warp control
     g_tuning_table[{2560, 9728, 61}] = {2560, 9728, 61, CANDIDATE_WPR4_WPB4, "Q4K_PASCAL_WPR4_WPB4", 126.91, 132.10, 1.041};
 
