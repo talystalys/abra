@@ -1,0 +1,136 @@
+{
+  "milestone": "M4",
+  "device": {
+    "name": "NVIDIA GeForce GTX 1060 6GB",
+    "compute_capability": "6.1",
+    "pci_bus_id": "0000:03:00.0",
+    "uuid": "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
+  },
+  "safe_fallback": {
+    "rule": "For shapes not explicitly tuned: if K % 256 == 0 and K == 2560 and N >= 8192 use Q4K_PASCAL_WPR1_WPB4; otherwise use Q4K_PASCAL_WPR2_WPB4; otherwise fallback to VARIANT_UPSTREAM_MMVQ.",
+    "default_candidate_id": 204,
+    "default_candidate_name": "Q4K_PASCAL_WPR2_WPB4"
+  },
+  "tuning_table": [
+    {
+      "shape_name": "attn_q",
+      "N": 4096,
+      "K": 2560,
+      "architecture": 61,
+      "winning_candidate_id": 204,
+      "winning_candidate_name": "Q4K_PASCAL_WPR2_WPB4",
+      "winning_median_us": 62.464,
+      "upstream_median_us": 71.664,
+      "speedup_vs_upstream": 1.1472848360655739,
+      "selection_rationale": "Fastest verified candidate (median 62.46 us vs upstream 71.66 us, +14.7%)"
+    },
+    {
+      "shape_name": "attn_kv",
+      "N": 1024,
+      "K": 2560,
+      "architecture": 61,
+      "winning_candidate_id": 104,
+      "winning_candidate_name": "Q4K_PASCAL_WPR1_WPB4",
+      "winning_median_us": 15.2,
+      "upstream_median_us": 20.4,
+      "speedup_vs_upstream": 1.3421052631578947,
+      "selection_rationale": "Fastest verified candidate (median 15.20 us vs upstream 20.40 us, +34.2%)"
+    },
+    {
+      "shape_name": "attn_out",
+      "N": 2560,
+      "K": 4096,
+      "architecture": 61,
+      "winning_candidate_id": 202,
+      "winning_candidate_name": "Q4K_PASCAL_WPR2_WPB2",
+      "winning_median_us": 58.368,
+      "upstream_median_us": 62.24,
+      "speedup_vs_upstream": 1.0663377192982455,
+      "selection_rationale": "Fastest verified candidate (median 58.37 us vs upstream 62.24 us, +6.6%)"
+    },
+    {
+      "shape_name": "ffn_gate_up",
+      "N": 9728,
+      "K": 2560,
+      "architecture": 61,
+      "winning_candidate_id": 1042,
+      "winning_candidate_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+      "winning_median_us": 134.144,
+      "upstream_median_us": 160.768,
+      "speedup_vs_upstream": 1.198473282442748,
+      "selection_rationale": "Fastest verified candidate (median 134.14 us vs upstream 160.77 us, +19.8%)"
+    },
+    {
+      "shape_name": "ffn_down",
+      "N": 2560,
+      "K": 9728,
+      "architecture": 61,
+      "winning_candidate_id": 404,
+      "winning_candidate_name": "Q4K_PASCAL_WPR4_WPB4",
+      "winning_median_us": 127.808,
+      "upstream_median_us": 133.12,
+      "speedup_vs_upstream": 1.041562343515273,
+      "selection_rationale": "Fastest verified candidate (median 127.81 us vs upstream 133.12 us, +4.2%)"
+    },
+    {
+      "shape_name": "ffn_down_synth36",
+      "N": 2560,
+      "K": 9728,
+      "architecture": 61,
+      "winning_candidate_id": 102,
+      "winning_candidate_name": "Q4K_PASCAL_WPR1_WPB2",
+      "winning_median_us": 128,
+      "upstream_median_us": 132.08,
+      "speedup_vs_upstream": 1.031875,
+      "selection_rationale": "Fastest verified candidate (median 128.00 us vs upstream 132.08 us, +3.2%)"
+    },
+    {
+      "shape_name": "guardrail_small_tail_k",
+      "N": 64,
+      "K": 256,
+      "architecture": 61,
+      "winning_candidate_id": 1042,
+      "winning_candidate_name": "Q4K_PASCAL_WPR1_WPB4_U2",
+      "winning_median_us": 3.776,
+      "upstream_median_us": 5.824,
+      "speedup_vs_upstream": 1.5423728813559323,
+      "selection_rationale": "Fastest verified candidate (median 3.78 us vs upstream 5.82 us, +54.2%)"
+    },
+    {
+      "shape_name": "guardrail_mid_k_tail",
+      "N": 128,
+      "K": 768,
+      "architecture": 61,
+      "winning_candidate_id": 204,
+      "winning_candidate_name": "Q4K_PASCAL_WPR2_WPB4",
+      "winning_median_us": 4.96,
+      "upstream_median_us": 7.28,
+      "speedup_vs_upstream": 1.467741935483871,
+      "selection_rationale": "Fastest verified candidate (median 4.96 us vs upstream 7.28 us, +46.8%)"
+    },
+    {
+      "shape_name": "guardrail_large_n_mid_k",
+      "N": 8192,
+      "K": 1024,
+      "architecture": 61,
+      "winning_candidate_id": 204,
+      "winning_candidate_name": "Q4K_PASCAL_WPR2_WPB4",
+      "winning_median_us": 48.128,
+      "upstream_median_us": 49.152,
+      "speedup_vs_upstream": 1.0212765957446808,
+      "selection_rationale": "Fastest verified candidate (median 48.13 us vs upstream 49.15 us, +2.1%)"
+    },
+    {
+      "shape_name": "guardrail_odd_n_boundary",
+      "N": 33,
+      "K": 2560,
+      "architecture": 61,
+      "winning_candidate_id": 202,
+      "winning_candidate_name": "Q4K_PASCAL_WPR2_WPB2",
+      "winning_median_us": 4.096,
+      "upstream_median_us": 5.728,
+      "speedup_vs_upstream": 1.3984375,
+      "selection_rationale": "Fastest verified candidate (median 4.10 us vs upstream 5.73 us, +39.8%)"
+    }
+  ]
+}
