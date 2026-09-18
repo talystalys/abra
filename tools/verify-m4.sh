@@ -70,8 +70,7 @@ echo "  llama.cpp pinned commit verified: ${LLAMA_COMMIT} (clean worktree)."
 
 # Gate 4: Build & Dual-arch Device Image Verification
 echo "[Gate 4/25] Checking build and dual-arch device images (sm_61 and sm_75)..."
-cd "${BUILD_DIR}"
-make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m4_occupancy legacy_q4k
+(cd "${BUILD_DIR}" && make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m4_occupancy legacy_q4k)
 
 OBJ_FILE="${BUILD_DIR}/CMakeFiles/legacy_q4k.dir/kernels/q4k/q4k_family.cu.o"
 CUOBJDUMP_BIN="$(which cuobjdump 2>/dev/null || echo /usr/local/cuda-12.9/bin/cuobjdump)"
@@ -170,6 +169,7 @@ export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
     --assert-cc 6.1 \
     --assert-pci "${PASCAL_PCI}" \
     --assert-uuid "${PASCAL_UUID}" \
+    --model "${MODEL_PATH}" \
     --mode m4 | grep "PASS: Physical GPU identity assertions verified"
 
 # Gate 11: In-binary GPU Physical Identity Assertion (Turing Control)
@@ -181,6 +181,7 @@ export CUDA_VISIBLE_DEVICES="${TURING_UUID}"
     --assert-cc 7.5 \
     --assert-pci "${TURING_PCI}" \
     --assert-uuid "${TURING_UUID}" \
+    --model "${MODEL_PATH}" \
     --mode m4 | grep "PASS: Physical GPU identity assertions verified"
 
 # Gate 12: Comprehensive Unit Test Suite Execution on Pascal GP106
@@ -301,8 +302,8 @@ echo "  Speedup threshold verified: ${SPEEDUP}x > 1.05x."
 # Gate 21: Deadlock-Free Predication on Odd Boundary Shapes
 echo "[Gate 21/25] Checking deadlock-free execution on odd boundary shapes..."
 export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
-"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" | grep -q "PASS: Edge=N-boundary (N=1, K=256)"
-"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" | grep -q "PASS: Edge=N-boundary (N=33, K=256)"
+"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" --model "${MODEL_PATH}" | grep -q "PASS: Edge=N-boundary (N=1, K=256)"
+"${BUILD_DIR}/q4k_q8_test" --arch pascal --assert-uuid "${PASCAL_UUID}" --model "${MODEL_PATH}" | grep -q "PASS: Edge=N-boundary (N=33, K=256)"
 echo "  Deadlock-free predication verified on non-warp/non-block aligned row boundaries."
 
 # Gate 22: M3 Backward Compatibility Verification
