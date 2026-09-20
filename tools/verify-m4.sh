@@ -293,11 +293,11 @@ d = json.load(open('${SUMMARY_FILE}'))
 print(f\"{d['primary_qualification_pascal']['canonical_model_aggregate']['mode1_multiply_only']['aggregate_speedup_vs_upstream']:.4f}\")
 ")
 echo "  Measured Pascal Aggregate Speedup: ${SPEEDUP}x"
-if (( $(echo "${SPEEDUP} < 1.05" | bc -l) )); then
+if ! python3 -c "import sys; sys.exit(0 if float('${SPEEDUP}') >= 1.05 else 1)"; then
     echo "FATAL: Aggregate speedup ${SPEEDUP}x is below the 1.05x threshold!" >&2
     exit 1
 fi
-echo "  Speedup threshold verified: ${SPEEDUP}x > 1.05x."
+echo "  Speedup threshold verified: ${SPEEDUP}x >= 1.05x."
 
 # Gate 21: Deadlock-Free Predication on Odd Boundary Shapes
 echo "[Gate 21/25] Checking deadlock-free execution on odd boundary shapes..."
