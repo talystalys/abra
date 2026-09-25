@@ -20,6 +20,24 @@ This repository governs research into recovering modern quantized AI inference p
 
 ## 2. Hardware Identity & Architecture Demarcation
 
+### Current authorized port environment (2026-10-12)
+
+The user authorized the GTX 1080 Ti port and execution of the milestones in
+`docs/1080ti-port-plan.md`. All new qualification and optimization evidence
+must explicitly identify these current BigBoy devices:
+
+| Role | Device | CC | PCI | UUID |
+| --- | --- | --- | --- | --- |
+| Primary | GTX 1080 Ti, 11 GiB | 6.1 | `0000:03:00.0` | `GPU-3007f159-e0cf-9303-0a81-41ea8e945315` |
+| Second Pascal device | GTX 1080 Ti, 11 GiB | 6.1 | `0000:81:00.0` | `GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c` |
+
+Both current devices are Pascal. There is no installed Turing control.
+UUID, PCI, name and CC assertions remain mandatory; CUDA ordinal is not an
+identity. The GPU identities below apply only to historical M0–M4 evidence.
+Do not overwrite historical logs or reinterpret historical qualification.
+
+### Historical qualification environment
+
 - **Physical Machine**: All hardware experiments and qualification must execute on host `BigBoy`.
 - **Primary Qualification GPU (Pascal SM 6.1)**:
   - Device: NVIDIA GeForce GTX 1060 6GB
@@ -41,6 +59,22 @@ This repository governs research into recovering modern quantized AI inference p
 ---
 
 ## 3. Milestone & Scope Discipline
+
+The current user instruction authorizes execution of P0–P4 in
+`docs/1080ti-port-plan.md`, including correctness tests, runtime integration,
+and measured optimization. It supersedes the previous requirement to wait
+for M5 implementation authorization within this scope. Historical milestone
+PASS verdicts remain unchanged; report current evidence and acceptance
+criteria rather than inventing technical-lead approval.
+Workload scope: Qwen3-4B only, per the user's follow-up.
+
+On 2026-10-12 the user delegated the choice between strict logit equivalence
+and upstream Flash Attention with maintained quality. The selected policy is
+to qualify upstream Flash Attention separately using fixed-corpus perplexity
+and deterministic task checks before selecting it for inference. The recorded
+strict logit failure remains a failure; custom kernel oracle and exact-output
+checks retain their existing tolerances. See the quality criteria in the port
+plan. This policy does not authorize lower precision or changed model weights.
 
 - **Active Milestone**: Only the currently authorized milestone may be implemented.
 - **Milestone Authorization**: The technical lead determines PASS/PARTIAL/FAIL for each milestone. Agents must never declare milestone PASS or proceed to subsequent milestones without explicit authorization.

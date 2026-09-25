@@ -1,0 +1,127 @@
+Local capture UTC: 2026-10-11T16:02:06.696300+00:00
+Command: ssh -o BatchMode=yes -o ConnectTimeout=12 taly@BigBoy 'date -u -Is; hostname; whoami; fastfetch --logo none --pipe true; uname -r; lscpu; free -h; lsblk -d -o NAME,SIZE,TYPE,MODEL; df -h /; nvidia-smi --query-gpu=name,uuid,pci.bus_id,compute_cap,memory.total,driver_version,power.limit,pcie.link.gen.max,pcie.link.gen.current,pcie.link.width.max,pcie.link.width.current --format=csv; nvidia-smi topo -m; /usr/local/cuda-12.9/bin/nvcc --version; gcc --version | head -1; ldd --version | head -1; cmake --version | head -1; ninja --version; git -C /home/taly/legacy-ai status --short; git -C /home/taly/legacy-ai branch -vv; git -C /home/taly/legacy-ai rev-parse HEAD; git -C /home/taly/legacy-ai remote -v; ls -la /home/taly/legacy-ai/.deps; ls -l /home/taly/legacy-ai/models; find /home/taly/legacy-ai/.deps -maxdepth 6 -type f -name llama-bench -print; git -C /home/taly/legacy-ai/.deps/llama.cpp rev-parse HEAD'
+
+2026-10-11T16:02:06+00:00
+BigBoy
+taly
+taly@BigBoy
+-----------
+OS: Debian GNU/Linux 13 (trixie) x86_64
+Host: JINGS-X99-P8
+Kernel: Linux 6.12.107+deb13-amd64
+Uptime: 15 days, 11 hours, 42 mins
+Packages: 1624 (dpkg)
+Shell: bash 5.2.37
+Cursor: Adwaita
+Terminal: 
+CPU: 2 x Intel(R) Xeon(R) E5-2683 v4 (64) @ 3.00 GHz
+GPU 1: NVIDIA GeForce GTX 1080 Ti [Discrete]
+GPU 2: NVIDIA GeForce GTX 1080 Ti [Discrete]
+Memory: 9.83 GiB / 62.77 GiB (16%)
+Swap: 1.75 MiB / 22.33 GiB (0%)
+Disk (/): 267.30 GiB / 892.90 GiB (30%) - ext4
+Local IP (enp6s0): 192.168.50.49/24
+Locale: en_US.UTF-8
+
+[40m   [41m   [42m   [43m   [44m   [45m   [46m   [47m   [m
+[100m   [101m   [102m   [103m   [104m   [105m   [106m   [107m   [m
+6.12.107+deb13-amd64
+Architecture:                            x86_64
+CPU op-mode(s):                          32-bit, 64-bit
+Address sizes:                           46 bits physical, 48 bits virtual
+Byte Order:                              Little Endian
+CPU(s):                                  64
+On-line CPU(s) list:                     0-63
+Vendor ID:                               GenuineIntel
+Model name:                              Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz
+CPU family:                              6
+Model:                                   79
+Thread(s) per core:                      2
+Core(s) per socket:                      16
+Socket(s):                               2
+Stepping:                                1
+CPU(s) scaling MHz:                      42%
+CPU max MHz:                             3000.0000
+CPU min MHz:                             1200.0000
+BogoMIPS:                                4190.24
+Flags:                                   fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts acpi mmx fxsr sse sse2 ss ht tm pbe syscall nx pdpe1gb rdtscp lm constant_tsc arch_perfmon pebs bts rep_good nopl xtopology nonstop_tsc cpuid aperfmperf pni pclmulqdq dtes64 monitor ds_cpl vmx smx est tm2 ssse3 sdbg fma cx16 xtpr pdcm pcid dca sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand lahf_lm abm 3dnowprefetch cpuid_fault epb cat_l3 cdp_l3 pti intel_ppin ssbd ibrs ibpb stibp tpr_shadow flexpriority ept vpid ept_ad fsgsbase tsc_adjust bmi1 hle avx2 smep bmi2 erms invpcid rtm cqm rdt_a rdseed adx smap intel_pt xsaveopt cqm_llc cqm_occup_llc cqm_mbm_total cqm_mbm_local dtherm ida arat pln pts vnmi md_clear flush_l1d
+Virtualization:                          VT-x
+L1d cache:                               1 MiB (32 instances)
+L1i cache:                               1 MiB (32 instances)
+L2 cache:                                8 MiB (32 instances)
+L3 cache:                                80 MiB (2 instances)
+NUMA node(s):                            2
+NUMA node0 CPU(s):                       0-15,32-47
+NUMA node1 CPU(s):                       16-31,48-63
+Vulnerability Gather data sampling:      Not affected
+Vulnerability Indirect target selection: Not affected
+Vulnerability Itlb multihit:             KVM: Mitigation: Split huge pages
+Vulnerability L1tf:                      Mitigation; PTE Inversion; VMX conditional cache flushes, SMT vulnerable
+Vulnerability Mds:                       Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Meltdown:                  Mitigation; PTI
+Vulnerability Mmio stale data:           Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Reg file data sampling:    Not affected
+Vulnerability Retbleed:                  Not affected
+Vulnerability Spec rstack overflow:      Not affected
+Vulnerability Spec store bypass:         Mitigation; Speculative Store Bypass disabled via prctl
+Vulnerability Spectre v1:                Mitigation; usercopy/swapgs barriers and __user pointer sanitization
+Vulnerability Spectre v2:                Mitigation; Retpolines; IBPB conditional; IBRS_FW; STIBP conditional; RSB filling; PBRSB-eIBRS Not affected; BHI Not affected
+Vulnerability Srbds:                     Not affected
+Vulnerability Tsa:                       Not affected
+Vulnerability Tsx async abort:           Mitigation; Clear CPU buffers; SMT vulnerable
+Vulnerability Vmscape:                   Mitigation; IBPB before exit to userspace
+               total        used        free      shared  buff/cache   available
+Mem:            62Gi       9.8Gi        29Gi       176Mi        24Gi        52Gi
+Swap:           22Gi       1.8Mi        22Gi
+NAME      SIZE TYPE MODEL
+nvme0n1 931.5G disk PNY CS3030 1TB SSD
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/nvme0n1p2  893G  268G  581G  32% /
+name, uuid, pci.bus_id, compute_cap, memory.total [MiB], driver_version, power.limit [W], pcie.link.gen.max, pcie.link.gen.current, pcie.link.width.max, pcie.link.width.current
+NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 11264 MiB, 550.163.01, 250.00 W, 3, 1, 16, 16
+NVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 11264 MiB, 550.163.01, 280.00 W, 3, 1, 16, 16
+	[4mGPU0	GPU1	CPU Affinity	NUMA Affinity	GPU NUMA ID[0m
+GPU0	 X 	SYS	0-15,32-47	0		N/A
+GPU1	SYS	 X 	16-31,48-63	1		N/A
+
+Legend:
+
+  X    = Self
+  SYS  = Connection traversing PCIe as well as the SMP interconnect between NUMA nodes (e.g., QPI/UPI)
+  NODE = Connection traversing PCIe as well as the interconnect between PCIe Host Bridges within a NUMA node
+  PHB  = Connection traversing PCIe as well as a PCIe Host Bridge (typically the CPU)
+  PXB  = Connection traversing multiple PCIe bridges (without traversing the PCIe Host Bridge)
+  PIX  = Connection traversing at most a single PCIe bridge
+  NV#  = Connection traversing a bonded set of # NVLinks
+nvcc: NVIDIA (R) Cuda compiler driver
+Copyright (c) 2005-2025 NVIDIA Corporation
+Built on Tue_May_27_02:21:03_PDT_2025
+Cuda compilation tools, release 12.9, V12.9.86
+Build cuda_12.9.r12.9/compiler.36037853_0
+gcc (Debian 14.2.0-19) 14.2.0
+ldd (Debian GLIBC 2.41-12+deb13u3) 2.41
+cmake version 3.31.6
+1.12.1
+* exp/qwen38-27b             fb1d5f2 m3r2: eliminate upstream ABI shim and finalize qualification
+  m0/reproducible-baseline   a2e207f m0: harden reproducibility and device qualification
+  m1/existing-baseline       3ef60d1 m1: harden baseline provenance and interpretation
+  m2/dp4a-microkernel        f10ead5 m2: finalize canonical provenance validation
+  m3/q4k-q8-microkernel      fb1d5f2 m3r2: eliminate upstream ABI shim and finalize qualification
+  m4/autotuned-kernel-family 815e3ff m4: update Gate 21 deadlock-free verification in verify-m4.sh
+fb1d5f26162cf659ddc47b5752c257dff0bfa43a
+origin	git@github.com:talystalys/legacy-ai.git (fetch)
+origin	git@github.com:talystalys/legacy-ai.git (push)
+total 32
+drwxrwxr-x+  4 taly taly 4096 Sep 18 19:53 .
+drwxrwxr-x+ 15 taly taly 4096 Sep 18 19:57 ..
+drwxrwxr-x+ 33 taly taly 4096 Aug 19 18:42 llama.cpp
+drwxrwxr-x+ 31 taly taly 4096 Sep 18 19:54 llama.cpp-qwen38
+total 18517316
+-rw-rw-r--+ 1 taly taly  2497280256 Aug 18 16:06 Qwen3-4B-Q4_K_M.gguf
+-rw-rw-r--+ 1 taly taly 16464440224 Sep 18 20:00 Qwen3.8-27B-UD-Q4_K_M.gguf
+/home/taly/legacy-ai/.deps/llama.cpp-qwen38/build/bin/llama-bench
+/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/llama-bench
+/home/taly/legacy-ai/.deps/llama.cpp/build-cublas/bin/llama-bench
+169e4a7ff201e666c2325bcd35afb64573e39d09
+
+Exit code: 0

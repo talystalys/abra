@@ -1,0 +1,17 @@
+-- The CXX compiler identification is GNU 14.2.0
+-- The CUDA compiler identification is NVIDIA 12.9.86 with host compiler GNU 14.2.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Detecting CUDA compiler ABI info
+-- Detecting CUDA compiler ABI info - done
+-- Check for working CUDA compiler: /usr/local/cuda-12.9/bin/nvcc - skipped
+-- Detecting CUDA compile features
+-- Detecting CUDA compile features - done
+-- Legacy GPU Target Architectures: 61
+-- Using CUDA compatibility overlay from: /home/taly/legacy-ai-1080ti-port/.cuda_compat/include
+-- Configuring done (3.8s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/taly/legacy-ai-1080ti-port/build-sm61

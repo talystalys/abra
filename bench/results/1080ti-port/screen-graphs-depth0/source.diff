@@ -1,0 +1,103 @@
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index f2e381ee0..b61781ea0 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -86,6 +86,7 @@
+ #include <cstdarg>
+ #include <cstdio>
+ #include <cstdlib>
++#include <cstring>
+ #include <string>
+ #include <vector>
+ 
+@@ -4201,6 +4202,9 @@ static void ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context * cud
+         ggml_cuda_graph * graph = cuda_ctx->cuda_graph(graph_key);
+         if (graph->instance == nullptr) { // Create executable graph from captured graph.
+             CUDA_CHECK(cudaGraphInstantiate(&graph->instance, graph->graph, NULL, NULL, 0));
++            if (ggml_cuda_info().devices[cuda_ctx->device].cc == 610) {
++                GGML_LOG_INFO("legacy_ai: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
++            }
+         }
+         if (cuda_graph_update_required) { // Update graph executable
+             ggml_cuda_graph_update_executable(cuda_ctx, graph_key);
+@@ -4219,7 +4223,13 @@ static bool ggml_cuda_graph_set_enabled(ggml_backend_cuda_context * cuda_ctx, co
+     ggml_cuda_graph * graph = cuda_ctx->cuda_graph(graph_key);
+ 
+     if (graph->graph == nullptr) {
+-        if (ggml_cuda_info().devices[cuda_ctx->device].cc < GGML_CUDA_CC_VOLTA) {
++        // Legacy AI: explicitly opt in only the qualified Pascal SM 6.1 path.
++        // Preserve the architecture guard and all upstream graph compatibility,
++        // warmup, recapture, update and explicit-disable checks by default.
++        const int cc = ggml_cuda_info().devices[cuda_ctx->device].cc;
++        const char * opt_in = std::getenv("LEGACY_AI_PASCAL_GRAPHS");
++        const bool pascal_graphs = cc == 610 && opt_in && std::strcmp(opt_in, "1") == 0;
++        if (cc < GGML_CUDA_CC_VOLTA && !pascal_graphs) {
+             if (!graph->disable_due_to_gpu_arch) {
+                 GGML_LOG_DEBUG("%s: disabling CUDA graphs due to GPU architecture\n", __func__);
+             }
+diff --git a/ggml/src/ggml-cuda/mmvq.cu b/ggml/src/ggml-cuda/mmvq.cu
+index c99923804..68e8b9ae6 100644
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -2,6 +2,9 @@
+ #include "quantize.cuh"
+ #include "unary.cuh"
+ #include "vecdotq.cuh"
++#include "legacy-ai-q4k.cuh"
++#include <cstring>
++#include <atomic>
+ 
+ #include <cstdint>
+ #include <type_traits>
+@@ -1065,6 +1068,51 @@ static void mul_mat_vec_q_switch_type(
+         const int stride_channel_x, const int stride_channel_y, const int stride_channel_dst,
+         const int nsamples_x, const int nsamples_dst, const int stride_sample_x, const int stride_sample_y, const int stride_sample_dst,
+         const int ids_stride, cudaStream_t stream) {
++
++    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.
++    static const bool legacy_q4k = [] {
++        const char * value = std::getenv("LEGACY_AI_Q4K");
++        return value && std::strcmp(value, "1") == 0;
++    }();
++    const bool canonical_shape =
++        (ncols_x == 2560 && (nrows_x == 4096 || nrows_x == 1024 || nrows_x == 9728)) ||
++        (ncols_x == 4096 && nrows_x == 2560) ||
++        (ncols_x == 9728 && nrows_x == 2560);
++    if (legacy_q4k && type_x == GGML_TYPE_Q4_K && canonical_shape &&
++        ncols_dst == 1 && !ids &&
++        nchannels_x == 1 && nchannels_y == 1 && nchannels_dst == 1 &&
++        nsamples_x == 1 && nsamples_dst == 1 &&
++        stride_row_x == ncols_x / QK_K &&
++        !fusion.x_bias && !fusion.gate && !fusion.gate_bias && !fusion.x_scale && !fusion.gate_scale &&
++        ggml_cuda_info().devices[ggml_cuda_get_device()].cc == 610) {
++        static const int wpr = [] {
++            const char * value = std::getenv("LEGACY_AI_Q4K_WPR");
++            return value ? std::atoi(value) : 2;
++        }();
++        const auto * w = static_cast<const block_q4_K *>(vx);
++        const auto * x = static_cast<const block_q8_1 *>(vy);
++        const dim3 block(32, 4);
++        if (wpr == 1 || wpr == 2 || wpr == 4) {
++            static std::atomic_flag reported = ATOMIC_FLAG_INIT;
++            if (!reported.test_and_set()) {
++                GGML_LOG_INFO("legacy_ai: Q4_K runtime dispatch active, WPR=%d\n", wpr);
++            }
++        }
++        switch (wpr) {
++            case 1:
++                legacy_ai_q4k_kernel<1, 4><<<dim3((nrows_x + 3) / 4), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                return;
++            case 2:
++                legacy_ai_q4k_kernel<2, 4><<<dim3((nrows_x + 1) / 2), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                return;
++            case 4:
++                legacy_ai_q4k_kernel<4, 4><<<dim3(nrows_x), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                return;
++            default:
++                break; // Unsupported experimental configuration uses upstream.
++        }
++    }
++
+     switch (type_x) {
+         case GGML_TYPE_Q1_0:
+             mul_mat_vec_q_switch_ncols_dst<GGML_TYPE_Q1_0>

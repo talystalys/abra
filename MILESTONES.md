@@ -2,7 +2,12 @@
 
 This document outlines the research and engineering roadmap for exploring modern quantized neural-network inference on legacy NVIDIA architectures (specifically NVIDIA Pascal SM 6.1).
 
-> **Important**: Milestone M4 is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
+> **Current authorization (2026-10-12):** execute P0–P4 in
+> [the GTX 1080 Ti port plan](docs/1080ti-port-plan.md), for Qwen3-4B only.
+> The prior M5 authorization wait below is historical and does not block
+> this explicitly requested port.
+
+> **Historical M4 status**: Milestone M4 is currently **completed and awaiting technical lead audit**. Future milestones require review, audit of evidence, and explicit authorization from the technical lead before implementation begins.
 
 ---
 

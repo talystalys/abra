@@ -1,0 +1,4 @@
+# Preserve raw evidence byte for byte, including upstream whitespace.
+bench/results/1080ti-port/** -whitespace
+docs/evidence/1080ti-port/** -whitespace
+docs/evidence/bigboy-refresh-2026-10-12/** -whitespace

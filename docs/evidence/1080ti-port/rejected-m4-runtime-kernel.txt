@@ -1,0 +1,85 @@
+#pragma once
+// M4 kernel transplanted into upstream's type/quantization implementation.
+// Included after vecdotq.cuh. The caller checks batch, shape, strides, fusion
+// and architecture before dispatch; every other case remains upstream.
+template <int WARPS_PER_ROW, int WARPS_PER_BLOCK, int UNROLL = 1>
+__global__ void legacy_ai_q4k_kernel(
+    const block_q4_K * __restrict__ d_w,
+    const block_q8_1 * __restrict__ d_x,
+    float * __restrict__ d_y,
+    const int N,
+    const int K
+) {
+    constexpr int ROWS_PER_BLOCK = WARPS_PER_BLOCK / WARPS_PER_ROW;
+    const int lane = threadIdx.x;
+    const int warp_id = threadIdx.y;
+    const int group_id = warp_id / WARPS_PER_ROW;
+    const int warp_in_group = warp_id % WARPS_PER_ROW;
+
+    const int row = blockIdx.x * ROWS_PER_BLOCK + group_id;
+    const bool is_valid_row = (row < N);
+
+    const int tid_in_group = warp_in_group * 32 + lane;
+    const int blocks_per_row = K / QK_K;
+    const int blocks_per_iter = WARPS_PER_ROW * 2;
+    const int kbx_start = tid_in_group / 16;
+    const int kqs = 2 * (lane % 16);
+
+    float sum = 0.0f;
+
+    if (is_valid_row) {
+        const block_q4_K * row_w = d_w + row * blocks_per_row;
+
+        if constexpr (UNROLL == 2) {
+            #pragma unroll 2
+            for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
+                const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+                sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
+            }
+        } else {
+            for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
+                const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+                sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
+            }
+        }
+
+        // Intra-warp shuffle reduction (32 lanes -> lane 0)
+        #pragma unroll
+        for (int mask = 16; mask > 0; mask >>= 1) {
+            sum += __shfl_xor_sync(0xffffffff, sum, mask, 32);
+        }
+    }
+
+    if constexpr (WARPS_PER_ROW == 1) {
+        // Zero shared memory, zero syncthreads
+        if (is_valid_row && lane == 0) {
+            d_y[row] = sum;
+        }
+    } else if constexpr (WARPS_PER_ROW == 2) {
+        __shared__ float smem_warps[WARPS_PER_BLOCK];
+        if (lane == 0) {
+            smem_warps[warp_id] = sum;
+        }
+        __syncthreads();
+
+        if (is_valid_row && warp_in_group == 0 && lane == 0) {
+            float total = smem_warps[group_id * 2 + 0] + smem_warps[group_id * 2 + 1];
+            d_y[row] = total;
+        }
+    } else if constexpr (WARPS_PER_ROW == 4) {
+        __shared__ float smem_warps[WARPS_PER_BLOCK];
+        if (lane == 0) {
+            smem_warps[warp_id] = sum;
+        }
+        __syncthreads();
+
+        if (is_valid_row && warp_in_group == 0 && lane == 0) {
+            float total = smem_warps[group_id * 4 + 0] +
+                          smem_warps[group_id * 4 + 1] +
+                          smem_warps[group_id * 4 + 2] +
+                          smem_warps[group_id * 4 + 3];
+            d_y[row] = total;
+        }
+    }
+}
+

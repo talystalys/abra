@@ -1,0 +1,154 @@
+[
+  {
+    "role": "primary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=0",
+      "--membind=0",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/q4k_q8_test",
+      "--model",
+      "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+      "--assert-name",
+      "NVIDIA GeForce GTX 1080 Ti",
+      "--assert-cc",
+      "6.1",
+      "--assert-pci",
+      "0000:03:00.0",
+      "--assert-uuid",
+      "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "--envelope-out",
+      "bench/results/1080ti-port/final-oracles/primary-envelope.json"
+    ],
+    "binary_sha256": "f910d67efa781058ba5e81f12c05ad965f27fa62cf3f6656994c056b54f738a3",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "primary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=0",
+      "--membind=0",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_kernel_test"
+    ],
+    "binary_sha256": "252ba05021a2704a2fb75b03c683caa44ffb1a48ea22b2378986f022b6ff3ec5",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "primary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=0",
+      "--membind=0",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/attention_kernel_test"
+    ],
+    "binary_sha256": "7e9de882f9b5999936344eba57683b0b8e2b872b9eb3259101a586533d391658",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "primary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=0",
+      "--membind=0",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/value_kernel_test"
+    ],
+    "binary_sha256": "47dd858fdde4c1c247cf889256c16fb0c6e1a37f666f8489e145474944337afd",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "secondary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=1",
+      "--membind=1",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/q4k_q8_test",
+      "--model",
+      "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+      "--assert-name",
+      "NVIDIA GeForce GTX 1080 Ti",
+      "--assert-cc",
+      "6.1",
+      "--assert-pci",
+      "0000:81:00.0",
+      "--assert-uuid",
+      "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "--envelope-out",
+      "bench/results/1080ti-port/final-oracles/secondary-envelope.json"
+    ],
+    "binary_sha256": "f910d67efa781058ba5e81f12c05ad965f27fa62cf3f6656994c056b54f738a3",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "secondary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=1",
+      "--membind=1",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_kernel_test"
+    ],
+    "binary_sha256": "252ba05021a2704a2fb75b03c683caa44ffb1a48ea22b2378986f022b6ff3ec5",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "secondary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=1",
+      "--membind=1",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/attention_kernel_test"
+    ],
+    "binary_sha256": "7e9de882f9b5999936344eba57683b0b8e2b872b9eb3259101a586533d391658",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  },
+  {
+    "role": "secondary",
+    "gpu": "NVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 550.163.01",
+    "argv": [
+      "numactl",
+      "--cpunodebind=1",
+      "--membind=1",
+      "/home/taly/legacy-ai-1080ti-port/build-sm61/value_kernel_test"
+    ],
+    "binary_sha256": "47dd858fdde4c1c247cf889256c16fb0c6e1a37f666f8489e145474944337afd",
+    "environment": {
+      "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "GGML_CUDA_DISABLE_GRAPHS": "1",
+      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+    }
+  }
+]

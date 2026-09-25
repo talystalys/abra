@@ -1,0 +1,7 @@
+<|im_start|>user
+Translate good morning into Spanish. Output only the translation. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

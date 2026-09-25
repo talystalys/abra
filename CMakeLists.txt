@@ -18,16 +18,17 @@ add_definitions(
 )
 
 # Include directories
+set(LLAMA_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp" CACHE PATH "Pinned llama.cpp source")
 include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/kernels
-    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/src
-    ${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/ggml/src/ggml-cuda
+    ${LLAMA_SOURCE_DIR}/ggml/include
+    ${LLAMA_SOURCE_DIR}/ggml/src
+    ${LLAMA_SOURCE_DIR}/ggml/src/ggml-cuda
 )
 
 # Pinned llama.cpp library location
-set(LLAMA_LIB_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp/build-default/bin")
+set(LLAMA_LIB_DIR "${LLAMA_SOURCE_DIR}/build-default/bin" CACHE PATH "Pinned llama.cpp libraries")
 link_directories(${LLAMA_LIB_DIR})
 
 # Common smoke kernel library (M0)
@@ -163,6 +164,22 @@ set_target_properties(dump_m4_occupancy PROPERTIES
     BUILD_RPATH "${LLAMA_LIB_DIR}"
     INSTALL_RPATH "${LLAMA_LIB_DIR}"
 )
+
+# End-to-end runtime validation for the hardware port (independent of timing).
+add_executable(runtime_logits tests/runtime_logits.cpp)
+target_include_directories(runtime_logits PRIVATE ${LLAMA_SOURCE_DIR}/include)
+target_link_libraries(runtime_logits PRIVATE llama ggml ggml-base)
+set_target_properties(runtime_logits PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
+
+add_executable(runtime_kernel_test tests/runtime_kernel_test.cu)
+target_link_libraries(runtime_kernel_test PRIVATE ggml-cuda ggml-base ggml)
+set_target_properties(runtime_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
+add_executable(attention_kernel_test tests/attention_kernel_test.cu)
+target_link_libraries(attention_kernel_test PRIVATE ggml-cuda ggml-base ggml)
+set_target_properties(attention_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
+add_executable(value_kernel_test tests/value_kernel_test.cu)
+target_link_libraries(value_kernel_test PRIVATE ggml-cuda ggml-base ggml)
+set_target_properties(value_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
 target_compile_options(dump_m4_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )

@@ -1,5 +1,36 @@
 # CURRENT_STATUS.md
 
+## Current authorized port — Qwen3-4B only
+
+- Branch: `port/1080ti-runtime`, derived from M4 `815e3ff`.
+- BigBoy checkout: `/home/taly/legacy-ai-1080ti-port`; public-key SSH to
+  `taly@BigBoy` resolves to `82.128.141.4` and works.
+- Hardware: two GTX 1080 Ti cards, each SM 6.1 and 11 GiB; identities and
+  current host specs are in [the inventory](docs/research/2026-10-12-bigboy-refresh.md).
+- P0: the unchanged M4 oracle suite completed 756/756 cases on each card.
+- P2: graph replay, exact-order Q4_K/Q6_K kernels and metadata prepacking
+  passed full-vocabulary, 32-step validation at depths 0 and 2048.
+- P3: thread-layout and activation-sum regressions are recorded. Custom QK/value
+  kernels passed bit-identical full-runtime comparisons on both GTX 1080 Ti
+  GPUs. Balanced final timing comparisons completed with 20 measured samples
+  per configuration/depth and five excluded full-workload warmups per block.
+- At depth 2048, Flash Attention improved primary decode 46.87 → 71.15
+  tokens/s (+51.8%) and secondary decode 51.23 → 72.66 (+41.8%). Exact custom
+  QK/value kernels reached 57.80 on the primary (+23.3%, bit-identical logits).
+  The primary card showed thermal slowdown; the secondary is the launcher
+  default because it delivered higher sustained Flash Attention throughput.
+- The user delegated the attention quality policy. Upstream Flash Attention
+  passed the separately declared quality criterion: WikiText-2 perplexity
+  12.3786 → 12.3824 (+0.031%) and 8/10 exact-format task successes in both modes.
+  Its frozen strict-logit failure remains recorded. The default launcher now
+  enables Flash Attention; `--runtime exact` preserves validated exact output.
+- [Milestones and acceptance criteria](docs/1080ti-port-plan.md). No historical
+  milestone verdict is changed by the port.
+- [Full results, limitations and reproduction](docs/research/1080ti-port-results.md).
+
+## Historical M4 status
+
+
 Current milestone: M4 (Pascal Autotuned Kernel Family — Complete — Awaiting Technical-Lead Audit & Authorization — DO NOT PROCEED TO M5)
 Current branch: m4/autotuned-kernel-family
 Lineage: Direct descendant of verified M3 HEAD fb1d5f26162cf659ddc47b5752c257dff0bfa43a and accepted M2 base f10ead5fa94925e0a36980b1f3bdaa4a6998aa84

@@ -1,0 +1,42 @@
+[  0%] Built target llama-common-base
+[  2%] Built target ggml-base
+[  2%] Built target cpp-httplib
+[  7%] Built target ggml-cpu
+[  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/mmvq.cu.o
+[  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/ggml-cuda.cu.o
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+  106 | __nv_cvt_double_to_fp4(const double x,
+      |                                       
+  107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
+      | ^                 
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+  334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
+      |                                                    
+  335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {
+      | ^                 
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+  106 | __nv_cvt_double_to_fp4(const double x,
+      |                                       
+  107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
+      | ^                 
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+  334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
+      |                                                    
+  335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {
+      | ^                 
+[  7%] Linking CUDA shared library ../../../bin/libggml-cuda.so
+[ 43%] Built target ggml-cuda
+[ 43%] Linking CXX shared library ../../bin/libggml.so
+[ 43%] Built target ggml
+[ 43%] Linking CXX shared library ../bin/libllama.so
+[ 89%] Built target llama
+[ 91%] Linking CXX shared library ../bin/libllama-common.so
+[ 98%] Built target llama-common
+[ 98%] Linking CXX shared library ../../bin/libllama-bench-impl.so
+[100%] Built target llama-bench-impl
+[100%] Linking CXX executable ../../bin/llama-bench
+[100%] Built target llama-bench

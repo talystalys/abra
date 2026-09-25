@@ -1,0 +1,3 @@
+<|im_start|>user
+All tulips are plants. Some plants are red. Must some tulips be red? Answer only yes or no. /no_think<|im_end|>
+<|im_start|>assistant

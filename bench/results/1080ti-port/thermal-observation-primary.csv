@@ -1,0 +1,3 @@
+timestamp, uuid, temperature.gpu, fan.speed [%], clocks.current.sm [MHz], power.draw [W], clocks_event_reasons.active, clocks_event_reasons.sw_thermal_slowdown, clocks_event_reasons.hw_thermal_slowdown
+2026/10/11 21:59:55.076, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 88, 83 %, 1733 MHz, 237.49 W, 0x0000000000000000, Not Active, Not Active
+2026/10/11 21:59:55.107, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 48, 0 %, 139 MHz, 12.87 W, 0x0000000000000001, Not Active, Not Active

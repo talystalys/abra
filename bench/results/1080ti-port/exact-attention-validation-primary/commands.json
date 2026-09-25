@@ -1,0 +1,325 @@
+{
+  "utc": "2026-10-11T17:26:28.446924+00:00",
+  "commands": [
+    {
+      "mode": "baseline",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/baseline-d0.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/baseline-d0-tokens.json",
+        "32",
+        "0"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "fallback",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/fallback-d0.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/fallback-d0-tokens.json",
+        "32",
+        "0"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "graphs",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/graphs-d0.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/graphs-d0-tokens.json",
+        "32",
+        "0"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "1",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": null
+      }
+    },
+    {
+      "mode": "exact-attention",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-d0.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-d0-tokens.json",
+        "32",
+        "0"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "1",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "exact-attention-graphs",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-graphs-d0.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-graphs-d0-tokens.json",
+        "32",
+        "0"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "1",
+        "LEGACY_AI_ATTENTION": "1",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": null
+      }
+    },
+    {
+      "mode": "baseline",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/baseline-d2048.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/baseline-d2048-tokens.json",
+        "32",
+        "2048"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "fallback",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/fallback-d2048.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/fallback-d2048-tokens.json",
+        "32",
+        "2048"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "graphs",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/graphs-d2048.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/graphs-d2048-tokens.json",
+        "32",
+        "2048"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "1",
+        "LEGACY_AI_ATTENTION": "0",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": null
+      }
+    },
+    {
+      "mode": "exact-attention",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-d2048.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-d2048-tokens.json",
+        "32",
+        "2048"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "0",
+        "LEGACY_AI_ATTENTION": "1",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": "1"
+      }
+    },
+    {
+      "mode": "exact-attention-graphs",
+      "argv": [
+        "numactl",
+        "--cpunodebind=0",
+        "--membind=0",
+        "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
+        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-graphs-d2048.tmp",
+        "bench/results/1080ti-port/exact-attention-validation-primary/exact-attention-graphs-d2048-tokens.json",
+        "32",
+        "2048"
+      ],
+      "environment": {
+        "LEGACY_AI_VALIDATE_SPLIT": "none",
+        "LEGACY_AI_VALIDATE_FLASH_ATTN": "0",
+        "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+        "LD_LIBRARY_PATH": ".deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+        "LEGACY_AI_PASCAL_GRAPHS": "1",
+        "LEGACY_AI_ATTENTION": "1",
+        "LEGACY_AI_ATTENTION_ROWS": "4",
+        "LEGACY_AI_PREPACK": "0",
+        "LEGACY_AI_Q4K": "0",
+        "LEGACY_AI_Q4K_WPR": "2",
+        "LEGACY_AI_Q4K_WPB": "8",
+        "LEGACY_AI_Q4K_SUMS": "0",
+        "LEGACY_AI_Q6K": "0",
+        "LEGACY_AI_Q6K_WPR": "2",
+        "LEGACY_AI_Q6K_WPB": "8",
+        "GGML_CUDA_DISABLE_GRAPHS": null
+      }
+    }
+  ]
+}

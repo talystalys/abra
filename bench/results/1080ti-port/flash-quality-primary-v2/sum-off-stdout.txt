@@ -1,0 +1,13 @@
+<think>
+
+</think>
+
+The sum of the integers from 1 to 8 is:
+
+$$
+1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 36
+$$
+
+**Answer: 36** [end of text]
+
+

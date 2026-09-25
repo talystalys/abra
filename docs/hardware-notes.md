@@ -1,6 +1,13 @@
 # Hardware Notes: Experimental Host `BigBoy`
 
-This document records the live physical hardware inventory, system topology, and driver configuration captured on host `BigBoy`.
+Current inventory (2026-10-12): BigBoy now has two GTX 1080 Ti cards, each
+with 11 GiB physical VRAM and compute capability 6.1. The host has 32 CPU
+cores / 64 threads, 62.77 GiB RAM and kernel `6.12.107+deb13-amd64`.
+See the [current inventory and raw evidence](research/2026-10-12-bigboy-refresh.md)
+for device UUIDs, NUMA topology, toolchain and project checkout state.
+
+The sections below preserve the historical M0 hardware inventory. The GTX
+1060 and GTX 1660 SUPER listed there are no longer installed on BigBoy.
 
 ---
 

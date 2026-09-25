@@ -1,0 +1,3 @@
+<|im_start|>user
+What is the capital of France? Output only the city name. /no_think<|im_end|>
+<|im_start|>assistant

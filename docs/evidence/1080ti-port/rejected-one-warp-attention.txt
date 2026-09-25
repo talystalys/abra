@@ -1,0 +1,58 @@
+#pragma once
+// Qwen3-4B K^T Q at batch one: preserve the two upstream warp reductions
+// separately, then add warp 0 + warp 1. Four/eight rows share a block.
+template <int ROWS>
+static __global__ void legacy_ai_attention_qk(
+    const half *weights, const float *input, float *output, int N,
+    int64_t row_stride, int64_t weight_head_stride, int64_t input_head_stride,
+    int64_t output_head_stride, int ratio) {
+    const int lane = threadIdx.x;
+    const int row = blockIdx.x * ROWS + threadIdx.y;
+    const int head = blockIdx.y;
+    if (row >= N) return; // No block barrier; all lanes of a warp agree.
+    const auto *w = reinterpret_cast<const half2 *>(weights + (head / ratio) * weight_head_stride + row * row_stride);
+    const auto *x = reinterpret_cast<const float2 *>(input + head * input_head_stride);
+    float part0 = 0.0f, part1 = 0.0f;
+    const float2 w0 = __half22float2(w[lane]);
+    const float2 w1 = __half22float2(w[lane + 32]);
+    const float2 x0 = x[lane], x1 = x[lane + 32];
+    ggml_cuda_mad(part0, w0.x, x0.x);
+    ggml_cuda_mad(part0, w0.y, x0.y);
+    ggml_cuda_mad(part1, w1.x, x1.x);
+    ggml_cuda_mad(part1, w1.y, x1.y);
+    part0 = warp_reduce_sum<32>(part0);
+    part1 = warp_reduce_sum<32>(part1);
+    if (lane == 0) output[head * output_head_stride + row] = part0 + part1;
+}
+
+static bool legacy_ai_attention_dispatch(ggml_backend_cuda_context &ctx,
+    const ggml_tensor *w, const ggml_tensor *x, const ggml_tensor *ids,
+    ggml_tensor *y, const ggml_cuda_mm_fusion_args_host *fusion) {
+    static const bool enabled = [] {
+        const char *v = std::getenv("LEGACY_AI_ATTENTION");
+        return v && std::strcmp(v, "1") == 0;
+    }();
+    if (!enabled || ids || fusion || w->type != GGML_TYPE_F16 ||
+        x->type != GGML_TYPE_F32 || y->type != GGML_TYPE_F32 ||
+        w->ne[0] != 128 || x->ne[0] != 128 || x->ne[1] != 1 || y->ne[1] != 1 ||
+        w->ne[2] != 8 || x->ne[2] != 32 || y->ne[2] != 32 ||
+        w->ne[3] != 1 || x->ne[3] != 1 || y->ne[3] != 1 ||
+        w->nb[0] != 2 || x->nb[0] != 4 || y->nb[0] != 4 ||
+        w->nb[1] % 4 || w->nb[2] % 4 || x->nb[2] % 8 || y->nb[2] % 4 ||
+        y->ne[0] != w->ne[1] || ggml_cuda_info().devices[ctx.device].cc != 610)
+        return false;
+    const int rows = std::getenv("LEGACY_AI_ATTENTION_ROWS") ? std::atoi(std::getenv("LEGACY_AI_ATTENTION_ROWS")) : 4;
+    const int N = w->ne[1];
+    if (rows != 4 && rows != 8) return false;
+    const dim3 grid((N + rows - 1) / rows, 32);
+    const dim3 block(32, rows);
+    if (rows == 4) legacy_ai_attention_qk<4><<<grid, block, 0, ctx.stream()>>>(
+        static_cast<const half *>(w->data), static_cast<const float *>(x->data), static_cast<float *>(y->data), N,
+        w->nb[1] / 2, w->nb[2] / 2, x->nb[2] / 4, y->nb[2] / 4, 4);
+    else legacy_ai_attention_qk<8><<<grid, block, 0, ctx.stream()>>>(
+        static_cast<const half *>(w->data), static_cast<const float *>(x->data), static_cast<float *>(y->data), N,
+        w->nb[1] / 2, w->nb[2] / 2, x->nb[2] / 4, y->nb[2] / 4, 4);
+    static std::atomic_flag reported = ATOMIC_FLAG_INIT;
+    if (!reported.test_and_set()) GGML_LOG_INFO("legacy_ai: exact attention QK dispatch active, ROWS=%d\n", rows);
+    return true;
+}

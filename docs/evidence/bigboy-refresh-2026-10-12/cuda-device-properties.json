@@ -1,0 +1,51 @@
+{
+  "host": "BigBoy",
+  "utc": "2026-10-11T16:02:10.236012+00:00",
+  "note": "Read-only driver attributes, no measured throughput; clock-rate attributes are not live telemetry.",
+  "devices": [
+    {
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "pci": "0000:03:00.0",
+      "uuid": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
+      "total_memory_bytes": 11707547648,
+      "compute_capability_major": 6,
+      "compute_capability_minor": 1,
+      "multiprocessor_count": 28,
+      "global_memory_bus_width": 352,
+      "l2_cache_size": 2883584,
+      "max_threads_per_multiprocessor": 2048,
+      "max_registers_per_multiprocessor": 65536,
+      "max_shared_memory_per_multiprocessor": 98304,
+      "max_shared_memory_per_block": 49152,
+      "max_threads_per_block": 1024,
+      "warp_size": 32,
+      "async_engine_count": 2,
+      "concurrent_kernels": 1,
+      "cooperative_launch": 1,
+      "memory_clock_rate": 5505000,
+      "clock_rate": 1670500
+    },
+    {
+      "name": "NVIDIA GeForce GTX 1080 Ti",
+      "pci": "0000:81:00.0",
+      "uuid": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
+      "total_memory_bytes": 11707547648,
+      "compute_capability_major": 6,
+      "compute_capability_minor": 1,
+      "multiprocessor_count": 28,
+      "global_memory_bus_width": 352,
+      "l2_cache_size": 2883584,
+      "max_threads_per_multiprocessor": 2048,
+      "max_registers_per_multiprocessor": 65536,
+      "max_shared_memory_per_multiprocessor": 98304,
+      "max_shared_memory_per_block": 49152,
+      "max_threads_per_block": 1024,
+      "warp_size": 32,
+      "async_engine_count": 2,
+      "concurrent_kernels": 1,
+      "cooperative_launch": 1,
+      "memory_clock_rate": 5505000,
+      "clock_rate": 1645000
+    }
+  ]
+}

@@ -1,0 +1,124 @@
+{
+  "perplexity": {
+    "off": {
+      "ppl": 12.3786,
+      "reported_uncertainty": 0.29076
+    },
+    "on": {
+      "ppl": 12.3824,
+      "reported_uncertainty": 0.29075
+    }
+  },
+  "probes": {
+    "multiply": {
+      "off": {
+        "answer": "391",
+        "passed": true
+      },
+      "on": {
+        "answer": "391",
+        "passed": true
+      }
+    },
+    "sum": {
+      "off": {
+        "answer": "The sum of the integers from 1 to 8 is:\n\n$$\n1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 36\n$$\n\n**Answer: 36**",
+        "passed": false
+      },
+      "on": {
+        "answer": "The sum of the integers from 1 to 8 is:\n\n$$\n1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 36\n$$\n\n**Answer: 36**",
+        "passed": false
+      }
+    },
+    "sort": {
+      "off": {
+        "answer": "[ -2, 0, 5, 9 ]",
+        "passed": true
+      },
+      "on": {
+        "answer": "[ -2, 0, 5, 9 ]",
+        "passed": true
+      }
+    },
+    "json": {
+      "off": {
+        "answer": "{\"name\": \"Ada\", \"count\": 3}",
+        "passed": true
+      },
+      "on": {
+        "answer": "{\"name\": \"Ada\", \"count\": 3}",
+        "passed": true
+      }
+    },
+    "code-trace": {
+      "off": {
+        "answer": "</think>\n\n</think>\n\n14",
+        "passed": false
+      },
+      "on": {
+        "answer": "</think>\n\n</think>\n\n14",
+        "passed": false
+      }
+    },
+    "fact": {
+      "off": {
+        "answer": "Paris",
+        "passed": true
+      },
+      "on": {
+        "answer": "Paris",
+        "passed": true
+      }
+    },
+    "translate": {
+      "off": {
+        "answer": "Buenos días",
+        "passed": true
+      },
+      "on": {
+        "answer": "Buenos días",
+        "passed": true
+      }
+    },
+    "logic": {
+      "off": {
+        "answer": "No.",
+        "passed": true
+      },
+      "on": {
+        "answer": "No.",
+        "passed": true
+      }
+    },
+    "extract": {
+      "off": {
+        "answer": "AZ731",
+        "passed": true
+      },
+      "on": {
+        "answer": "</think>\n\nAZ731",
+        "passed": false
+      }
+    },
+    "long-retrieval": {
+      "off": {
+        "answer": "cobalt-orchid-731",
+        "passed": true
+      },
+      "on": {
+        "answer": "cobalt-orchid-731",
+        "passed": true
+      }
+    }
+  },
+  "limitations": "20 fixed corpus chunks and ten probes do not establish quality equivalence on all tasks.",
+  "relative_ppl_change": 0.0003069814033898055,
+  "scores": {
+    "off": 8,
+    "on": 7
+  },
+  "lost_successes": [
+    "extract"
+  ],
+  "qualified": false
+}

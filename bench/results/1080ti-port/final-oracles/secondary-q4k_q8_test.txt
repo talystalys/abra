@@ -1,0 +1,360 @@
+ggml_cuda_init: found 1 CUDA devices (Total VRAM: 11165 MiB):
+  Device 0: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
+============================================================
+Milestone M4: Pascal Q4_K x Q8_1 Parameterized Family Correctness Test Suite
+Device: NVIDIA GeForce GTX 1080 Ti
+Compute Capability: 6.1
+PCI Bus ID: 0000:81:00.0
+UUID: GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c
+Test Mode: m4
+============================================================
+PASS: Physical GPU identity assertions verified successfully.
+
+=== Theoretical Occupancy Analysis for Tested Candidates ===
+Candidate Name                Block Dim   Regs/Thd  SMem(B)   Blks/SM   Warps/SM    Occupancy(%)
+----------------------------------------------------------------------------------------------
+VARIANT_UPSTREAM_MMVQ         32x4        40        16        12        48/64       75.0%
+Q4K_PASCAL_WPR1_WPB1          32x1        32        0         32        32/64       50.0%
+Q4K_PASCAL_WPR1_WPB2          32x2        32        0         32        64/64       100.0%
+Q4K_PASCAL_WPR1_WPB4          32x4        32        0         16        64/64       100.0%
+Q4K_PASCAL_WPR1_WPB8          32x8        32        0         8         64/64       100.0%
+Q4K_PASCAL_WPR1_WPB16         32x16       32        0         4         64/64       100.0%
+Q4K_PASCAL_WPR2_WPB2          32x2        40        8         24        48/64       75.0%
+Q4K_PASCAL_WPR2_WPB4          32x4        40        16        12        48/64       75.0%
+Q4K_PASCAL_WPR2_WPB8          32x8        40        32        6         48/64       75.0%
+Q4K_PASCAL_WPR2_WPB16         32x16       40        64        3         48/64       75.0%
+Q4K_PASCAL_WPR4_WPB4          32x4        40        16        12        48/64       75.0%
+Q4K_PASCAL_WPR4_WPB8          32x8        40        32        6         48/64       75.0%
+Q4K_PASCAL_WPR4_WPB16         32x16       40        64        3         48/64       75.0%
+Q4K_PASCAL_WPR1_WPB4_U2       32x4        40        0         12        48/64       75.0%
+Q4K_PASCAL_WPR2_WPB4_U2       32x4        40        16        12        48/64       75.0%
+Q4K_PASCAL_WPR1_WPB8_U2       32x8        40        0         6         48/64       75.0%
+Q4K_PASCAL_WPR2_WPB8_U2       32x8        40        32        6         48/64       75.0%
+----------------------------------------------------------------------------------------------
+
+=== Phase 1: Input Families x Candidate Smoke Tests (N=128, K=256) ===
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=ALL_ZERO                 | RelVsF64=0.00e+00 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=LOW_AMPLITUDE_CONST      | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=ALTERNATING_SIGN         | RelVsF64=2.18e-08 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=BOUNDED_PSEUDORANDOM     | RelVsF64=6.52e-06 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=WIDE_DYNAMIC_RANGE       | RelVsF64=3.64e-06 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=SPARSE_OUTLIERS          | RelVsF64=1.50e-07 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=VARYING_SCALE            | RelVsF64=4.04e-06 | AbsVsU=0.00e+00
+PASS: Candidate=VARIANT_UPSTREAM_MMVQ        | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB1         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB2         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB16        | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB2         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB16        | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB4         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB8         | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR4_WPB16        | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+PASS: Candidate=Q4K_AUTOTUNED_DISPATCH       | Dist=NONZERO_MIN_EXERCISE     | RelVsF64=1.06e-07 | AbsVsU=0.00e+00
+
+=== Phase 2: K-Edge Coverage Suite (N=64, various K) ===
+K-edge coverage tests passed: 10 K values across 18 candidates.
+
+=== Phase 3: N-Boundary Coverage Suite (K=256, various N) ===
+N-boundary tests passed: 15 N values across 18 candidates.
+
+=== Phase 4: Qwen3-Derived Canonical & Synthetic Shapes ===
+PASS: Shape=attn_q         | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=2.24e-04 | AbsVsU=0.00e+00
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=2.72e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=2.72e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=2.72e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=2.69e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_q         | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=2.03e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=3.14e-05 | AbsVsU=0.00e+00
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=9.74e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=9.74e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=9.74e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=6.88e-05 | AbsVsU=7.63e-06
+PASS: Shape=attn_kv        | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=1.97e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.63e-04 | AbsVsU=0.00e+00
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=4.28e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=4.28e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=4.28e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=1.63e-04 | AbsVsU=7.63e-06
+PASS: Shape=attn_out       | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=attn_out       | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=1.63e-04 | AbsVsU=9.54e-06
+PASS: Shape=ffn_gate_up    | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.33e-03 | AbsVsU=0.00e+00
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=8.49e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=8.49e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=8.49e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=1.58e-03 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_gate_up    | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=9.88e-04 | AbsVsU=7.63e-06
+PASS: Shape=ffn_down       | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.56e-04 | AbsVsU=0.00e+00
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=1.12e-04 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=1.12e-04 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=1.12e-04 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=9.12e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
+PASS: Shape=ffn_down       | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=1.12e-04 | AbsVsU=1.53e-05
+
+=== Phase 5: Real Model-Byte Sanity Suite (from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf) ===
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.43e-06 | AbsVsU=0.00e+00
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=1.43e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=1.43e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=1.43e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=2.77e-06 | AbsVsU=5.96e-08
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.07e-06 | AbsVsU=0.00e+00
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=1.21e-06 | AbsVsU=2.98e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=1.21e-06 | AbsVsU=2.98e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=1.21e-06 | AbsVsU=2.98e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=7.86e-07 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.attn_output.weight   | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=1.62e-06 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=9.47e-05 | AbsVsU=0.00e+00
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=1.85e-05 | AbsVsU=3.58e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=1.85e-05 | AbsVsU=3.58e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=1.85e-05 | AbsVsU=3.58e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=9.47e-05 | AbsVsU=2.38e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_gate.weight      | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=2.61e-05 | AbsVsU=2.53e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=6.66e-06 | AbsVsU=0.00e+00
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB4         | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB8         | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB16        | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB2         | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB4         | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB8         | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB16        | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR4_WPB4         | RelVsF64=6.07e-06 | AbsVsU=2.68e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR4_WPB8         | RelVsF64=6.07e-06 | AbsVsU=2.68e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR4_WPB16        | RelVsF64=6.07e-06 | AbsVsU=2.68e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB4_U2      | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB4_U2      | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
+Wrote frozen numerical envelope to: bench/results/1080ti-port/final-oracles/secondary-envelope.json
+
+============================================================
+Q4_K x Q8_1 Test Summary: 756 / 756 Tests PASSED
+Upstream vs F64 Max Rel Error: 1.3340e-03
+Upstream vs F64 Max Abs Error: 1.5547e-02
+Custom vs Upstream Max Abs Diff: 1.5259e-05
+Custom vs F64 Max Rel Error:   1.5764e-03
+============================================================

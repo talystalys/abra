@@ -1,0 +1,7 @@
+<think>
+
+</think>
+
+[ -2, 0, 5, 9 ] [end of text]
+
+

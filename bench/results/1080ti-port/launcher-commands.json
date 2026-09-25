@@ -1,0 +1,104 @@
+{
+  "cwd": "/home/taly/legacy-ai-1080ti-port",
+  "commands": [
+    {
+      "file": "launcher-default-smoke.txt",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--",
+        "--reasoning",
+        "off",
+        "--single-turn",
+        "-p",
+        "What is 17 times 23? Output only the integer.",
+        "-n",
+        "64"
+      ]
+    },
+    {
+      "file": "launcher-greedy-smoke.txt",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--",
+        "--reasoning",
+        "off",
+        "--single-turn",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-p",
+        "What is 17 times 23? Output only the integer.",
+        "-n",
+        "64"
+      ]
+    },
+    {
+      "file": "launcher-baseline-greedy-smoke.txt",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--runtime",
+        "baseline",
+        "--",
+        "--reasoning",
+        "off",
+        "--single-turn",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-p",
+        "What is 17 times 23? Output only the integer.",
+        "-n",
+        "64"
+      ]
+    },
+    {
+      "file": "launcher-template-smoke.txt",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--",
+        "--reasoning",
+        "off",
+        "--single-turn",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "--log-prompts-dir",
+        ".deps/launcher-prompts",
+        "-p",
+        "What is 17 times 23? Output only the integer. /no_think",
+        "-n",
+        "64"
+      ]
+    },
+    {
+      "file": "launcher-exact-greedy-smoke.txt",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--gpu",
+        "primary",
+        "--runtime",
+        "exact",
+        "--completion",
+        "--",
+        "-no-cnv",
+        "--no-display-prompt",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-f",
+        "bench/results/1080ti-port/flash-quality-primary-v3/fact-prompt.txt",
+        "-n",
+        "64"
+      ]
+    }
+  ]
+}

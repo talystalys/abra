@@ -1,8 +1,42 @@
-# Legacy GPU AI Inference Research — Milestone M0
+# Legacy GPU AI Inference Research
 
 Research project investigating recovery of modern quantized neural-network inference performance on legacy NVIDIA GPU architectures (specifically **NVIDIA Pascal compute capability 6.1 / `sm_61`**).
 
 ---
+
+## Current work: Qwen3-4B on two GTX 1080 Ti GPUs
+
+The authorized port runs in `/home/taly/legacy-ai-1080ti-port` on BigBoy,
+branch `port/1080ti-runtime`. Both installed GPUs are Pascal SM 6.1 with
+11 GiB physical VRAM. The user selected Qwen3-4B until extreme optimization.
+See [the port milestones](docs/1080ti-port-plan.md),
+[current inventory](docs/research/2026-10-12-bigboy-refresh.md), and
+[current status](CURRENT_STATUS.md).
+
+Reproduction tooling:
+
+```bash
+# Requires the existing, clean pinned control checkout and CUDA/glibc overlay.
+python3 tools/build-port.py --profile
+python3 tools/qwen3-4b.py -- --reasoning off --single-turn -p 'Explain memory bandwidth. /no_think' -n 128
+# Original reduction order with exact-output QK/value kernels:
+python3 tools/qwen3-4b.py --runtime exact --gpu secondary
+```
+
+The default launcher selects the measured faster secondary GTX 1080 Ti and
+enables upstream Flash Attention with unchanged Q4_K_M
+weights and F16 KV. It passed the declared perplexity/task quality comparison;
+it does not meet the historical strict logit envelope. `--runtime exact` uses
+custom QK/value kernels that match upstream logits bit for bit in validation.
+Raw measurements live in `bench/results/1080ti-port/`. Diagnostic profiling is
+compiled into the measured build but disabled by all timing/inference tools.
+The detailed results and reproduction commands are in
+[the port report](docs/research/1080ti-port-results.md).
+
+## Historical M0 setup
+
+The following hardware roles and verification commands document the old
+GTX 1060 / GTX 1660 SUPER qualification environment.
 
 ## Target Hardware & Roles (Host: `BigBoy`)
 

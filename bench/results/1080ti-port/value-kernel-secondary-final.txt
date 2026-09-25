@@ -1,0 +1,2 @@
+Device: NVIDIA GeForce GTX 1080 Ti CC 6.1 PCI 0000:81:00.0
+PASS: 48 value cases, bit-identical to pinned upstream; double-oracle max abs error 0.000717636851

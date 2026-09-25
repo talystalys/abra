@@ -1,7 +1,7 @@
 # LegacyGpuArch.cmake
 # Configures dual-architecture compilation for Pascal (sm_61) and Turing (sm_75)
 
-set(CMAKE_CUDA_ARCHITECTURES "61;75" CACHE STRING "Target CUDA architectures" FORCE)
+set(CMAKE_CUDA_ARCHITECTURES "61;75" CACHE STRING "Target CUDA architectures")
 message(STATUS "Legacy GPU Target Architectures: ${CMAKE_CUDA_ARCHITECTURES}")
 
 # Suppress deprecation warning for SM 6.1 in CUDA 12.9

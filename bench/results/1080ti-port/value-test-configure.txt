@@ -1,0 +1,5 @@
+-- Legacy GPU Target Architectures: 61
+-- Using CUDA compatibility overlay from: /home/taly/legacy-ai-1080ti-port/.cuda_compat/include
+-- Configuring done (0.0s)
+-- Generating done (0.1s)
+-- Build files have been written to: /home/taly/legacy-ai-1080ti-port/build-sm61

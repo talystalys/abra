@@ -1,0 +1,24 @@
+0.00.020.275 I llama_completion: llama backend init
+0.00.020.284 I llama_completion: load the model and apply lora adapter, if any
+0.00.766.814 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.462.634 I cmn          init: llama threadpool init, n_threads = 4
+0.01.531.319 I 
+0.01.531.432 I system_info: n_threads = 4 (n_threads_batch = 4) / 64 | CUDA : ARCHS = 610 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.531.434 I 
+0.01.531.626 I sampler seed: 1
+0.01.531.641 I sampler params: 
+	repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000
+	dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 64
+	top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000
+	mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000, adaptive_target = -1.000, adaptive_decay = 0.900
+0.01.531.648 I sampler chain: logits -> ?penalties -> ?dry -> ?top-n-sigma -> top-k -> ?typical -> top-p -> min-p -> ?xtc -> temp-ext -> dist 
+0.01.531.649 I generate: n_ctx = 2048, n_batch = 2048, n_predict = 128, n_keep = 0
+0.01.531.649 I 
+0.02.336.402 I common_perf_print:    sampling time =      21.63 ms
+0.02.336.403 I common_perf_print:    samplers time =       5.99 ms /    90 tokens
+0.02.336.407 I common_perf_print:        load time =     867.28 ms
+0.02.336.409 I common_perf_print: prompt eval time =      66.22 ms /    35 tokens (    1.89 ms per token,   528.55 tokens per second)
+0.02.336.411 I common_perf_print:        eval time =     715.64 ms /    54 runs   (   13.25 ms per token,    75.46 tokens per second)
+0.02.336.412 I common_perf_print:       total time =     805.09 ms /    89 tokens
+0.02.336.413 I common_perf_print: unaccounted time =       1.60 ms /   0.2 %      (total - sampling - prompt eval - eval) / (total)
+0.02.336.413 I common_perf_print:    graphs reused =         53

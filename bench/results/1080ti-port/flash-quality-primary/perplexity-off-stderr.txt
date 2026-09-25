@@ -1,0 +1,8 @@
+0.00.615.001 W common_fit_params: failed to fit params to free device memory: n_gpu_layers already set by user to 99, abort
+0.00.808.274 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.421.753 E ggml_backend_cuda_buffer_type_alloc_buffer: allocating 288.00 MiB on device 0: cudaMalloc failed: out of memory
+0.01.421.760 E alloc_tensor_range: failed to allocate CUDA0 buffer of size 301989888
+0.01.422.281 E llama_init_from_model: failed to initialize the context: failed to allocate buffer for kv cache
+0.01.422.288 E cmn  common_init_: failed to create context with model '/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf'
+0.01.422.292 E cmn  common_init_: failed to create context with model '/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf'
+0.01.422.297 E llama_perplexity: failed to create context

@@ -1,0 +1,62 @@
+{
+  "libggml-base.so.0.20.2": {
+    "recorded": "4e054676f5c77aa101b2e28a49e7ec20bedb209ca1faffc56f716cfa1e638394",
+    "current": "4e054676f5c77aa101b2e28a49e7ec20bedb209ca1faffc56f716cfa1e638394",
+    "matched": true
+  },
+  "libggml-cpu.so.0.20.2": {
+    "recorded": "43728a32eeab7ced72059e8113cff05d74d974f18ca1b16c53f45a78d394a03a",
+    "current": "43728a32eeab7ced72059e8113cff05d74d974f18ca1b16c53f45a78d394a03a",
+    "matched": true
+  },
+  "libggml-cuda.so.0.20.2": {
+    "recorded": "b6810ad52295a527357656b42b0c9bb5b28e0f404e5bd57a9b798740797bb7d2",
+    "current": "b6810ad52295a527357656b42b0c9bb5b28e0f404e5bd57a9b798740797bb7d2",
+    "matched": true
+  },
+  "libggml.so.0.20.2": {
+    "recorded": "897788ad3b4b4f07743a20bb7236a3e029a4e659b654555a5c71c5cbe063a9ae",
+    "current": "897788ad3b4b4f07743a20bb7236a3e029a4e659b654555a5c71c5cbe063a9ae",
+    "matched": true
+  },
+  "libllama-bench-impl.so": {
+    "recorded": "0d2339fb3a7aa8b8c22c95e0cc7ae0a6d9d74448012a348ab0c94c49d9aff349",
+    "current": "0d2339fb3a7aa8b8c22c95e0cc7ae0a6d9d74448012a348ab0c94c49d9aff349",
+    "matched": true
+  },
+  "libllama-cli-impl.so": {
+    "recorded": "4738f65651118385e878b9dbd297045f3dda068dedd23ee7290acc04d70dfb02",
+    "current": "4738f65651118385e878b9dbd297045f3dda068dedd23ee7290acc04d70dfb02",
+    "matched": true
+  },
+  "libllama-common.so.0.1.2": {
+    "recorded": "ba5d54c5d53e531a9b75157a00a8494dc3edb9ddb435a746a8c3b42f7ba0d095",
+    "current": "ba5d54c5d53e531a9b75157a00a8494dc3edb9ddb435a746a8c3b42f7ba0d095",
+    "matched": true
+  },
+  "libllama-completion-impl.so": {
+    "recorded": "e91796cc8137a173a2d1a55e9465db54d3e95683cbb020a3334413ac3d620ff6",
+    "current": "e91796cc8137a173a2d1a55e9465db54d3e95683cbb020a3334413ac3d620ff6",
+    "matched": true
+  },
+  "libllama-perplexity-impl.so": {
+    "recorded": "1ce784c05208e653e2ee424a680c490f9d963f583ef6ba16019dec0518ceaf9a",
+    "current": "1ce784c05208e653e2ee424a680c490f9d963f583ef6ba16019dec0518ceaf9a",
+    "matched": true
+  },
+  "libllama-server-impl.so": {
+    "recorded": "69b82825e0de6a73eab45b764d73c1d00f85f65b1bd6e2a9985e7ccb2d772ce2",
+    "current": "69b82825e0de6a73eab45b764d73c1d00f85f65b1bd6e2a9985e7ccb2d772ce2",
+    "matched": true
+  },
+  "libllama.so.0.1.2": {
+    "recorded": "af9a55fe050fae1f4dc76ff145684f6aaeda24b270aa5ddb3ec04c54a97d3398",
+    "current": "af9a55fe050fae1f4dc76ff145684f6aaeda24b270aa5ddb3ec04c54a97d3398",
+    "matched": true
+  },
+  "libmtmd.so.0.1.2": {
+    "recorded": "a917e0e6f0061096833ecf390456585c8dd5870752d26111c416d552cfaee643",
+    "current": "a917e0e6f0061096833ecf390456585c8dd5870752d26111c416d552cfaee643",
+    "matched": true
+  }
+}

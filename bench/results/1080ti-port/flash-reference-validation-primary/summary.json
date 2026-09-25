@@ -1,0 +1,78 @@
+{
+  "gpu": "primary",
+  "reports": [
+    {
+      "shape": [
+        151936,
+        32
+      ],
+      "logits_checked": 4861952,
+      "max_absolute_error": 0.0,
+      "rms_error": 0.0,
+      "tolerance_violations": 0,
+      "absolute_tolerance": 0.001,
+      "relative_tolerance": 0.0001,
+      "tokens_identical": true,
+      "prompt_lengths_identical": true,
+      "bit_identical": true,
+      "reference_sha256": "511e62fa64210000c49067b0982c9b482cb9bd22b6961e325508fdd35547b38d",
+      "candidate_sha256": "511e62fa64210000c49067b0982c9b482cb9bd22b6961e325508fdd35547b38d",
+      "accepted": true
+    },
+    {
+      "shape": [
+        151936,
+        32
+      ],
+      "logits_checked": 4861952,
+      "max_absolute_error": 0.0,
+      "rms_error": 0.0,
+      "tolerance_violations": 0,
+      "absolute_tolerance": 0.001,
+      "relative_tolerance": 0.0001,
+      "tokens_identical": true,
+      "prompt_lengths_identical": true,
+      "bit_identical": true,
+      "reference_sha256": "511e62fa64210000c49067b0982c9b482cb9bd22b6961e325508fdd35547b38d",
+      "candidate_sha256": "511e62fa64210000c49067b0982c9b482cb9bd22b6961e325508fdd35547b38d",
+      "accepted": true
+    },
+    {
+      "shape": [
+        151936,
+        32
+      ],
+      "logits_checked": 4861952,
+      "max_absolute_error": 0.0,
+      "rms_error": 0.0,
+      "tolerance_violations": 0,
+      "absolute_tolerance": 0.001,
+      "relative_tolerance": 0.0001,
+      "tokens_identical": true,
+      "prompt_lengths_identical": true,
+      "bit_identical": true,
+      "reference_sha256": "7cfb2ab0cfaf66fcbd7571f98e8d67b0e002dd1dae96c385b1dd254c0a66ef60",
+      "candidate_sha256": "7cfb2ab0cfaf66fcbd7571f98e8d67b0e002dd1dae96c385b1dd254c0a66ef60",
+      "accepted": true
+    },
+    {
+      "shape": [
+        151936,
+        32
+      ],
+      "logits_checked": 4861952,
+      "max_absolute_error": 0.0,
+      "rms_error": 0.0,
+      "tolerance_violations": 0,
+      "absolute_tolerance": 0.001,
+      "relative_tolerance": 0.0001,
+      "tokens_identical": true,
+      "prompt_lengths_identical": true,
+      "bit_identical": true,
+      "reference_sha256": "7cfb2ab0cfaf66fcbd7571f98e8d67b0e002dd1dae96c385b1dd254c0a66ef60",
+      "candidate_sha256": "7cfb2ab0cfaf66fcbd7571f98e8d67b0e002dd1dae96c385b1dd254c0a66ef60",
+      "accepted": true
+    }
+  ],
+  "accepted": true
+}

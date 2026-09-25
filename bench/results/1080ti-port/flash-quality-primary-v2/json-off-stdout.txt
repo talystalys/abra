@@ -1,0 +1,7 @@
+<think>
+
+</think>
+
+{"name": "Ada", "count": 3} [end of text]
+
+

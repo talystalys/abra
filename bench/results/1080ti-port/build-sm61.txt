@@ -1,0 +1,135 @@
+[ 12%] Building CUDA object CMakeFiles/legacy_q4k.dir/kernels/q4k/q4k_q8_mmvq.cu.o
+[ 25%] Building CUDA object CMakeFiles/legacy_q4k.dir/kernels/q4k/q4k_family.cu.o
+[ 37%] Building CUDA object CMakeFiles/legacy_q4k.dir/kernels/q4k/upstream_adapter.cu.o
+[ 50%] Building CUDA object CMakeFiles/legacy_smoke.dir/kernels/smoke/smoke.cu.o
+In file included from /home/taly/legacy-ai-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
+/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+ 1228 | #define USE_CUDA_GRAPH
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from /home/taly/legacy-ai-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
+/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+ 1228 | #define USE_CUDA_GRAPH
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z31CUSTOM_REFERENCE_Q8_1_QUANTIZERPKfP10block_q8_1i' for 'sm_61'
+ptxas info    : Function properties for _Z31CUSTOM_REFERENCE_Q8_1_QUANTIZERPKfP10block_q8_1i
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 27 registers, used 0 barriers, 340 bytes cmem[0], 24 bytes cmem[2]
+ptxas info    : Compile time = 20.679 ms
+ptxas info    : Compiling entry function '_Z24q4k_q8_mmvq_1warp_kernelPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z24q4k_q8_mmvq_1warp_kernelPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.848 ms
+ptxas info    : Compiling entry function '_Z24q4k_q8_mmvq_2warp_kernelPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z24q4k_q8_mmvq_2warp_kernelPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 16 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.186 ms
+ptxas info    : Compiling entry function '_Z24q4k_q8_mmvq_4warp_kernelPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z24q4k_q8_mmvq_4warp_kernelPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 1 barriers, 16 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.846 ms
+ptxas info    : 0 bytes gmem
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi8ELi2EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi8ELi2EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 32 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 18.142 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi8ELi2EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi8ELi2EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 16.816 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi4ELi2EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi4ELi2EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 16 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 16.875 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi4ELi2EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi4ELi2EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 15.885 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi4ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi4ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 64 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.343 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi4ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi4ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 32 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.100 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi4ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi4ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 16 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.808 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 64 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.548 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 32 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.630 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 16 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.687 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi2ELi2ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi2ELi2ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 40 registers, used 1 barriers, 8 bytes smem, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 8.727 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi16ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.820 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi8ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.591 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi4ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.533 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi2ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi2ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.192 ms
+ptxas info    : Compiling entry function '_Z25q4k_q8_mmvq_family_kernelILi1ELi1ELi1EEvPK10block_q4_KPK10block_q8_1Pfii' for 'sm_61'
+ptxas info    : Function properties for _Z25q4k_q8_mmvq_family_kernelILi1ELi1ELi1EEvPK10block_q4_KPK10block_q8_1Pfii
+    0 bytes stack frame, 0 bytes spill stores, 0 bytes spill loads
+ptxas info    : Used 32 registers, used 0 barriers, 352 bytes cmem[0], 4 bytes cmem[2]
+ptxas info    : Compile time = 7.564 ms
+[ 62%] Linking CUDA static library liblegacy_smoke.a
+[ 62%] Built target legacy_smoke
+ptxas info    : 26792 bytes gmem, 88 bytes cmem[4]
+[ 75%] Linking CUDA static library liblegacy_q4k.a
+[ 75%] Built target legacy_q4k
+[ 87%] Building CUDA object CMakeFiles/q4k_q8_test.dir/tests/q4k_q8_test.cu.o
+ptxas info    : 0 bytes gmem
+[100%] Linking CUDA executable q4k_q8_test
+[100%] Built target q4k_q8_test
+[ 25%] Built target legacy_smoke
+[ 75%] Built target legacy_q4k
+[ 87%] Building CUDA object CMakeFiles/q4k_q8_bench.dir/bench/micro/q4k_q8_bench.cu.o
+ptxas info    : 0 bytes gmem
+[100%] Linking CUDA executable q4k_q8_bench
+[100%] Built target q4k_q8_bench
+[ 50%] Built target legacy_smoke
+[ 75%] Building CUDA object CMakeFiles/list_cuda_devices.dir/tools/list_cuda_devices.cu.o
+[100%] Linking CUDA executable list_cuda_devices
+[100%] Built target list_cuda_devices
