@@ -171,6 +171,11 @@ target_include_directories(runtime_logits PRIVATE ${LLAMA_SOURCE_DIR}/include)
 target_link_libraries(runtime_logits PRIVATE llama ggml ggml-base)
 set_target_properties(runtime_logits PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
 
+add_executable(lookup_decode tests/lookup_decode.cpp)
+target_include_directories(lookup_decode PRIVATE ${LLAMA_SOURCE_DIR}/include)
+target_link_libraries(lookup_decode PRIVATE llama ggml ggml-base)
+set_target_properties(lookup_decode PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
+
 add_executable(runtime_kernel_test tests/runtime_kernel_test.cu)
 target_link_libraries(runtime_kernel_test PRIVATE ggml-cuda ggml-base ggml)
 set_target_properties(runtime_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")

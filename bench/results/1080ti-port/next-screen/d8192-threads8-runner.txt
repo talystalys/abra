@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-screen/d8192-threads8", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 8192, "samples": 3, "median_tps": 62.553212655763446, "min_tps": 62.54705713183847, "max_tps": 62.562023189436, "spread_tps": 0.014966057597526117, "median_ns": 2046257811, "stddev_tps": 0.006141831597953407}]}

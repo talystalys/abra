@@ -1,0 +1,28 @@
+{
+  "device": {
+    "name": "NVIDIA GeForce GTX 1080 Ti",
+    "compute_capability": "6.1",
+    "pci_bus_id": "0000:81:00.0",
+    "uuid": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
+  },
+  "upstream_vs_f64_oracle": {
+    "max_abs_error": 0.0155468,
+    "max_rel_error": 0.001334,
+    "max_rms_error": 0.00580536
+  },
+  "frozen_acceptance_envelope": {
+    "max_rel_tolerance": 0.005,
+    "max_abs_tolerance": 0.05,
+    "justification": "Frozen based on measured upstream vs F64 error bounds plus FP16 rounding margin"
+  },
+  "custom_variants_vs_upstream": {
+    "max_abs_diff_vs_upstream": 1.52588e-05,
+    "max_rel_diff_vs_upstream": 0.000484195
+  },
+  "custom_variants_vs_f64_oracle": {
+    "max_abs_error": 0.0155468,
+    "max_rel_error": 0.00157642
+  },
+  "total_tests": 756,
+  "passed_tests": 756
+}

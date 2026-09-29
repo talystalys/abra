@@ -1,0 +1,1 @@
+{"prompt_tokens":38,"draft_max":0,"key":4,"runs":[{"prefill_ms":183.752,"decode_ms":64.9079,"proposed":0,"accepted":0,"tokens":[23563,22,18,16],"block_ms":[30.9229,11.4467,11.1381,11.1582],"block_tokens":[1,1,1,1]}]}

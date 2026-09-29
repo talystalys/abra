@@ -1,0 +1,10 @@
+The expression `sum(i*i for i in range(4))` calculates the sum of the squares of the numbers from 0 to 3 (since `range(4)` includes 0, 1, 2, 3).
+
+Let's break it down:
+
+- `i` takes values 0, 1, 2, 3
+- `i*i` gives 0, 1, 4, 9
+- Summing these: 0 + 1 + 4 + 9 = **14**
+
+So, the output of `print(sum(i*i for i in range(4
+

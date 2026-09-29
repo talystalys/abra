@@ -1,0 +1,342 @@
+diff --git a/ggml/src/ggml-cuda/common.cuh b/ggml/src/ggml-cuda/common.cuh
+index d27d8acb1..f211f255a 100644
+--- a/ggml/src/ggml-cuda/common.cuh
++++ b/ggml/src/ggml-cuda/common.cuh
+@@ -1667,3 +1667,5 @@ static __inline__ void ggml_cuda_kernel_launch(Kernel kernel, const ggml_cuda_ke
+     CUDA_CHECK(cudaGetLastError());
+ }
+ 
++
++const void *legacy_ai_get_packed_q4(const ggml_tensor *tensor);
+diff --git a/ggml/src/ggml-cuda/ggml-cuda.cu b/ggml/src/ggml-cuda/ggml-cuda.cu
+index f2e381ee0..386968772 100644
+--- a/ggml/src/ggml-cuda/ggml-cuda.cu
++++ b/ggml/src/ggml-cuda/ggml-cuda.cu
+@@ -86,6 +86,8 @@
+ #include <cstdarg>
+ #include <cstdio>
+ #include <cstdlib>
++#include "legacy-ai-packed-q4.cuh"
++#include <cstring>
+ #include <string>
+ #include <vector>
+ 
+@@ -725,6 +727,9 @@ struct ggml_backend_cuda_buffer_context {
+     int device;
+     void * dev_ptr = nullptr;
+     std::string name;
++    // Legacy AI model-owned metadata cache.
++    std::mutex packed_mutex;
++    std::unordered_map<const void *, void *> packed_q4;
+ 
+     ggml_backend_cuda_buffer_context(int device, void * dev_ptr) :
+         device(device), dev_ptr(dev_ptr),
+@@ -732,6 +737,8 @@ struct ggml_backend_cuda_buffer_context {
+     }
+ 
+     ~ggml_backend_cuda_buffer_context() {
++        ggml_cuda_set_device(device);
++        for (auto &entry : packed_q4) CUDA_CHECK(cudaFree(entry.second));
+         CUDA_CHECK(cudaFree(dev_ptr));
+     }
+ };
+@@ -745,6 +752,47 @@ static bool ggml_backend_buffer_is_cuda(ggml_backend_buffer_t buffer) {
+     return buffer->iface.free_buffer == ggml_backend_cuda_buffer_free_buffer;
+ }
+ 
++
++static void legacy_ai_invalidate_q4(ggml_backend_cuda_buffer_context *ctx, const void *address) {
++    std::lock_guard<std::mutex> lock(ctx->packed_mutex);
++    auto it = ctx->packed_q4.find(address);
++    if (it != ctx->packed_q4.end()) {
++        ggml_cuda_set_device(ctx->device);
++        CUDA_CHECK(cudaFree(it->second));
++        ctx->packed_q4.erase(it);
++    }
++}
++
++const void *legacy_ai_get_packed_q4(const ggml_tensor *tensor) {
++    if (!tensor || !tensor->buffer || !ggml_backend_buffer_is_cuda(tensor->buffer)) return nullptr;
++    auto *ctx = static_cast<ggml_backend_cuda_buffer_context *>(tensor->buffer->context);
++    std::lock_guard<std::mutex> lock(ctx->packed_mutex);
++    auto it = ctx->packed_q4.find(tensor->data);
++    return it == ctx->packed_q4.end() ? nullptr : it->second;
++}
++
++static void legacy_ai_prepare_q4(ggml_backend_cuda_buffer_context *ctx, ggml_tensor *tensor, size_t offset, size_t size) {
++    const char *opt = std::getenv("LEGACY_AI_PREPACK");
++    if (!opt || std::strcmp(opt, "1") || tensor->type != GGML_TYPE_Q4_K || offset != 0 ||
++        size != ggml_nbytes(tensor) || !ggml_is_contiguous(tensor) || tensor->ne[2] != 1 || tensor->ne[3] != 1 ||
++        ggml_cuda_info().devices[ctx->device].cc != 610) return;
++    const int64_t blocks = ggml_nelements(tensor) / QK_K;
++    void *packed = nullptr;
++    const size_t packed_bytes = blocks * sizeof(legacy_ai_packed_q4);
++    if (cudaMalloc(&packed, packed_bytes) != cudaSuccess) {
++        cudaGetLastError();
++        GGML_LOG_WARN("legacy_ai: Q4_K packing allocation failed; retaining upstream weights\n");
++        return;
++    }
++    legacy_ai_pack_q4_kernel<<<(blocks + 255) / 256, 256, 0, cudaStreamPerThread>>>(
++        static_cast<const block_q4_K *>(tensor->data), static_cast<legacy_ai_packed_q4 *>(packed), blocks);
++    CUDA_CHECK(cudaGetLastError());
++    CUDA_CHECK(cudaStreamSynchronize(cudaStreamPerThread));
++    std::lock_guard<std::mutex> lock(ctx->packed_mutex);
++    ctx->packed_q4[tensor->data] = packed;
++    GGML_LOG_INFO("legacy_ai: packed %s (%zu bytes)\n", tensor->name, packed_bytes);
++}
++
+ static void * ggml_backend_cuda_buffer_get_base(ggml_backend_buffer_t buffer) {
+     ggml_backend_cuda_buffer_context * ctx = (ggml_backend_cuda_buffer_context *)buffer->context;
+     return ctx->dev_ptr;
+@@ -774,6 +822,7 @@ static enum ggml_status ggml_backend_cuda_buffer_init_tensor(ggml_backend_buffer
+ static void ggml_backend_cuda_buffer_memset_tensor(ggml_backend_buffer_t buffer, ggml_tensor * tensor, uint8_t value, size_t offset, size_t size) {
+     ggml_backend_cuda_buffer_context * ctx = (ggml_backend_cuda_buffer_context *) buffer->context;
+ 
++    legacy_ai_invalidate_q4(ctx, tensor->data);
+     ggml_cuda_set_device(ctx->device);
+     CUDA_CHECK(cudaMemsetAsync((char *) tensor->data + offset, value, size, cudaStreamPerThread));
+     CUDA_CHECK(cudaStreamSynchronize(cudaStreamPerThread));
+@@ -782,9 +831,11 @@ static void ggml_backend_cuda_buffer_memset_tensor(ggml_backend_buffer_t buffer,
+ static void ggml_backend_cuda_buffer_set_tensor(ggml_backend_buffer_t buffer, ggml_tensor * tensor, const void * data, size_t offset, size_t size) {
+     ggml_backend_cuda_buffer_context * ctx = (ggml_backend_cuda_buffer_context *) buffer->context;
+ 
++    legacy_ai_invalidate_q4(ctx, tensor->data);
+     ggml_cuda_set_device(ctx->device);
+     CUDA_CHECK(cudaMemcpyAsync((char *) tensor->data + offset, data, size, cudaMemcpyHostToDevice, cudaStreamPerThread));
+     CUDA_CHECK(cudaStreamSynchronize(cudaStreamPerThread));
++    legacy_ai_prepare_q4(ctx, tensor, offset, size);
+ }
+ 
+ static void ggml_backend_cuda_buffer_get_tensor(ggml_backend_buffer_t buffer, const ggml_tensor * tensor, void * data, size_t offset, size_t size) {
+@@ -799,6 +850,7 @@ static void ggml_backend_cuda_buffer_set_tensor_2d(ggml_backend_buffer_t buffer,
+         size_t offset, size_t size, size_t n_copies, size_t stride_tensor, size_t stride_data) {
+     ggml_backend_cuda_buffer_context * ctx = (ggml_backend_cuda_buffer_context *) buffer->context;
+ 
++    legacy_ai_invalidate_q4(ctx, tensor->data);
+     ggml_cuda_set_device(ctx->device);
+     CUDA_CHECK(cudaMemcpy2DAsync(
+         (char *) tensor->data + offset, stride_tensor, data, stride_data, size, n_copies, cudaMemcpyHostToDevice, cudaStreamPerThread));
+@@ -821,6 +873,7 @@ static bool ggml_backend_cuda_buffer_cpy_tensor(ggml_backend_buffer_t buffer, co
+         ggml_backend_cuda_buffer_context * dst_ctx = (ggml_backend_cuda_buffer_context *)dst->buffer->context;
+         // compare the backing physical devices: distinct virtual devices may share one physical GPU,
+         // in which case a same-device copy (not a peer copy) is required
++        legacy_ai_invalidate_q4(dst_ctx, dst->data);
+         const int src_physical = ggml_cuda_get_physical_device(src_ctx->device);
+         const int dst_physical = ggml_cuda_get_physical_device(dst_ctx->device);
+         if (src_physical == dst_physical) {
+@@ -843,6 +896,12 @@ static bool ggml_backend_cuda_buffer_cpy_tensor(ggml_backend_buffer_t buffer, co
+ static void ggml_backend_cuda_buffer_clear(ggml_backend_buffer_t buffer, uint8_t value) {
+     ggml_backend_cuda_buffer_context * ctx = (ggml_backend_cuda_buffer_context *)buffer->context;
+ 
++    {
++        std::lock_guard<std::mutex> lock(ctx->packed_mutex);
++        ggml_cuda_set_device(ctx->device);
++        for (auto &entry : ctx->packed_q4) CUDA_CHECK(cudaFree(entry.second));
++        ctx->packed_q4.clear();
++    }
+     ggml_cuda_set_device(ctx->device);
+     CUDA_CHECK(cudaMemsetAsync(ctx->dev_ptr, value, buffer->size, cudaStreamPerThread));
+     CUDA_CHECK(cudaStreamSynchronize(cudaStreamPerThread));
+@@ -3996,6 +4055,40 @@ static int ggml_cuda_try_fuse(ggml_backend_cuda_context * cuda_ctx, ggml_cgraph
+     return 0;
+ }
+ 
++
++// Diagnostic only: event intervals include exposed host launch gaps and each
++// operation is synchronized. These samples cannot serve as throughput claims.
++struct legacy_ai_profile_scope {
++    bool enabled;
++    ggml_tensor * node;
++    cudaStream_t stream;
++    cudaEvent_t start, stop;
++    int64_t wall_start;
++    legacy_ai_profile_scope(ggml_backend_cuda_context * ctx, ggml_tensor * tensor, bool captured)
++        : enabled(!captured && std::getenv("LEGACY_AI_PROFILE") != nullptr), node(tensor) {
++        if (!enabled) return;
++        stream = ctx->stream();
++        CUDA_CHECK(cudaEventCreate(&start));
++        CUDA_CHECK(cudaEventCreate(&stop));
++        wall_start = ggml_time_us();
++        CUDA_CHECK(cudaEventRecord(start, stream));
++    }
++    ~legacy_ai_profile_scope() {
++        if (!enabled) return;
++        CUDA_CHECK(cudaEventRecord(stop, stream));
++        CUDA_CHECK(cudaEventSynchronize(stop));
++        float ms;
++        CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
++        const auto * src = node->src[0];
++        std::fprintf(stderr, "LEGACY_PROFILE,%s,%s,%s,%lld,%lld,%lld,%.6f,%lld\n",
++            node->name, ggml_op_name(node->op), src ? ggml_type_name(src->type) : "none",
++            (long long)(src ? src->ne[0] : 0), (long long)(src ? src->ne[1] : 0),
++            (long long)node->ne[1], ms, (long long)(ggml_time_us() - wall_start));
++        CUDA_CHECK(cudaEventDestroy(start));
++        CUDA_CHECK(cudaEventDestroy(stop));
++    }
++};
++
+ static void ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context * cuda_ctx, ggml_cgraph * cgraph, const bool use_cuda_graph, const bool cuda_graph_update_required, const void * graph_key) {
+     bool graph_evaluated_or_captured = false;
+ 
+@@ -4136,6 +4229,7 @@ static void ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context * cud
+                     continue;
+                 }
+ 
++                legacy_ai_profile_scope profile(cuda_ctx, node, use_cuda_graph);
+                 int nodes_to_skip = ggml_cuda_try_fuse(cuda_ctx, cgraph, i);
+ 
+                 if (nodes_to_skip != 0) {
+@@ -4201,6 +4295,9 @@ static void ggml_cuda_graph_evaluate_and_capture(ggml_backend_cuda_context * cud
+         ggml_cuda_graph * graph = cuda_ctx->cuda_graph(graph_key);
+         if (graph->instance == nullptr) { // Create executable graph from captured graph.
+             CUDA_CHECK(cudaGraphInstantiate(&graph->instance, graph->graph, NULL, NULL, 0));
++            if (ggml_cuda_info().devices[cuda_ctx->device].cc == 610) {
++                GGML_LOG_INFO("legacy_ai: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
++            }
+         }
+         if (cuda_graph_update_required) { // Update graph executable
+             ggml_cuda_graph_update_executable(cuda_ctx, graph_key);
+@@ -4219,7 +4316,13 @@ static bool ggml_cuda_graph_set_enabled(ggml_backend_cuda_context * cuda_ctx, co
+     ggml_cuda_graph * graph = cuda_ctx->cuda_graph(graph_key);
+ 
+     if (graph->graph == nullptr) {
+-        if (ggml_cuda_info().devices[cuda_ctx->device].cc < GGML_CUDA_CC_VOLTA) {
++        // Legacy AI: explicitly opt in only the qualified Pascal SM 6.1 path.
++        // Preserve the architecture guard and all upstream graph compatibility,
++        // warmup, recapture, update and explicit-disable checks by default.
++        const int cc = ggml_cuda_info().devices[cuda_ctx->device].cc;
++        const char * opt_in = std::getenv("LEGACY_AI_PASCAL_GRAPHS");
++        const bool pascal_graphs = cc == 610 && opt_in && std::strcmp(opt_in, "1") == 0;
++        if (cc < GGML_CUDA_CC_VOLTA && !pascal_graphs) {
+             if (!graph->disable_due_to_gpu_arch) {
+                 GGML_LOG_DEBUG("%s: disabling CUDA graphs due to GPU architecture\n", __func__);
+             }
+diff --git a/ggml/src/ggml-cuda/mmvf.cu b/ggml/src/ggml-cuda/mmvf.cu
+index d7dbc8b99..9d967c443 100644
+--- a/ggml/src/ggml-cuda/mmvf.cu
++++ b/ggml/src/ggml-cuda/mmvf.cu
+@@ -3,6 +3,10 @@
+ #include "unary.cuh"
+ #include "mmvf.cuh"
+ #include "convert.cuh"
++#include <cstdlib>
++#include <cstring>
++#include <atomic>
++#include "legacy-ai-attention.cuh"
+ 
+ template <typename T, typename type_acc, int ncols_dst, int block_size, bool has_fusion = false, bool is_multi_token_id = false>
+ static __global__ void mul_mat_vec_f(
+@@ -632,6 +636,8 @@ void ggml_cuda_mul_mat_vec_f(ggml_backend_cuda_context & ctx, const ggml_tensor
+     GGML_ASSERT(!ids ||  ids->type == GGML_TYPE_I32);
+     GGML_ASSERT(         dst->type == GGML_TYPE_F32);
+ 
++    if (legacy_ai_attention_dispatch(ctx, src0, src1, ids, dst, fusion)) return;
++
+     GGML_TENSOR_BINARY_OP_LOCALS;
+ 
+     const size_t ts_src0 = ggml_type_size(src0->type);
+diff --git a/ggml/src/ggml-cuda/mmvq.cu b/ggml/src/ggml-cuda/mmvq.cu
+index c99923804..a6f38f58a 100644
+--- a/ggml/src/ggml-cuda/mmvq.cu
++++ b/ggml/src/ggml-cuda/mmvq.cu
+@@ -2,6 +2,18 @@
+ #include "quantize.cuh"
+ #include "unary.cuh"
+ #include "vecdotq.cuh"
++#include "legacy-ai-mmvq.cuh"
++#include <cstring>
++#include <atomic>
++#include "legacy-ai-mmvq.cuh"
++#include <cstring>
++#include <atomic>
++#include "legacy-ai-mmvq.cuh"
++#include <cstring>
++#include <atomic>
++#include "legacy-ai-mmvq.cuh"
++#include <cstring>
++#include <atomic>
+ 
+ #include <cstdint>
+ #include <type_traits>
+@@ -1064,7 +1076,59 @@ static void mul_mat_vec_q_switch_type(
+         const int nchannels_x, const int nchannels_y, const int nchannels_dst,
+         const int stride_channel_x, const int stride_channel_y, const int stride_channel_dst,
+         const int nsamples_x, const int nsamples_dst, const int stride_sample_x, const int stride_sample_y, const int stride_sample_dst,
+-        const int ids_stride, cudaStream_t stream) {
++        const int ids_stride, cudaStream_t stream, const void * packed_weights = nullptr, const void * packed_gate = nullptr) {
++
++
++
++
++    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.
++    static const bool legacy_q4k = [] {
++        const char * value = std::getenv("LEGACY_AI_Q4K");
++        return value && std::strcmp(value, "1") == 0;
++    }();
++    static const bool legacy_q6k = [] {
++        const char * value = std::getenv("LEGACY_AI_Q6K");
++        return value && std::strcmp(value, "1") == 0;
++    }();
++    const bool canonical_q4 =
++        (ncols_x == 2560 && (nrows_x == 4096 || nrows_x == 1024 || nrows_x == 9728)) ||
++        (ncols_x == 4096 && nrows_x == 2560) ||
++        (ncols_x == 9728 && nrows_x == 2560);
++    const bool canonical_q6 =
++        (ncols_x == 2560 && (nrows_x == 1024 || nrows_x == 151936)) ||
++        (ncols_x == 9728 && nrows_x == 2560);
++    const bool supported_type = (legacy_q4k && type_x == GGML_TYPE_Q4_K && canonical_q4) ||
++                                (legacy_q6k && type_x == GGML_TYPE_Q6_K && canonical_q6);
++    if (supported_type && ncols_dst == 1 && !ids &&
++        nchannels_x == 1 && nchannels_y == 1 && nchannels_dst == 1 &&
++        nsamples_x == 1 && nsamples_dst == 1 &&
++        stride_row_x == ncols_x / QK_K &&
++        !fusion.x_bias && !fusion.gate_bias && !fusion.x_scale && !fusion.gate_scale &&
++        ggml_cuda_info().devices[ggml_cuda_get_device()].cc == 610) {
++        const bool q6 = type_x == GGML_TYPE_Q6_K;
++        const char * env_wpr = std::getenv(q6 ? "LEGACY_AI_Q6K_WPR" : "LEGACY_AI_Q4K_WPR");
++        const char * env_wpb = std::getenv(q6 ? "LEGACY_AI_Q6K_WPB" : "LEGACY_AI_Q4K_WPB");
++        const int wpr = env_wpr ? std::atoi(env_wpr) : 2;
++        const int wpb = env_wpb ? std::atoi(env_wpb) : 8;
++        const char * sums_env = std::getenv("LEGACY_AI_Q4K_SUMS");
++        const bool precompute = !q6 && sums_env && std::strcmp(sums_env, "1") == 0;
++        const bool packed = !q6 && packed_weights && (!fusion.gate || packed_gate);
++        auto packed_fusion = fusion;
++        if (packed) packed_fusion.gate = packed_gate;
++        const auto * x = static_cast<const block_q8_1 *>(vy);
++        const bool dispatched = q6 ?
++            legacy_ai_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream) :
++            legacy_ai_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, packed ? packed_weights : vx, x, dst, nrows_x, ncols_x, packed ? packed_fusion : fusion, stream, precompute, packed);
++        if (dispatched) {
++            static std::atomic_flag reported_q4 = ATOMIC_FLAG_INIT;
++            static std::atomic_flag reported_q6 = ATOMIC_FLAG_INIT;
++            if (!(q6 ? reported_q6 : reported_q4).test_and_set()) {
++                GGML_LOG_INFO("legacy_ai: Q%d_K runtime dispatch active, WPR=%d WPB=%d packed=%d\n", q6 ? 6 : 4, wpr, wpb, packed);
++            }
++            return;
++        }
++    }
++
+     switch (type_x) {
+         case GGML_TYPE_Q1_0:
+             mul_mat_vec_q_switch_ncols_dst<GGML_TYPE_Q1_0>
+@@ -1318,11 +1382,19 @@ void ggml_cuda_mul_mat_vec_q(
+ 
+     const int64_t ids_stride = ids ? ids->nb[1] / ggml_type_size(ids->type) : 0;
+ 
++    // Legacy AI: obtain immutable packed model weights for decode only.
++    static const bool prepack_enabled = [] {
++        const char *v = std::getenv("LEGACY_AI_PREPACK");
++        return v && std::strcmp(v, "1") == 0;
++    }();
++    const void *packed_weights = prepack_enabled && ncols_dst == 1 ? legacy_ai_get_packed_q4(src0) : nullptr;
++    const void *packed_gate = prepack_enabled && fusion && fusion->gate ? legacy_ai_get_packed_q4(fusion->gate) : nullptr;
++
+     mul_mat_vec_q_switch_type(
+         src0->data, src0->type, src1_q8_1.get(), ids_d, fusion_local, dst_d, ne00,
+         ne01,              ncols_dst,     s01, stride_col_y,     stride_col_dst,
+         ne02, nchannels_y, nchannels_dst, s02, stride_channel_y, stride_channel_dst,
+-        ne03,              ne3,           s03, s13,              s3,               ids_stride, stream);
++        ne03,              ne3,           s03, s13,              s3,               ids_stride, stream, packed_weights, packed_gate);
+ }
+ 
+ void ggml_cuda_op_mul_mat_vec_q(

@@ -1,0 +1,11 @@
+-- Legacy GPU Target Architectures: 61
+-- Using CUDA compatibility overlay from: /home/taly/legacy-ai-1080ti-port/.cuda_compat/include
+-- Configuring done (0.0s)
+-- Generating done (0.0s)
+-- Build files have been written to: /home/taly/legacy-ai-1080ti-port/build-sm61
+[ 50%] Building CXX object CMakeFiles/lookup_decode.dir/tests/lookup_decode.cpp.o
+[100%] Linking CXX executable lookup_decode
+[100%] Built target lookup_decode
+[ 50%] Building CXX object CMakeFiles/runtime_logits.dir/tests/runtime_logits.cpp.o
+[100%] Linking CXX executable runtime_logits
+[100%] Built target runtime_logits

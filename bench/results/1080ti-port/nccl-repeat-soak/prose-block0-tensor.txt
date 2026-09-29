@@ -1,0 +1,17 @@
+Certainly! A **CPU cache** is a small, fast memory component that sits between the CPU and main memory (RAM), designed to reduce the time it takes for the CPU to access data. Caches are crucial for improving the performance of a computer system, especially in modern processors where the speed of the CPU is much faster than the speed of main memory.
+
+Let’s break down how a CPU cache works, including **cache lines**, **locality**, and the importance of **memory bandwidth**.
+
+---
+
+## 1. **What is a CPU Cache?**
+
+A **CPU cache** is a small, high-speed memory that stores copies of data from main memory (RAM) that the CPU is likely to use again. The idea is to reduce the time it takes for the CPU to access data by keeping frequently used data in a faster, smaller memory.
+
+Caches are organized in **multiple levels** (L1, L2, L3), with L1 being the fastest and smallest, and L3 being the largest and slowest. The goal is to have data that the CPU needs available in the fastest possible cache.
+
+---
+
+## 2. **Cache Lines**
+
+A **cache line** (or **cache block**) is the smallest unit of data that can be

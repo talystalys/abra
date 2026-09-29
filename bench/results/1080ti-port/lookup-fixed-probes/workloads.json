@@ -1,0 +1,81 @@
+[
+  {
+    "id": "multiply",
+    "prompt": "What is 17 times 23? Output only the integer.",
+    "kind": "exact",
+    "expected": "391",
+    "limit": 128
+  },
+  {
+    "id": "sum",
+    "prompt": "Compute the sum of the integers from 1 to 8 inclusive. Output only the integer.",
+    "kind": "exact",
+    "expected": "36",
+    "limit": 128
+  },
+  {
+    "id": "sort",
+    "prompt": "Sort these integers in ascending order: 9, -2, 5, 0. Output only a JSON array.",
+    "kind": "json",
+    "expected": [
+      -2,
+      0,
+      5,
+      9
+    ],
+    "limit": 128
+  },
+  {
+    "id": "json",
+    "prompt": "Return only a JSON object with two fields: name is Ada and count is the integer 3.",
+    "kind": "json",
+    "expected": {
+      "name": "Ada",
+      "count": 3
+    },
+    "limit": 128
+  },
+  {
+    "id": "code-trace",
+    "prompt": "In Python, what does print(sum(i*i for i in range(4))) print? Output only the integer.",
+    "kind": "exact",
+    "expected": "14",
+    "limit": 128
+  },
+  {
+    "id": "fact",
+    "prompt": "What is the capital of France? Output only the city name.",
+    "kind": "exact",
+    "expected": "Paris",
+    "limit": 128
+  },
+  {
+    "id": "translate",
+    "prompt": "Translate good morning into Spanish. Output only the translation.",
+    "kind": "exact",
+    "expected": "Buenos d\u00edas",
+    "limit": 128
+  },
+  {
+    "id": "logic",
+    "prompt": "All tulips are plants. Some plants are red. Must some tulips be red? Answer only yes or no.",
+    "kind": "exact",
+    "expected": "no",
+    "limit": 128
+  },
+  {
+    "id": "extract",
+    "prompt": "A record has owner Mira, reference AZ731, and status ready. Output only the reference.",
+    "kind": "exact",
+    "expected": "AZ731",
+    "limit": 128
+  },
+  {
+    "id": "long-retrieval",
+    "prompt": "In the notes below, the access word is written once. Copy only the access word.",
+    "kind": "exact",
+    "expected": "cobalt-orchid-731",
+    "long_context": true,
+    "limit": 128
+  }
+]

@@ -29,6 +29,7 @@ int main(int argc, char **argv) {
         mp.n_gpu_layers = 99;
         const char *split = std::getenv("LEGACY_AI_VALIDATE_SPLIT");
         mp.split_mode = split && std::strcmp(split, "row") == 0 ? LLAMA_SPLIT_MODE_ROW :
+                        split && std::strcmp(split, "tensor") == 0 ? LLAMA_SPLIT_MODE_TENSOR :
                         split && std::strcmp(split, "layer") == 0 ? LLAMA_SPLIT_MODE_LAYER : LLAMA_SPLIT_MODE_NONE;
         llama_model *model = llama_model_load_from_file(argv[1], mp);
         if (!model) throw std::runtime_error("model load failed");

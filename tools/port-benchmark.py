@@ -41,7 +41,16 @@ def main():
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--gpu', choices=[*DEVICES, 'both'], default='primary')
     p.add_argument('--model', type=Path, default=Path('/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf'))
-    p.add_argument('--split-mode', choices=['none', 'layer', 'row'], help='Explicit placement; row/layer require both GPUs')
+    p.add_argument('--split-mode', choices=['none', 'layer', 'row', 'tensor'], help='Explicit placement; splitting requires both GPUs')
+    p.add_argument('--gpu-layers', type=int, default=99)
+    p.add_argument('--no-kv-offload', action='store_true')
+    p.add_argument('--cache-k', choices=['f16', 'q8_0', 'q4_0'], default='f16')
+    p.add_argument('--cache-v', choices=['f16', 'q8_0', 'q4_0'], default='f16')
+    p.add_argument('--batch', type=int, default=2048)
+    p.add_argument('--ubatch', type=int, default=512)
+    p.add_argument('--allreduce',choices=['nccl','internal','none'],help='Explicit multi GPU communication implementation')
+    p.add_argument('--nccl-proof',action='store_true',help='Require untimed NCCL initialization evidence')
+    p.add_argument('--tensor-split',default='1/1',help='Two GPU weight proportions, e.g. 4/5; recorded in argv')
     p.add_argument('--warmup-samples', type=int, default=0, help='Exclude this many full workload samples per row before measured samples')
     p.add_argument('--depth', type=int, default=0)
     p.add_argument('--reps', type=int, default=10)
@@ -66,7 +75,7 @@ def main():
     a = p.parse_args()
     if socket.gethostname() != 'BigBoy':
         raise SystemExit('GPU benchmarks must run on BigBoy')
-    if a.split_mode in ['layer', 'row'] and a.gpu != 'both':
+    if a.split_mode in ['layer', 'row', 'tensor'] and a.gpu != 'both':
         raise SystemExit('Row/layer splitting requires both explicitly identified GPUs')
     if a.reps < 1 or a.gen < 1 or a.depth < 0 or a.warmup_samples < 0:
         raise SystemExit('Invalid benchmark dimensions')
@@ -85,6 +94,8 @@ def main():
         if row[0] != 'NVIDIA GeForce GTX 1080 Ti' or row[3] != '6.1' or row[2].lower().lstrip('0') != pci.lower().lstrip('0'):
             raise SystemExit(f'Physical identity mismatch: {row}')
     env = os.environ.copy()
+    if a.allreduce: env['GGML_CUDA_ALLREDUCE'] = a.allreduce
+    else: env.pop('GGML_CUDA_ALLREDUCE',None)
     env.pop('LEGACY_AI_PROFILE', None)
     env.update(CUDA_VISIBLE_DEVICES=','.join(DEVICES[r][0] for r in selected),
                LEGACY_AI_PASCAL_GRAPHS='1' if a.graphs else '0',
@@ -97,9 +108,9 @@ def main():
         env['GGML_CUDA_DISABLE_GRAPHS'] = '1'
     env['LD_LIBRARY_PATH'] = '/usr/local/cuda-12.9/lib64:' + env.get('LD_LIBRARY_PATH', '')
     command = ['numactl', '--cpunodebind=0', '--membind=0'] if a.gpu == 'both' else ['numactl', f'--cpunodebind={DEVICES[a.gpu][2]}', f'--membind={DEVICES[a.gpu][2]}']
-    command += [str(a.binary.resolve()), '-m', str(a.model.resolve()), '-p', str(a.prompt), '-n', str(a.gen), '-d', str(a.depth), '-b', '2048', '-ub', '512', '-ctk', 'f16', '-ctv', 'f16', '-ngl', '99', '-r', str(a.reps + a.warmup_samples), '-t', str(a.threads), '-fa', a.flash_attn, '-sm', a.split_mode or ('layer' if a.gpu == 'both' else 'none'), '-o', 'json']
+    command += [str(a.binary.resolve()), '-m', str(a.model.resolve()), '-p', str(a.prompt), '-n', str(a.gen), '-d', str(a.depth), '-b', str(a.batch), '-ub', str(a.ubatch), '-ctk', a.cache_k, '-ctv', a.cache_v, '-ngl', str(a.gpu_layers), '-nkvo', str(int(a.no_kv_offload)), '-r', str(a.reps + a.warmup_samples), '-t', str(a.threads), '-fa', a.flash_attn, '-sm', a.split_mode or ('layer' if a.gpu == 'both' else 'none'), '-o', 'json']
     if a.gpu == 'both':
-        command += ['-ts', '1/1']
+        command += ['-ts', a.tensor_split]
     source_diff = output(['git', '-C', str(a.source), 'diff', 'HEAD'])
     (a.out / 'source.diff').write_text(source_diff)
     manifest = {
@@ -112,6 +123,7 @@ def main():
         'warmup': 'llama-bench default prompt/decode warmup enabled; context prefill excluded from decode samples',
         'excluded_full_workload_warmup_samples': a.warmup_samples,
         'clocks': 'Dynamic clocks; no clock/power configuration changes',
+        'allreduce':a.allreduce or 'platform default',
         'toolchain': output(['/usr/local/cuda-12.9/bin/nvcc', '--version']),
     }
     runtime_kernel = a.source / 'ggml/src/ggml-cuda/legacy-ai-mmvq.cuh'
@@ -128,20 +140,33 @@ def main():
         (a.out / 'attention-kernel.txt').write_text(attention_header.read_text())
     library_files = sorted(a.binary.parent.glob('lib*.so*'))
     manifest['library_sha256'] = {x.name: digest(x) for x in library_files if x.is_file() and not x.is_symlink()}
+    ldd = output(['ldd',str(a.binary.parent/'libggml-cuda.so')])
+    (a.out/'runtime-dependencies.txt').write_text(ldd)
+    for line in ldd.splitlines():
+        if 'libnccl.so' in line and '=>' in line:
+            resolved = Path(line.split('=>',1)[1].strip().split()[0])
+            if resolved.is_file(): manifest['nccl'] = {'path':str(resolved),'sha256':digest(resolved)}
     cache = a.binary.parent.parent / 'CMakeCache.txt'
     if cache.exists():
         (a.out / 'CMakeCache.txt').write_text(cache.read_text())
     (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    if a.offload_proof:
+    if a.offload_proof or a.nccl_proof:
         proof = command.copy()
         for flag, value in [('-p', '32'), ('-n', '0'), ('-d', '0'), ('-r', '1')]:
             proof[proof.index(flag) + 1] = value
         proof += ['-v']
         manifest['untimed_offload_proof_argv'] = proof
+        proof_env = dict(env)
+        if a.nccl_proof: proof_env['NCCL_DEBUG']='INFO'
+        manifest['untimed_proof_nccl_debug'] = proof_env.get('NCCL_DEBUG')
         with open(a.out / 'offload.json', 'w') as raw, open(a.out / 'offload-stderr.txt', 'w') as err:
-            subprocess.run(proof, env=env, stdout=raw, stderr=err, check=True, timeout=300)
-        if 'offloaded 37/37 layers' not in (a.out / 'offload-stderr.txt').read_text():
+            subprocess.run(proof, env=proof_env, stdout=raw, stderr=err, check=True, timeout=300)
+        if a.gpu_layers >= 37 and 'offloaded 37/37 layers' not in (a.out / 'offload-stderr.txt').read_text():
             raise SystemExit('Full Qwen3-4B GPU offload not confirmed')
+        if a.nccl_proof:
+            proof_text=(a.out/'offload.json').read_text()+(a.out/'offload-stderr.txt').read_text()
+            if 'NCCL version 2.27.7' not in proof_text or 'Init COMPLETE' not in proof_text or 'NCCL init failed' in proof_text:
+                raise SystemExit('Pinned NCCL dispatch was not confirmed')
     telemetry_args = ['nvidia-smi', '--query-gpu=timestamp,uuid,pstate,temperature.gpu,power.draw,power.limit,clocks.sm,clocks.mem,utilization.gpu,memory.used,pcie.link.gen.current,pcie.link.width.current', '--format=csv', '-lms', '250']
     with open(a.out / 'telemetry.csv', 'w') as telemetry, open(a.out / 'raw.json', 'w') as raw, open(a.out / 'stderr.txt', 'w') as stderr:
         sampler = subprocess.Popen(telemetry_args, stdout=telemetry, stderr=subprocess.STDOUT)

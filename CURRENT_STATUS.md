@@ -1,6 +1,25 @@
 # CURRENT_STATUS.md
 
-## Current authorized port — Qwen3-4B only
+## Latest optimization round — Qwen3-4B
+
+The user authorized further research, implementation and tests in
+[the next-round plan](docs/1080ti-next-plan.md). Default inference now uses
+both GTX 1080 Ti GPUs with NCCL FP32, tensor splitting and F16 Flash Attention.
+Balanced 20-sample decode comparisons: 72.18 → 94.10 tokens/s at 2K (+30.4%),
+60.79 → 82.53 at 8K (+35.8%). Perplexity changed +0.194% with no lost fixed
+task successes (8/10). NCCL matched the original tensor logits bit for bit
+at 0/2K/8K; the strict single-versus-tensor failure remains recorded.
+CPU KV/layers and quantized KV saved VRAM but slowed the screens. Prompt
+lookup accelerated repeated code prefixes but failed general token equality
+and remains explicitly experimental. A balanced complete 24-function copy
+comparison measured 72.04 single, 90.00 tensor and 293.02 tensor lookup
+tokens/s (20 samples each, identical complete text/IDs), a workload-specific
+4.067× gain over the single-card baseline. The 100-request NCCL soak completed
+25,600 tokens with identical outputs and flat sampled allocation; all 5838
+original oracle cases and corrected launcher smokes completed. The 4K launcher
+context probes retained 8/10 with no lost successes. [Full evidence and limitations](docs/research/1080ti-next-results.md).
+
+## First port round — Qwen3-4B only
 
 - Branch: `port/1080ti-runtime`, derived from M4 `815e3ff`.
 - BigBoy checkout: `/home/taly/legacy-ai-1080ti-port`; public-key SSH to
@@ -17,13 +36,12 @@
 - At depth 2048, Flash Attention improved primary decode 46.87 → 71.15
   tokens/s (+51.8%) and secondary decode 51.23 → 72.66 (+41.8%). Exact custom
   QK/value kernels reached 57.80 on the primary (+23.3%, bit-identical logits).
-  The primary card showed thermal slowdown; the secondary is the launcher
-  default because it delivered higher sustained Flash Attention throughput.
+  The primary card showed thermal slowdown; the secondary was the first-round
+  launcher default because it delivered higher sustained Flash Attention throughput.
 - The user delegated the attention quality policy. Upstream Flash Attention
   passed the separately declared quality criterion: WikiText-2 perplexity
   12.3786 → 12.3824 (+0.031%) and 8/10 exact-format task successes in both modes.
-  Its frozen strict-logit failure remains recorded. The default launcher now
-  enables Flash Attention; `--runtime exact` preserves validated exact output.
+  Its frozen strict-logit failure remains recorded. The first-round launcher selected Flash Attention; `--runtime exact` preserves validated exact output.
 - [Milestones and acceptance criteria](docs/1080ti-port-plan.md). No historical
   milestone verdict is changed by the port.
 - [Full results, limitations and reproduction](docs/research/1080ti-port-results.md).

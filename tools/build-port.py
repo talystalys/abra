@@ -13,6 +13,7 @@ p.add_argument('--overlay', type=Path, default=ROOT / '.cuda_compat/include')
 p.add_argument('--cuda', type=Path, default=Path('/usr/local/cuda-12.9'))
 p.add_argument('--jobs', type=int, default=8)
 p.add_argument('--profile', action='store_true')
+p.add_argument('--nccl-prefix',type=Path,help='Optional locally extracted NCCL prefix; no system installation')
 a = p.parse_args()
 
 def run(argv):
@@ -36,14 +37,21 @@ if not source.exists():
 run(['python3', ROOT / 'tools/prepare-port-runtime.py', source, '--kernels'] + (['--profile'] if a.profile else []))
 run(['python3', ROOT / 'tools/prepare-packed-weights.py', source])
 run(['python3', ROOT / 'tools/prepare-attention.py', source])
+nccl_flags = []
+if a.nccl_prefix:
+    include = a.nccl_prefix.resolve() / 'usr/include'
+    library = a.nccl_prefix.resolve() / 'usr/lib/x86_64-linux-gnu/libnccl.so'
+    if not (include/'nccl.h').exists() or not library.exists(): raise SystemExit('NCCL headers/library missing')
+    run(['python3',ROOT/'tools/prepare-nccl.py',source])
+    nccl_flags = [f'-DNCCL_INCLUDE_DIR={include}',f'-DNCCL_LIBRARY={library}','-DGGML_CUDA_NCCL=ON']
 flags = '-I' + str(a.overlay.absolute()) + ' -Wno-deprecated-gpu-targets'
 common = [f'-DCMAKE_CUDA_COMPILER={a.cuda}/bin/nvcc', f'-DCMAKE_CUDA_FLAGS={flags}',
           '-DCMAKE_CUDA_ARCHITECTURES=61', '-DCMAKE_BUILD_TYPE=Release']
 run(['cmake', '-S', source, '-B', source / 'build-port', '-DGGML_CUDA=ON',
-     '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_CURL=OFF', *common])
+     '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_CURL=OFF', *nccl_flags, *common])
 run(['cmake', '--build', source / 'build-port', '--target', 'llama-bench', 'llama-cli', 'llama-completion', 'llama-perplexity', '--parallel', a.jobs])
 run(['cmake', '-S', ROOT, '-B', ROOT / 'build-sm61',
      f'-DLLAMA_SOURCE_DIR={a.upstream.resolve()}',
      f'-DLLAMA_LIB_DIR={a.upstream.resolve()}/build-default/bin', *common])
 run(['cmake', '--build', ROOT / 'build-sm61', '--target', 'list_cuda_devices',
-     'q4k_q8_test', 'runtime_logits', 'runtime_kernel_test', 'attention_kernel_test', 'value_kernel_test', '--parallel', a.jobs])
+     'q4k_q8_test', 'runtime_logits', 'lookup_decode', 'runtime_kernel_test', 'attention_kernel_test', 'value_kernel_test', '--parallel', a.jobs])

@@ -17,21 +17,38 @@ Reproduction tooling:
 
 ```bash
 # Requires the existing, clean pinned control checkout and CUDA/glibc overlay.
-python3 tools/build-port.py --profile
+# Fetch once: extract pinned NVIDIA packages locally, without apt/system changes.
+python3 tools/fetch-nccl.py
+python3 tools/build-port.py --profile --nccl-prefix .deps/nccl-2.27.7-cuda12
 python3 tools/qwen3-4b.py -- --reasoning off --single-turn -p 'Explain memory bandwidth. /no_think' -n 128
 # Original reduction order with exact-output QK/value kernels:
 python3 tools/qwen3-4b.py --runtime exact --gpu secondary
 ```
 
-The default launcher selects the measured faster secondary GTX 1080 Ti and
-enables upstream Flash Attention with unchanged Q4_K_M
-weights and F16 KV. It passed the declared perplexity/task quality comparison;
-it does not meet the historical strict logit envelope. `--runtime exact` uses
-custom QK/value kernels that match upstream logits bit for bit in validation.
-Raw measurements live in `bench/results/1080ti-port/`. Diagnostic profiling is
-compiled into the measured build but disabled by all timing/inference tools.
-The detailed results and reproduction commands are in
-[the port report](docs/research/1080ti-port-results.md).
+The default launcher uses both identified GTX 1080 Ti GPUs, equal tensor
+splitting, NCCL FP32 and Flash Attention, with unchanged Q4_K_M weights and
+F16 KV. Balanced measurements show 72.18 → 94.10 tokens/s at 2K context
+(+30.4%) and 60.79 → 82.53 at 8K (+35.8%), compared with single-GPU Flash
+Attention. The declared quality comparison passed (+0.194% perplexity,
+8/10 fixed tasks in both modes). Tensor logits differ from single-GPU logits;
+NCCL matches the pinned tensor implementation bit for bit. Experimental
+prompt lookup reached 293.02 tokens/s versus 72.04 on a complete repetitive
+code-copy task (4.067×, identical tokens, 20 samples); general prose token
+equality failed, so this stays separate from normal chat.
+
+```bash
+# Single-card fallback:
+python3 tools/qwen3-4b.py --runtime flash --gpu secondary
+# Experimental greedy lookup for repetitive code; prose equality failed:
+python3 tools/qwen3-4b-lookup.py --gpu both --allreduce nccl --file prompt.txt
+```
+
+`--runtime exact` uses custom QK/value kernels that matched the original
+single-GPU logits bit for bit. Diagnostic profiling is compiled into the
+measured build but disabled by timing/inference tools. Raw results live in
+`bench/results/1080ti-port/`. See [the new results and RAM tradeoffs](docs/research/1080ti-next-results.md),
+[the next-round milestones](docs/1080ti-next-plan.md), and
+[the original port report](docs/research/1080ti-port-results.md).
 
 ## Historical M0 setup
 

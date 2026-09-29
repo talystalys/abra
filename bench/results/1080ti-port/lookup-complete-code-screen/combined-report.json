@@ -1,0 +1,346 @@
+{
+  "results": [
+    {
+      "case": "code-copy",
+      "config": "baseline",
+      "samples": 3,
+      "median_tps": 76.29354191690757,
+      "min_tps": 76.2215909498703,
+      "max_tps": 76.45447071477011,
+      "spread_tps": 0.23287976489980622,
+      "generated_tokens": 531,
+      "p95_block_ms": 13.2303,
+      "max_block_ms": 14.2163,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786624,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 75.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 3283.0
+          },
+          "temperature": {
+            "min": 65.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1911.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-baseline.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "code-copy",
+      "config": "tensor",
+      "samples": 3,
+      "median_tps": 94.55835372303484,
+      "min_tps": 91.78244621825209,
+      "max_tps": 96.32058975047343,
+      "spread_tps": 4.538143532221341,
+      "generated_tokens": 531,
+      "p95_block_ms": 11.1344,
+      "max_block_ms": 25.3956,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905532,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 75.0,
+            "max": 85.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1822.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-tensor.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.2394018071152044
+    },
+    {
+      "case": "code-copy",
+      "config": "tensor-lookup",
+      "samples": 3,
+      "median_tps": 322.0328703984474,
+      "min_tps": 314.039518117892,
+      "max_tps": 323.7232440605015,
+      "spread_tps": 9.683725942609499,
+      "generated_tokens": 531,
+      "p95_block_ms": 32.815,
+      "max_block_ms": 47.1769,
+      "blocks_all_single_token": false,
+      "accepted": 1428,
+      "proposed": 2544,
+      "acceptance_fraction": 0.5613207547169812,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905608,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 82.0,
+            "max": 87.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 4.220971556795439
+    },
+    {
+      "case": "code-edit",
+      "config": "baseline",
+      "samples": 3,
+      "median_tps": 72.5536705872065,
+      "min_tps": 72.31002617323358,
+      "max_tps": 72.9456726456475,
+      "spread_tps": 0.6356464724139244,
+      "generated_tokens": 531,
+      "p95_block_ms": 14.0992,
+      "max_block_ms": 14.9479,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786928,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 77.0,
+            "max": 85.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1873.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 3283.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 85.0
+          },
+          "clock": {
+            "min": 1607.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-edit-block0-baseline.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "code-edit",
+      "config": "tensor",
+      "samples": 3,
+      "median_tps": 91.08436710945219,
+      "min_tps": 90.10293114507081,
+      "max_tps": 91.39131662013914,
+      "spread_tps": 1.2883854750683241,
+      "generated_tokens": 531,
+      "p95_block_ms": 11.1819,
+      "max_block_ms": 25.3844,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905972,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 77.0,
+            "max": 85.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 81.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1746.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-edit-block0-tensor.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.2554067405862335
+    },
+    {
+      "case": "code-edit",
+      "config": "tensor-lookup",
+      "samples": 3,
+      "median_tps": 308.2979168118164,
+      "min_tps": 306.87965231864627,
+      "max_tps": 308.7855597683236,
+      "spread_tps": 1.9059074496773292,
+      "generated_tokens": 531,
+      "p95_block_ms": 38.159,
+      "max_block_ms": 44.7502,
+      "blocks_all_single_token": false,
+      "accepted": 1416,
+      "proposed": 2544,
+      "acceptance_fraction": 0.5566037735849056,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905888,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 83.0,
+            "max": 88.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1885.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1797.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-edit-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 4.249239415685456
+    }
+  ],
+  "excluded_runs_per_block": 1,
+  "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
+  "percentile_method": "sorted[floor((N-1)*0.95)]",
+  "task_scoring": "Existing qualification scorer normalizes case and trailing punctuation, strips thinking/fences, and parses JSON; literal matching is additionally reported. Complete code equality remains literal after outer whitespace trimming.",
+  "analyzer_sha256": "8517e8574f59974a20a24f19b022ab4312e5f3be2b61643de30c82c89e219ea6",
+  "note": "p95 block equals token latency only where every block contains one token; telemetry includes initialization, prefill and excluded runs."
+}

@@ -1,0 +1,2610 @@
+{
+  "results": [
+    {
+      "case": "code-trace",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 74.69291873783907,
+      "min_tps": 74.69291873783907,
+      "max_tps": 74.69291873783907,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.6354,
+      "max_block_ms": 13.9021,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786448,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2857.0
+          },
+          "temperature": {
+            "min": 73.0,
+            "max": 73.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-trace-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-trace-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191720.0,
+          "rss_median_last_10_percent_kib": 667872.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "code-trace",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 74.30773060475347,
+      "min_tps": 74.30773060475347,
+      "max_tps": 74.30773060475347,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.6708,
+      "max_block_ms": 14.0399,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786328,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2517.0
+          },
+          "temperature": {
+            "min": 73.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-trace-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-trace-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191804.0,
+          "rss_median_last_10_percent_kib": 687428.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.9948430434960301
+    },
+    {
+      "case": "code-trace",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 56.03747786519625,
+      "min_tps": 56.03747786519625,
+      "max_tps": 56.03747786519625,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 9.78251,
+      "max_block_ms": 25.6603,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2907504,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 72.0,
+            "max": 73.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-trace-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-trace-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340496.0,
+          "rss_median_last_10_percent_kib": 1101128.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.7502381592809272
+    },
+    {
+      "case": "code-trace",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 45.21235111007625,
+      "min_tps": 45.21235111007625,
+      "max_tps": 45.21235111007625,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.3581,
+      "max_block_ms": 31.5653,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905344,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 72.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1531.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-trace-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-trace-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340512.0,
+          "rss_median_last_10_percent_kib": 1064620.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.6053097385143673
+    },
+    {
+      "case": "extract",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 77.5560536377667,
+      "min_tps": 77.5560536377667,
+      "max_tps": 77.5560536377667,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 12.6787,
+      "max_block_ms": 13.5898,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2787028,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2857.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 70.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "extract-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "extract-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 193744.0,
+          "rss_median_last_10_percent_kib": 693256.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "extract",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 77.61128002343861,
+      "min_tps": 77.61128002343861,
+      "max_tps": 77.61128002343861,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 12.5892,
+      "max_block_ms": 13.6513,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786540,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2867.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 70.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "extract-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "extract-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191792.0,
+          "rss_median_last_10_percent_kib": 685368.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0007120834942151
+    },
+    {
+      "case": "extract",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 61.625780529026514,
+      "min_tps": 61.625780529026514,
+      "max_tps": 61.625780529026514,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 11.4467,
+      "max_block_ms": 30.9229,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905868,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 70.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "extract-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "extract-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340444.0,
+          "rss_median_last_10_percent_kib": 1105500.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.794596651563215
+    },
+    {
+      "case": "extract",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 60.651917131285614,
+      "min_tps": 60.651917131285614,
+      "max_tps": 60.651917131285614,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 11.6179,
+      "max_block_ms": 31.2361,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2906296,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 69.0,
+            "max": 70.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "extract-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "extract-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340516.0,
+          "rss_median_last_10_percent_kib": 1105536.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.7820397542990836
+    },
+    {
+      "case": "fact",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 72.69713645979485,
+      "min_tps": 72.69713645979485,
+      "max_tps": 72.69713645979485,
+      "spread_tps": 0.0,
+      "generated_tokens": 1,
+      "p95_block_ms": 13.5887,
+      "max_block_ms": 13.5887,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786412,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2517.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 72.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "fact-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "fact-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191804.0,
+          "rss_median_last_10_percent_kib": 682016.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "fact",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 72.37984944991314,
+      "min_tps": 72.37984944991314,
+      "max_tps": 72.37984944991314,
+      "spread_tps": 0.0,
+      "generated_tokens": 1,
+      "p95_block_ms": 13.6496,
+      "max_block_ms": 13.6496,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2787024,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2517.0
+          },
+          "temperature": {
+            "min": 72.0,
+            "max": 72.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "fact-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "fact-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 224568.0,
+          "rss_median_last_10_percent_kib": 710004.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.9956354950781702
+    },
+    {
+      "case": "fact",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 33.03131699163978,
+      "min_tps": 33.03131699163978,
+      "max_tps": 33.03131699163978,
+      "spread_tps": 0.0,
+      "generated_tokens": 1,
+      "p95_block_ms": 30.0126,
+      "max_block_ms": 30.0126,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905700,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1831.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1831.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 72.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "fact-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "fact-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340512.0,
+          "rss_median_last_10_percent_kib": 1103412.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.45436888714189927
+    },
+    {
+      "case": "fact",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 32.59431164073246,
+      "min_tps": 32.59431164073246,
+      "max_tps": 32.59431164073246,
+      "spread_tps": 0.0,
+      "generated_tokens": 1,
+      "p95_block_ms": 30.4407,
+      "max_block_ms": 30.4407,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2907252,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1841.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1841.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "fact-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "fact-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340448.0,
+          "rss_median_last_10_percent_kib": 1068196.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.44835757263642345
+    },
+    {
+      "case": "json",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 78.56693903205532,
+      "min_tps": 78.56693903205532,
+      "max_tps": 78.56693903205532,
+      "spread_tps": 0.0,
+      "generated_tokens": 12,
+      "p95_block_ms": 12.6617,
+      "max_block_ms": 13.6011,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786960,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2855.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 75.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "json-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "json-block0-baseline-host-memory.csv",
+          "samples": 6,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": null,
+          "rss_median_last_10_percent_kib": 395688.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "json",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 78.507314264779,
+      "min_tps": 78.507314264779,
+      "max_tps": 78.507314264779,
+      "spread_tps": 0.0,
+      "generated_tokens": 12,
+      "p95_block_ms": 12.6864,
+      "max_block_ms": 13.6583,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2785892,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2865.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "json-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "json-block0-lookup-host-memory.csv",
+          "samples": 6,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": null,
+          "rss_median_last_10_percent_kib": 707292.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.999241095962107
+    },
+    {
+      "case": "json",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 79.46861982874513,
+      "min_tps": 79.46861982874513,
+      "max_tps": 79.46861982874513,
+      "spread_tps": 0.0,
+      "generated_tokens": 12,
+      "p95_block_ms": 11.3713,
+      "max_block_ms": 30.5099,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905468,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1835.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1835.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "json-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "json-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340508.0,
+          "rss_median_last_10_percent_kib": 1103440.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.011476593180268
+    },
+    {
+      "case": "json",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 79.50547593965534,
+      "min_tps": 79.50547593965534,
+      "max_tps": 79.50547593965534,
+      "spread_tps": 0.0,
+      "generated_tokens": 12,
+      "p95_block_ms": 11.3837,
+      "max_block_ms": 29.8038,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905948,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1845.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1845.0
+          },
+          "temperature": {
+            "min": 73.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "json-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "json-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340396.0,
+          "rss_median_last_10_percent_kib": 726200.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.011945697759933
+    },
+    {
+      "case": "logic",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 74.72389520720937,
+      "min_tps": 74.72389520720937,
+      "max_tps": 74.72389520720937,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.6093,
+      "max_block_ms": 13.9538,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786044,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2857.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "logic-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "logic-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191768.0,
+          "rss_median_last_10_percent_kib": 681664.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "logic",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 76.11421699402123,
+      "min_tps": 76.11421699402123,
+      "max_tps": 76.11421699402123,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.5693,
+      "max_block_ms": 13.5368,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786292,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2867.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "logic-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "logic-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191712.0,
+          "rss_median_last_10_percent_kib": 688812.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.0186061203441885
+    },
+    {
+      "case": "logic",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 46.24362993997577,
+      "min_tps": 46.24362993997577,
+      "max_tps": 46.24362993997577,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 12.1327,
+      "max_block_ms": 30.8743,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905004,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1837.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "logic-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "logic-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340388.0,
+          "rss_median_last_10_percent_kib": 1105404.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 0.6188600020347197
+    },
+    {
+      "case": "logic",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 47.75127316832085,
+      "min_tps": 47.75127316832085,
+      "max_tps": 47.75127316832085,
+      "spread_tps": 0.0,
+      "generated_tokens": 2,
+      "p95_block_ms": 11.333,
+      "max_block_ms": 30.3111,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905992,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 70.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "logic-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "logic-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340424.0,
+          "rss_median_last_10_percent_kib": 1064592.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 0.6390361883023705
+    },
+    {
+      "case": "long-retrieval",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 73.50418973881511,
+      "min_tps": 73.50418973881511,
+      "max_tps": 73.50418973881511,
+      "spread_tps": 0.0,
+      "generated_tokens": 9,
+      "p95_block_ms": 13.5159,
+      "max_block_ms": 14.6014,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786840,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 3103.0
+          },
+          "temperature": {
+            "min": 69.0,
+            "max": 73.0
+          },
+          "clock": {
+            "min": 1822.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "long-retrieval-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "long-retrieval-block0-baseline-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 336396.0,
+          "rss_median_last_10_percent_kib": 721576.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "long-retrieval",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 89.2919151131527,
+      "min_tps": 89.2919151131527,
+      "max_tps": 89.2919151131527,
+      "spread_tps": 0.0,
+      "generated_tokens": 9,
+      "p95_block_ms": 14.6636,
+      "max_block_ms": 45.2609,
+      "blocks_all_single_token": false,
+      "accepted": 4,
+      "proposed": 16,
+      "acceptance_fraction": 0.25,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786944,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 3103.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1822.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "long-retrieval-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "long-retrieval-block0-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 322324.0,
+          "rss_median_last_10_percent_kib": 719808.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.214786741142738
+    },
+    {
+      "case": "long-retrieval",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 86.12934713954868,
+      "min_tps": 86.12934713954868,
+      "max_tps": 86.12934713954868,
+      "spread_tps": 0.0,
+      "generated_tokens": 9,
+      "p95_block_ms": 10.2517,
+      "max_block_ms": 22.8431,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905364,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1995.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 1759.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1995.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "long-retrieval-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "long-retrieval-block0-tensor-host-memory.csv",
+          "samples": 11,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 460168.0,
+          "rss_median_last_10_percent_kib": 1119554.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.17176105805118
+    },
+    {
+      "case": "long-retrieval",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 87.41683259676557,
+      "min_tps": 87.41683259676557,
+      "max_tps": 87.41683259676557,
+      "spread_tps": 0.0,
+      "generated_tokens": 9,
+      "p95_block_ms": 22.1491,
+      "max_block_ms": 49.9131,
+      "blocks_all_single_token": false,
+      "accepted": 4,
+      "proposed": 16,
+      "acceptance_fraction": 0.25,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2907592,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1995.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1995.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "long-retrieval-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "long-retrieval-block0-tensor-lookup-host-memory.csv",
+          "samples": 11,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 464052.0,
+          "rss_median_last_10_percent_kib": 1087588.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.1892768685347967
+    },
+    {
+      "case": "multiply",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 76.33160484654803,
+      "min_tps": 76.33160484654803,
+      "max_tps": 76.33160484654803,
+      "spread_tps": 0.0,
+      "generated_tokens": 3,
+      "p95_block_ms": 12.7095,
+      "max_block_ms": 13.7536,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786332,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2851.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 746.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "multiply-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "multiply-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191852.0,
+          "rss_median_last_10_percent_kib": 1098032.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "multiply",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 76.32539040437192,
+      "min_tps": 76.32539040437192,
+      "max_tps": 76.32539040437192,
+      "spread_tps": 0.0,
+      "generated_tokens": 3,
+      "p95_block_ms": 12.6763,
+      "max_block_ms": 13.8116,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786792,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2861.0
+          },
+          "temperature": {
+            "min": 77.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "multiply-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "multiply-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191796.0,
+          "rss_median_last_10_percent_kib": 682356.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.9999185862502353
+    },
+    {
+      "case": "multiply",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 55.20947394572909,
+      "min_tps": 55.20947394572909,
+      "max_tps": 55.20947394572909,
+      "spread_tps": 0.0,
+      "generated_tokens": 3,
+      "p95_block_ms": 11.6168,
+      "max_block_ms": 31.2288,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905984,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1833.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1833.0
+          },
+          "temperature": {
+            "min": 77.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "multiply-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "multiply-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340452.0,
+          "rss_median_last_10_percent_kib": 1105516.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.7232845956366112
+    },
+    {
+      "case": "multiply",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 55.66451368697617,
+      "min_tps": 55.66451368697617,
+      "max_tps": 55.66451368697617,
+      "spread_tps": 0.0,
+      "generated_tokens": 3,
+      "p95_block_ms": 11.8483,
+      "max_block_ms": 30.4345,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905992,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1843.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1843.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 77.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "multiply-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "multiply-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340464.0,
+          "rss_median_last_10_percent_kib": 1105872.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.7292459499427583
+    },
+    {
+      "case": "sort",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 78.52185625668191,
+      "min_tps": 78.52185625668191,
+      "max_tps": 78.52185625668191,
+      "spread_tps": 0.0,
+      "generated_tokens": 13,
+      "p95_block_ms": 12.6596,
+      "max_block_ms": 13.9134,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786596,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2859.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sort-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sort-block0-baseline-host-memory.csv",
+          "samples": 6,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": null,
+          "rss_median_last_10_percent_kib": 718172.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "sort",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 65.21422874141555,
+      "min_tps": 65.21422874141555,
+      "max_tps": 65.21422874141555,
+      "spread_tps": 0.0,
+      "generated_tokens": 13,
+      "p95_block_ms": 31.2546,
+      "max_block_ms": 38.4497,
+      "blocks_all_single_token": false,
+      "accepted": 1,
+      "proposed": 32,
+      "acceptance_fraction": 0.03125,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2787176,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2867.0
+          },
+          "temperature": {
+            "min": 75.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sort-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sort-block0-lookup-host-memory.csv",
+          "samples": 6,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": null,
+          "rss_median_last_10_percent_kib": 726564.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.8305232689384628
+    },
+    {
+      "case": "sort",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 76.7972022188484,
+      "min_tps": 76.7972022188484,
+      "max_tps": 76.7972022188484,
+      "spread_tps": 0.0,
+      "generated_tokens": 13,
+      "p95_block_ms": 11.8531,
+      "max_block_ms": 31.7809,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2904972,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1839.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1839.0
+          },
+          "temperature": {
+            "min": 75.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sort-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sort-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340392.0,
+          "rss_median_last_10_percent_kib": 1108724.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.9780360001654093
+    },
+    {
+      "case": "sort",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 52.7128891123555,
+      "min_tps": 52.7128891123555,
+      "max_tps": 52.7128891123555,
+      "spread_tps": 0.0,
+      "generated_tokens": 13,
+      "p95_block_ms": 40.3414,
+      "max_block_ms": 50.2859,
+      "blocks_all_single_token": false,
+      "accepted": 1,
+      "proposed": 32,
+      "acceptance_fraction": 0.03125,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905336,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1847.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 75.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sort-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sort-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340376.0,
+          "rss_median_last_10_percent_kib": 720332.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.6713148621963433
+    },
+    {
+      "case": "sum",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 79.03570244142834,
+      "min_tps": 79.03570244142834,
+      "max_tps": 79.03570244142834,
+      "spread_tps": 0.0,
+      "generated_tokens": 51,
+      "p95_block_ms": 12.6629,
+      "max_block_ms": 13.7271,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786828,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 1430.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2855.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sum-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sum-block0-baseline-host-memory.csv",
+          "samples": 8,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 339928.0,
+          "rss_median_last_10_percent_kib": 389688.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": false,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "sum",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 85.23126082102773,
+      "min_tps": 85.23126082102773,
+      "max_tps": 85.23126082102773,
+      "spread_tps": 0.0,
+      "generated_tokens": 51,
+      "p95_block_ms": 12.6835,
+      "max_block_ms": 40.1717,
+      "blocks_all_single_token": false,
+      "accepted": 6,
+      "proposed": 16,
+      "acceptance_fraction": 0.375,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786704,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 76.0
+          },
+          "clock": {
+            "min": 1265.0,
+            "max": 1430.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2865.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sum-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sum-block0-lookup-host-memory.csv",
+          "samples": 8,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 332056.0,
+          "rss_median_last_10_percent_kib": 393868.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": false,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.0783893631386496
+    },
+    {
+      "case": "sum",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 93.3054270827235,
+      "min_tps": 93.3054270827235,
+      "max_tps": 93.3054270827235,
+      "spread_tps": 0.0,
+      "generated_tokens": 51,
+      "p95_block_ms": 11.2979,
+      "max_block_ms": 29.6901,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2906316,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1835.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 80.0
+          },
+          "clock": {
+            "min": 1265.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1835.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sum-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sum-block0-tensor-host-memory.csv",
+          "samples": 11,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 464308.0,
+          "rss_median_last_10_percent_kib": 1094748.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": false,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.1805478309232482
+    },
+    {
+      "case": "sum",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 91.63910006810043,
+      "min_tps": 91.63910006810043,
+      "max_tps": 91.63910006810043,
+      "spread_tps": 0.0,
+      "generated_tokens": 51,
+      "p95_block_ms": 11.7088,
+      "max_block_ms": 50.7963,
+      "blocks_all_single_token": false,
+      "accepted": 6,
+      "proposed": 16,
+      "acceptance_fraction": 0.375,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2906084,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1845.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1845.0
+          },
+          "temperature": {
+            "min": 76.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "sum-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "sum-block0-tensor-lookup-host-memory.csv",
+          "samples": 11,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 464208.0,
+          "rss_median_last_10_percent_kib": 1102622.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": false,
+      "task_literal_success_all_blocks": false,
+      "speedup_vs_baseline": 1.1594646120341905
+    },
+    {
+      "case": "translate",
+      "config": "baseline",
+      "samples": 1,
+      "median_tps": 77.59968649726656,
+      "min_tps": 77.59968649726656,
+      "max_tps": 77.59968649726656,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 12.5828,
+      "max_block_ms": 13.6573,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786680,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2849.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "translate-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "translate-block0-baseline-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191788.0,
+          "rss_median_last_10_percent_kib": 682888.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "translate",
+      "config": "lookup",
+      "samples": 1,
+      "median_tps": 77.6530152665828,
+      "min_tps": 77.6530152665828,
+      "max_tps": 77.6530152665828,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 12.585,
+      "max_block_ms": 13.5881,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786976,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1430.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2857.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 72.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "translate-block0-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "translate-block0-lookup-host-memory.csv",
+          "samples": 5,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 191800.0,
+          "rss_median_last_10_percent_kib": 676624.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 1.000687229185109
+    },
+    {
+      "case": "translate",
+      "config": "tensor",
+      "samples": 1,
+      "median_tps": 62.591442185067244,
+      "min_tps": 62.591442185067244,
+      "max_tps": 62.591442185067244,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 11.2764,
+      "max_block_ms": 30.0399,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2907456,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1831.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1430.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1831.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "translate-block0-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "translate-block0-tensor-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340520.0,
+          "rss_median_last_10_percent_kib": 1053452.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.8065940084341967
+    },
+    {
+      "case": "translate",
+      "config": "tensor-lookup",
+      "samples": 1,
+      "median_tps": 61.0214688782881,
+      "min_tps": 61.0214688782881,
+      "max_tps": 61.0214688782881,
+      "spread_tps": 0.0,
+      "generated_tokens": 4,
+      "p95_block_ms": 12.1335,
+      "max_block_ms": 30.3767,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2905416,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 1839.0
+          },
+          "temperature": {
+            "min": 78.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1759.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 1839.0
+          },
+          "temperature": {
+            "min": 70.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 1898.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "translate-block0-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "translate-block0-tensor-lookup-host-memory.csv",
+          "samples": 9,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 340460.0,
+          "rss_median_last_10_percent_kib": 1066616.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "task_success_all_blocks": true,
+      "task_literal_success_all_blocks": true,
+      "speedup_vs_baseline": 0.7863623119203912
+    }
+  ],
+  "excluded_runs_per_block": 0,
+  "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
+  "percentile_method": "sorted[floor((N-1)*0.95)]",
+  "task_scoring": "Existing qualification scorer normalizes case and trailing punctuation, strips thinking/fences, and parses JSON; literal matching is additionally reported. Complete code equality remains literal after outer whitespace trimming.",
+  "analyzer_sha256": "8517e8574f59974a20a24f19b022ab4312e5f3be2b61643de30c82c89e219ea6",
+  "note": "p95 block equals token latency only where every block contains one token; telemetry includes initialization, prefill and excluded runs."
+}

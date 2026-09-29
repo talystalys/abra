@@ -1,0 +1,7 @@
+{
+  "libllama-perplexity-impl.so": "1ce784c05208e653e2ee424a680c490f9d963f583ef6ba16019dec0518ceaf9a",
+  "libllama-completion-impl.so": "e91796cc8137a173a2d1a55e9465db54d3e95683cbb020a3334413ac3d620ff6",
+  "libllama-server-impl.so": "69b82825e0de6a73eab45b764d73c1d00f85f65b1bd6e2a9985e7ccb2d772ce2",
+  "libllama-cli-impl.so": "4738f65651118385e878b9dbd297045f3dda068dedd23ee7290acc04d70dfb02",
+  "libllama-bench-impl.so": "0d2339fb3a7aa8b8c22c95e0cc7ae0a6d9d74448012a348ab0c94c49d9aff349"
+}

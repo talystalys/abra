@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-screen/d8192-f16", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 8192, "samples": 3, "median_tps": 62.812261496966556, "min_tps": 62.76083833440949, "max_tps": 62.81768732573478, "spread_tps": 0.05684899132528898, "median_ns": 2037818683, "stddev_tps": 0.025615943559291244}]}

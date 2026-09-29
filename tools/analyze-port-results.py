@@ -40,8 +40,24 @@ for row in rows:
                      (x['depth'], x['prompt'], x['gen']) == (row['depth'], row['prompt'], row['gen'])), None)
     if baseline:
         row['speedup_vs_baseline'] = row['median_tps'] / baseline['median_tps']
+    devices = {}
+    for directory in row['directories']:
+        for path in Path(directory).glob('*telemetry*.csv'):
+            for line in path.read_text().splitlines():
+                fields = [value.strip() for value in line.split(',')]
+                if len(fields) != 12 or not fields[1].startswith('GPU-'):
+                    continue
+                entry = devices.setdefault(fields[1], {'temperature': [], 'clock': [], 'memory': []})
+                for name, index in [('temperature', 3), ('clock', 6), ('memory', 9)]:
+                    try:
+                        entry[name].append(float(fields[index].split()[0]))
+                    except ValueError:
+                        pass
+    row['telemetry'] = {uuid: {name: {'min': min(values), 'max': max(values)}
+                             for name, values in entry.items() if values}
+                        for uuid, entry in devices.items()}
 report = {'model_sha256': next(iter(model_hashes)), 'results': rows,
-          'note': 'Dynamic clocks. Screening is exploratory; final claims require balanced order and at least twenty measured samples.'}
+          'note': 'Dynamic clocks. Screening is exploratory; final claims require balanced order and at least twenty measured samples. Telemetry extrema include initialization and excluded warmups.'}
 a.out.write_text(json.dumps(report, indent=2) + '\n')
 for row in rows:
     print(f"d{row['depth']} {row['configuration']} pp{row['prompt']} tg{row['gen']}: "

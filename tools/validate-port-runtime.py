@@ -32,13 +32,15 @@ def main():
     p.add_argument('--attention-rows', choices=[4, 8], type=int, default=4)
     p.add_argument('--q4k-sums', action='store_true')
     p.add_argument('--prepack', action='store_true', help='Lossless metadata expansion; extra model-owned VRAM cache')
-    p.add_argument('--split-mode', choices=['row', 'layer'])
+    p.add_argument('--split-mode', choices=['row', 'layer', 'tensor'])
+    p.add_argument('--reference-split-mode',choices=['none','tensor'],default='none')
+    p.add_argument('--no-graphs',action='store_true',help='Omit graph-specific modes when qualifying communication changes')
     p.add_argument('--flash-attn', action='store_true')
     p.add_argument('--reference-flash-attn', action='store_true', help='Compare fallback/graphs against upstream Flash Attention, retaining strict checks')
     a = p.parse_args()
     if socket.gethostname() != 'BigBoy':
         raise SystemExit('Run on BigBoy')
-    if a.split_mode and a.gpu != 'both':
+    if (a.split_mode or a.reference_split_mode=='tensor') and a.gpu != 'both':
         raise SystemExit('Both GPUs are required for split validation')
     if a.out.exists():
         raise SystemExit('Refusing to overwrite validation results')
@@ -72,6 +74,7 @@ def main():
         modes['flash-attention'] = (a.runtime_lib, False, False)
     if a.split_mode:
         modes[a.split_mode] = (a.baseline_lib, False, False)
+    if a.no_graphs: modes = {name:value for name,value in modes.items() if not value[1]}
     commands = []
     reports = []
     for depth in a.depths:
@@ -79,7 +82,7 @@ def main():
             prefix = a.out / f'{name}-d{depth}'
             env = os.environ.copy()
             env.pop('LEGACY_AI_PROFILE', None)
-            env.update(LEGACY_AI_ATTENTION_V='1' if 'value' in name else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if name.startswith('exact-attention') else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_VALIDATE_SPLIT=a.split_mode if name == a.split_mode else 'none', LEGACY_AI_VALIDATE_FLASH_ATTN='1' if name == 'flash-attention' or a.reference_flash_attn else '0', CUDA_VISIBLE_DEVICES=UUIDS[a.gpu],
+            env.update(LEGACY_AI_ATTENTION_V='1' if 'value' in name else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if name.startswith('exact-attention') else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_VALIDATE_SPLIT=a.split_mode if name == a.split_mode else a.reference_split_mode, LEGACY_AI_VALIDATE_FLASH_ATTN='1' if name == 'flash-attention' or a.reference_flash_attn else '0', CUDA_VISIBLE_DEVICES=UUIDS[a.gpu],
                        LD_LIBRARY_PATH=str(libraries) + ':/usr/local/cuda-12.9/lib64',
                        LEGACY_AI_PASCAL_GRAPHS='1' if graphs else '0',
                        LEGACY_AI_PREPACK='1' if kernels and a.prepack else '0', LEGACY_AI_Q4K='1' if kernels else '0', LEGACY_AI_Q4K_WPR='2',

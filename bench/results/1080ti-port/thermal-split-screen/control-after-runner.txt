@@ -1,0 +1,1 @@
+{"out": "bench/results/1080ti-port/thermal-split-screen/control-after", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 2048, "samples": 5, "median_tps": 93.96179897909624, "min_tps": 90.08825516327691, "max_tps": 95.41155977193682, "spread_tps": 5.32330460865991, "median_ns": 1362255740, "stddev_tps": 2.090174703834528}]}

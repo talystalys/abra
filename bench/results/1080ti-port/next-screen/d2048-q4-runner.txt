@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-screen/d2048-q4", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 2048, "samples": 3, "median_tps": 67.61627791443081, "min_tps": 67.60179275940541, "max_tps": 67.63204481883461, "spread_tps": 0.03025205942920195, "median_ns": 1893035286, "stddev_tps": 0.012354046077192116}]}

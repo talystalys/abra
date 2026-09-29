@@ -1,5 +1,9 @@
 # Qwen3-4B port to BigBoy's GTX 1080 Ti GPUs
 
+The subsequent [optimization round](1080ti-next-results.md) selects two-GPU
+NCCL inference. This report preserves the first round's measurements and
+launcher selection as recorded at that time.
+
 Session date: 2026-10-12. The raw commands and host clocks retain their actual
 UTC timestamps. Branch: `port/1080ti-runtime`, based on M4 `815e3ff`.
 

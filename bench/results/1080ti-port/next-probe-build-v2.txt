@@ -1,0 +1,3 @@
+[ 50%] Building CXX object CMakeFiles/lookup_decode.dir/tests/lookup_decode.cpp.o
+[100%] Linking CXX executable lookup_decode
+[100%] Built target lookup_decode

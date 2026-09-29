@@ -1,0 +1,7 @@
+<|im_start|>user
+Sort these integers in ascending order: 9, -2, 5, 0. Output only a JSON array. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

@@ -1,0 +1,32 @@
+[
+  {
+    "label": "control-before",
+    "ratio": "1/1",
+    "exit_code": 0,
+    "median_tps": 97.71666327935925
+  },
+  {
+    "label": "four-five",
+    "ratio": "4/5",
+    "exit_code": 0,
+    "median_tps": 91.69990450300304
+  },
+  {
+    "label": "two-three",
+    "ratio": "2/3",
+    "exit_code": 0,
+    "median_tps": 89.45126682928185
+  },
+  {
+    "label": "three-five",
+    "ratio": "3/5",
+    "exit_code": 0,
+    "median_tps": 88.04612113910459
+  },
+  {
+    "label": "control-after",
+    "ratio": "1/1",
+    "exit_code": 0,
+    "median_tps": 93.96179897909624
+  }
+]

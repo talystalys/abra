@@ -1,0 +1,34 @@
+Sure! Let's go step by step to find the **sum of the integers from 1 to 100**, and then generalize that to the sum of integers from 1 to **n**.
+
+---
+
+### Step 1: Understand the Problem
+
+You want to find the **sum of all integers from 1 to 100**. That is:
+
+$$
+1 + 2 + 3 + \dots + 99 + 100
+$$
+
+This is a **finite arithmetic series**.
+
+---
+
+### Step 2: Use the Formula for the Sum of an Arithmetic Series
+
+The general formula for the sum of the first **n** positive integers is:
+
+$$
+S_n = \frac{n(n + 1)}{2}
+$$
+
+Where:
+- $ n $ is the number of terms (in this case, 100),
+- $ S_n $ is the sum of the first $ n $ positive integers.
+
+---
+
+### Step 3: Plug in the Value of $ n = 100 $
+
+$$
+S_{100} = \frac{100(100 + 1)}{2} = \frac{100 \times 101}{

@@ -1,0 +1,154 @@
+{
+  "utc": "2026-10-11T21:16:33.093910+00:00",
+  "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "scripts": {
+    "qwen3-4b.py": "9952b977eb257f72b6323feef65722b0cf062bb5c3bcb60cfd9346da5fd1df2c",
+    "qwen3-4b-lookup.py": "efdeeb8844bee877a44558b4215e58a9a997860c05c7eb4797fd700c27b917d9",
+    "smoke-next-launchers.py": "211ab42715cbb7b71ac708f4d639332a2e05a583e756394be713e693c3b90828"
+  },
+  "hardware": "NVIDIA GeForce GTX 1080 Ti, GPU-3007f159-e0cf-9303-0a81-41ea8e945315, 00000000:03:00.0, 6.1, 550.163.01, 250.00 W\nNVIDIA GeForce GTX 1080 Ti, GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c, 00000000:81:00.0, 6.1, 550.163.01, 280.00 W\n",
+  "commands": [
+    {
+      "label": "default-chat",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--",
+        "--reasoning",
+        "off",
+        "--single-turn",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-p",
+        "What is 17 times 23? Output only the integer. /no_think",
+        "-n",
+        "32"
+      ],
+      "exit_code": 0,
+      "expected": "391",
+      "passed": true
+    },
+    {
+      "label": "default-completion",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--completion",
+        "--",
+        "-f",
+        "bench/results/1080ti-port/next-launcher-smokes-v2/prompt.txt",
+        "-no-cnv",
+        "--no-display-prompt",
+        "--simple-io",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-n",
+        "32"
+      ],
+      "exit_code": 0,
+      "expected": "391",
+      "passed": true
+    },
+    {
+      "label": "flash-completion",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--runtime",
+        "flash",
+        "--gpu",
+        "secondary",
+        "--completion",
+        "--",
+        "-f",
+        "bench/results/1080ti-port/next-launcher-smokes-v2/prompt.txt",
+        "-no-cnv",
+        "--no-display-prompt",
+        "--simple-io",
+        "--temp",
+        "0",
+        "--seed",
+        "1",
+        "-n",
+        "32"
+      ],
+      "exit_code": 0,
+      "expected": "391",
+      "passed": true
+    },
+    {
+      "label": "lookup-both",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "--gpu",
+        "both",
+        "--allreduce",
+        "nccl",
+        "--prompt",
+        "What is the capital of France? Output only the city name.",
+        "--tokens",
+        "32"
+      ],
+      "exit_code": 0,
+      "expected": "Paris",
+      "passed": true
+    },
+    {
+      "label": "lookup-no-draft",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "--draft",
+        "0",
+        "--prompt",
+        "What is the capital of France? Output only the city name.",
+        "--tokens",
+        "32"
+      ],
+      "exit_code": 0,
+      "expected": "Paris",
+      "passed": true
+    },
+    {
+      "label": "invalid-gpu",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "--runtime",
+        "tensor",
+        "--gpu",
+        "secondary"
+      ],
+      "exit_code": 1,
+      "expected": "Tensor mode requires both GPUs",
+      "passed": true
+    },
+    {
+      "label": "existing-output",
+      "argv": [
+        "python3",
+        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "--prompt",
+        "Paris",
+        "--output",
+        "bench/results/1080ti-port/next-launcher-smokes-v2/prompt.txt"
+      ],
+      "exit_code": 1,
+      "expected": "existing output file",
+      "passed": true
+    }
+  ],
+  "runtime_files": {
+    "llama-cli": "5c64ae6e5664976b0a4bc58d4916ac27395b4bf66e9b77f286c9aee93e56e7db",
+    "llama-completion": "ebad8b7bbf030c064b48bad14db58375eab1502d4823baf2365faf15ed87f728",
+    "libllama.so": "af9a55fe050fae1f4dc76ff145684f6aaeda24b270aa5ddb3ec04c54a97d3398",
+    "libggml-cuda.so": "55c5073eff0f03a717f68a162d9eb54d530c9aa36adb0126bf924f535af755f9"
+  },
+  "lookup_binary_sha256": "a481aeadf849972685a0310e1a22301b3b47fe26b9b5c212a286a619696d824d",
+  "all_passed": true
+}

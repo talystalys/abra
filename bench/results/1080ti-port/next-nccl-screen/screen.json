@@ -1,0 +1,173 @@
+[
+  {
+    "depth": 0,
+    "config": "single",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 0,
+        "samples": 3,
+        "median_tps": 80.75829979119898,
+        "min_tps": 80.7553884269516,
+        "max_tps": 80.86030926797889,
+        "spread_tps": 0.10492084102729393,
+        "median_ns": 1584976409,
+        "stddev_tps": 0.04878842334972403
+      }
+    ]
+  },
+  {
+    "depth": 0,
+    "config": "butterfly",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 0,
+        "samples": 3,
+        "median_tps": 90.85307837311554,
+        "min_tps": 90.81787879813707,
+        "max_tps": 91.19863732022101,
+        "spread_tps": 0.3807585220839371,
+        "median_ns": 1408868057,
+        "stddev_tps": 0.17179673006293483
+      }
+    ]
+  },
+  {
+    "depth": 0,
+    "config": "nccl",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 0,
+        "samples": 3,
+        "median_tps": 106.00210185936415,
+        "min_tps": 105.76936511825382,
+        "max_tps": 106.12131629697095,
+        "spread_tps": 0.35195117871712966,
+        "median_ns": 1207523226,
+        "stddev_tps": 0.1461536881341537
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "single",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 74.39884686948773,
+        "min_tps": 74.38846551562251,
+        "max_tps": 74.40116627222685,
+        "spread_tps": 0.012700756604331787,
+        "median_ns": 1720456773,
+        "stddev_tps": 0.005522291749139094
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "butterfly",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 85.62977316118503,
+        "min_tps": 85.62612748077932,
+        "max_tps": 85.64534125281173,
+        "spread_tps": 0.019213772032415477,
+        "median_ns": 1494807183,
+        "stddev_tps": 0.008332169906997564
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "nccl",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 99.00016017993886,
+        "min_tps": 98.72836515873679,
+        "max_tps": 99.05991682330381,
+        "spread_tps": 0.3315516645670158,
+        "median_ns": 1292927201,
+        "stddev_tps": 0.14428748165213495
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "single",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 62.675049761418855,
+        "min_tps": 62.50198236267888,
+        "max_tps": 62.71092636358976,
+        "spread_tps": 0.20894400091088272,
+        "median_ns": 2042279990,
+        "stddev_tps": 0.09122441839685358
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "butterfly",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 76.72935646313648,
+        "min_tps": 76.47096984159937,
+        "max_tps": 76.75266612423358,
+        "spread_tps": 0.28169628263421487,
+        "median_ns": 1668201141,
+        "stddev_tps": 0.12765395155991952
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "nccl",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 87.05444663666887,
+        "min_tps": 86.79236118134455,
+        "max_tps": 87.07048150181703,
+        "spread_tps": 0.2781203204724818,
+        "median_ns": 1470344192,
+        "stddev_tps": 0.12749588901982256
+      }
+    ]
+  }
+]

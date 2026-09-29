@@ -1,0 +1,96 @@
+[
+BigBoy:2683361:2683361 [1] NCCL INFO cudaDriverVersion 12040
+BigBoy:2683361:2683361 [1] NCCL INFO Bootstrap: Using enp6s0:192.168.50.49<0>
+BigBoy:2683361:2683361 [0] NCCL INFO NCCL version 2.27.7+cuda12.9
+BigBoy:2683361:2683411 [1] NCCL INFO NET/Plugin: Could not find: libnccl-net.so. 
+BigBoy:2683361:2683411 [1] NCCL INFO Failed to open libibverbs.so[.1]
+BigBoy:2683361:2683411 [1] NCCL INFO NET/Socket : Using [0]enp6s0:192.168.50.49<0> [1]pterodactyl0:172.18.0.1<0> [2]flannel.1:10.42.0.0<0> [3]cni0:10.42.0.1<0> [4]vethd421de06:fe80::9cfe:35ff:fe57:fd78%vethd421de06<0> [5]veth8791e434:fe80::70f7:9cff:fef1:ff%veth8791e434<0> [6]veth76bbc523:fe80::e4cb:94ff:fe68:40e7%veth76bbc523<0> [7]vethdaa9adae:fe80::989c:3eff:fe2b:8e5%vethdaa9adae<0> [8]veth81b314b1:fe80::b0d3:13ff:fed7:e8ea%veth81b314b1<0> [9]vethbda69019:fe80::a05b:8fff:fe1a:6e29%vethbda69019<0> [10]veth785e4f81:fe80::eced:60ff:fe57:aa72%veth785e4f81<0> [11]vethb44d2c42:fe80::4072:17ff:fe70:3825%vethb44d2c42<0> [12]vethb84c7162:fe80::1c8e:cdff:fe32:eee%vethb84c7162<0> [13]veth60510ae8:fe80::bc25:1fff:fef6:ca29%veth60510ae8<0> [14]veth3f58e198:fe80::201a:4bff:fed9:946a%veth3f58e198<0> [15]vetha01e8619:fe80::644a:42ff:fe94:3d92%vetha01e8619<0>
+BigBoy:2683361:2683411 [1] NCCL INFO Initialized NET plugin Socket
+BigBoy:2683361:2683411 [1] NCCL INFO Assigned NET plugin Socket to comm
+BigBoy:2683361:2683411 [1] NCCL INFO Using network Socket
+BigBoy:2683361:2683410 [0] NCCL INFO Assigned NET plugin Socket to comm
+BigBoy:2683361:2683410 [0] NCCL INFO Using network Socket
+BigBoy:2683361:2683410 [0] NCCL INFO ncclCommInitAll comm 0x55cd926e8350 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 3000 commId 0xdefdd463a6674fae - Init START
+BigBoy:2683361:2683411 [1] NCCL INFO ncclCommInitAll comm 0x55cd92ca5240 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 81000 commId 0xdefdd463a6674fae - Init START
+BigBoy:2683361:2683411 [1] NCCL INFO RAS client listening socket at ::1<28028>
+BigBoy:2683361:2683411 [1] NCCL INFO Bootstrap timings total 0.041079 (create 0.039224, send 0.000259, recv 0.000480, ring 0.000157, delay 0.000002)
+BigBoy:2683361:2683410 [0] NCCL INFO Bootstrap timings total 0.041119 (create 0.039260, send 0.000318, recv 0.000666, ring 0.000106, delay 0.000000)
+BigBoy:2683361:2683410 [0] NCCL INFO Setting affinity for GPU 0 to 0-15,32-47
+BigBoy:2683361:2683411 [1] NCCL INFO comm 0x55cd92ca5240 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0
+BigBoy:2683361:2683410 [0] NCCL INFO comm 0x55cd926e8350 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+BigBoy:2683361:2683411 [1] NCCL INFO Trees [0] -1/-1/-1->1->0 [1] -1/-1/-1->1->0
+BigBoy:2683361:2683411 [1] NCCL INFO P2P Chunksize set to 131072
+BigBoy:2683361:2683410 [0] NCCL INFO Channel 00/02 : 0 1
+BigBoy:2683361:2683410 [0] NCCL INFO Channel 01/02 : 0 1
+BigBoy:2683361:2683410 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1 [1] 1/-1/-1->0->-1
+BigBoy:2683361:2683410 [0] NCCL INFO P2P Chunksize set to 131072
+BigBoy:2683361:2683411 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+BigBoy:2683361:2683410 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+BigBoy:2683361:2683410 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 1
+BigBoy:2683361:2683413 [1] NCCL INFO [Proxy Service] Device 1 CPU core 15
+BigBoy:2683361:2683414 [0] NCCL INFO [Proxy Service] Device 0 CPU core 8
+BigBoy:2683361:2683415 [1] NCCL INFO [Proxy Service UDS] Device 1 CPU core 7
+BigBoy:2683361:2683416 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 5
+BigBoy:2683361:2683411 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+BigBoy:2683361:2683411 [1] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
+BigBoy:2683361:2683410 [0] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+BigBoy:2683361:2683410 [0] NCCL INFO 2 coll channels, 2 collnet channels, 0 nvls channels, 2 p2p channels, 2 p2p channels per peer
+BigBoy:2683361:2683410 [0] NCCL INFO CC Off, workFifoBytes 1048576
+BigBoy:2683361:2683411 [1] NCCL INFO TUNER/Plugin: Could not find: libnccl-tuner.so. Using internal tuner plugin.
+BigBoy:2683361:2683411 [1] NCCL INFO ncclCommInitAll comm 0x55cd92ca5240 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 81000 commId 0xdefdd463a6674fae - Init COMPLETE
+BigBoy:2683361:2683411 [1] NCCL INFO Init timings - ncclCommInitAll: rank 1 nranks 2 total 0.32 (kernels 0.22, alloc 0.02, bootstrap 0.04, allgathers 0.01, topo 0.02, graphs 0.00, connections 0.00, rest 0.00)
+BigBoy:2683361:2683410 [0] NCCL INFO ncclCommInitAll comm 0x55cd926e8350 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 3000 commId 0xdefdd463a6674fae - Init COMPLETE
+BigBoy:2683361:2683410 [0] NCCL INFO Init timings - ncclCommInitAll: rank 0 nranks 2 total 0.32 (kernels 0.22, alloc 0.02, bootstrap 0.04, allgathers 0.00, topo 0.03, graphs 0.00, connections 0.00, rest 0.00)
+BigBoy:2683361:2683418 [0] NCCL INFO Channel 00 : 0[0] -> 1[1] via SHM/direct/direct
+BigBoy:2683361:2683418 [0] NCCL INFO Channel 01 : 0[0] -> 1[1] via SHM/direct/direct
+BigBoy:2683361:2683417 [1] NCCL INFO Channel 00 : 1[1] -> 0[0] via SHM/direct/direct
+BigBoy:2683361:2683417 [1] NCCL INFO Channel 01 : 1[1] -> 0[0] via SHM/direct/direct
+BigBoy:2683361:2683417 [1] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+BigBoy:2683361:2683418 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
+  {
+    "build_commit": "169e4a7ff",
+    "build_number": 10489,
+    "cpu_info": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
+    "gpu_info": "NVIDIA GeForce GTX 1080 Ti, NVIDIA GeForce GTX 1080 Ti",
+    "backends": "CUDA",
+    "model_filename": "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+    "model_type": "qwen3 4B Q4_K - Medium",
+    "model_size": 2491323904,
+    "model_n_params": 4022468096,
+    "n_batch": 2048,
+    "n_ubatch": 512,
+    "n_threads": 4,
+    "cpu_mask": "0x0",
+    "cpu_strict": false,
+    "poll": 50,
+    "type_k": "f16",
+    "type_v": "f16",
+    "n_gpu_layers": 99,
+    "n_cpu_moe": 0,
+    "split_mode": "tensor",
+    "main_gpu": 0,
+    "no_kv_offload": false,
+    "flash_attn": 1,
+    "devices": "auto",
+    "tensor_split": "1.00/1.00",
+    "tensor_buft_overrides": "none",
+    "load_mode": "auto",
+    "embeddings": false,
+    "no_op_offload": 0,
+    "no_host": false,
+    "fit_target": 0,
+    "fit_min_ctx": 0,
+    "n_prompt": 32,
+    "n_gen": 0,
+    "n_depth": 0,
+    "test_time": "2026-10-11T20:34:05Z",
+    "avg_ns": 33553538,
+    "stddev_ns": 0,
+    "avg_ts": 953.699726,
+    "stddev_ts": 0.000000,
+    "samples_ns": [ 33553538 ],
+    "samples_ts": [ 953.7 ]
+  }BigBoy:2683361:2683420 [0] NCCL INFO comm 0x55cd926e8350 rank 0 nranks 2 cudaDev 0 busId 3000 - Destroy COMPLETE
+BigBoy:2683361:2683420 [1] NCCL INFO comm 0x55cd92ca5240 rank 1 nranks 2 cudaDev 1 busId 81000 - Destroy COMPLETE
+
+]

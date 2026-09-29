@@ -1,0 +1,12 @@
+[
+  {
+    "id": "prose",
+    "prompt": "Explain how a CPU cache works, including cache lines, locality, and why memory bandwidth matters.",
+    "limit": 256
+  },
+  {
+    "id": "reasoning",
+    "prompt": "Explain step by step how to find the sum of the integers from 1 to 100, then generalize to n.",
+    "limit": 256
+  }
+]

@@ -1,0 +1,226 @@
+{
+  "results": [
+    {
+      "case": "code-copy",
+      "config": "baseline",
+      "samples": 20,
+      "median_tps": 72.03897103322512,
+      "min_tps": 71.360513043116,
+      "max_tps": 76.11113659297312,
+      "spread_tps": 4.750623549857124,
+      "generated_tokens": 531,
+      "p95_block_ms": 14.1776,
+      "max_block_ms": 15.3373,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786864,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 67.0,
+            "max": 89.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1556.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 3283.0
+          },
+          "temperature": {
+            "min": 59.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1911.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-baseline.json",
+        "code-copy-block1-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-copy-block0-baseline-host-memory.csv",
+          "samples": 454,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 722956.0,
+          "rss_median_last_10_percent_kib": 722964.0
+        },
+        {
+          "file": "code-copy-block1-baseline-host-memory.csv",
+          "samples": 471,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 722980.0,
+          "rss_median_last_10_percent_kib": 722980.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "code-copy",
+      "config": "tensor",
+      "samples": 20,
+      "median_tps": 90.00393147493861,
+      "min_tps": 73.15037016015935,
+      "max_tps": 96.10859728506787,
+      "spread_tps": 22.958227124908518,
+      "generated_tokens": 531,
+      "p95_block_ms": 13.9376,
+      "max_block_ms": 31.1403,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2907672,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 67.0,
+            "max": 91.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1936.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1594.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-tensor.json",
+        "code-copy-block1-tensor.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-copy-block0-tensor-host-memory.csv",
+          "samples": 367,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1150404.0,
+          "rss_median_last_10_percent_kib": 1150408.0
+        },
+        {
+          "file": "code-copy-block1-tensor-host-memory.csv",
+          "samples": 406,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1148560.0,
+          "rss_median_last_10_percent_kib": 1148564.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 1.2493783598523063
+    },
+    {
+      "case": "code-copy",
+      "config": "tensor-lookup",
+      "samples": 20,
+      "median_tps": 293.0182057436631,
+      "min_tps": 287.9578312599646,
+      "max_tps": 310.43554516223327,
+      "spread_tps": 22.477713902268647,
+      "generated_tokens": 531,
+      "p95_block_ms": 40.8965,
+      "max_block_ms": 50.089,
+      "blocks_all_single_token": false,
+      "accepted": 9520,
+      "proposed": 16960,
+      "acceptance_fraction": 0.5613207547169812,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2906112,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 84.0,
+            "max": 89.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1809.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2085.0
+          },
+          "temperature": {
+            "min": 80.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1797.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "code-copy-block0-tensor-lookup.json",
+        "code-copy-block1-tensor-lookup.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "code-copy-block0-tensor-lookup-host-memory.csv",
+          "samples": 135,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1159776.0,
+          "rss_median_last_10_percent_kib": 1159796.0
+        },
+        {
+          "file": "code-copy-block1-tensor-lookup-host-memory.csv",
+          "samples": 137,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1158468.0,
+          "rss_median_last_10_percent_kib": 1158480.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "complete_code_exact": true,
+      "speedup_vs_baseline": 4.06749571157145
+    }
+  ],
+  "excluded_runs_per_block": 5,
+  "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
+  "percentile_method": "sorted[floor((N-1)*0.95)]",
+  "task_scoring": "Existing qualification scorer normalizes case and trailing punctuation, strips thinking/fences, and parses JSON; literal matching is additionally reported. Complete code equality remains literal after outer whitespace trimming.",
+  "analyzer_sha256": "8517e8574f59974a20a24f19b022ab4312e5f3be2b61643de30c82c89e219ea6",
+  "note": "p95 block equals token latency only where every block contains one token; telemetry includes initialization, prefill and excluded runs."
+}

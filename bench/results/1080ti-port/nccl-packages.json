@@ -1,0 +1,20 @@
+{
+  "index_url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/Packages.gz",
+  "index_sha256": "abcace4be4f41610bb6c6d637ebcc8a03af13864e8edab95634c311cc0ea5ab4",
+  "packages": [
+    {
+      "package": "libnccl2",
+      "version": "2.27.7-1+cuda12.9",
+      "url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/./libnccl2_2.27.7-1+cuda12.9_amd64.deb",
+      "sha256": "8cb3ae385b87165ce928350dd6c14ea6b03253132ad3e0c82b6a62f250504c02",
+      "bytes": 207897372
+    },
+    {
+      "package": "libnccl-dev",
+      "version": "2.27.7-1+cuda12.9",
+      "url": "https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/x86_64/./libnccl-dev_2.27.7-1+cuda12.9_amd64.deb",
+      "sha256": "e17588731b9cd69e1e5491a8256492b2bf402cfcfb864f383c1dfe3c484ed193",
+      "bytes": 208440760
+    }
+  ]
+}

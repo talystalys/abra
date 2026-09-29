@@ -76,6 +76,13 @@ strict logit failure remains a failure; custom kernel oracle and exact-output
 checks retain their existing tolerances. See the quality criteria in the port
 plan. This policy does not authorize lower precision or changed model weights.
 
+The next user request (2026-10-12) explicitly authorizes further research,
+implementation and testing, including RAM placement and quantized KV cache
+experiments described in their message. See `docs/1080ti-next-plan.md`.
+Model weights remain unchanged. Cache precision experiments are labeled
+separately and require quality qualification; strict custom kernel checks
+remain frozen. Earlier experimental failures and milestones remain unchanged.
+
 - **Active Milestone**: Only the currently authorized milestone may be implemented.
 - **Milestone Authorization**: The technical lead determines PASS/PARTIAL/FAIL for each milestone. Agents must never declare milestone PASS or proceed to subsequent milestones without explicit authorization.
 - **No Speculative Infrastructure**: Do not implement unrequested runtime, compiler, autotuner, or model infrastructure ahead of the roadmap.

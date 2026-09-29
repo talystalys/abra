@@ -1,0 +1,7 @@
+<|im_start|>user
+Return only a JSON object with two fields: name is Ada and count is the integer 3. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

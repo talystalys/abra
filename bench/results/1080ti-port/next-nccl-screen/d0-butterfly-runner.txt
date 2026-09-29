@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-nccl-screen/d0-butterfly", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 0, "samples": 3, "median_tps": 90.85307837311554, "min_tps": 90.81787879813707, "max_tps": 91.19863732022101, "spread_tps": 0.3807585220839371, "median_ns": 1408868057, "stddev_tps": 0.17179673006293483}]}

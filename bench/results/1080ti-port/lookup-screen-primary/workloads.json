@@ -1,0 +1,12 @@
+[
+  {
+    "id": "code-copy",
+    "prompt": "Return the following Python code exactly, without markdown or explanation:\ndef transform_0(value):\n    adjusted = value + 0\n    return adjusted * 2\n\ndef transform_1(value):\n    adjusted = value + 1\n    return adjusted * 2\n\ndef transform_2(value):\n    adjusted = value + 2\n    return adjusted * 2\n\ndef transform_3(value):\n    adjusted = value + 3\n    return adjusted * 2\n\ndef transform_4(value):\n    adjusted = value + 4\n    return adjusted * 2\n\ndef transform_5(value):\n    adjusted = value + 5\n    return adjusted * 2\n\ndef transform_6(value):\n    adjusted = value + 6\n    return adjusted * 2\n\ndef transform_7(value):\n    adjusted = value + 7\n    return adjusted * 2\n\ndef transform_8(value):\n    adjusted = value + 8\n    return adjusted * 2\n\ndef transform_9(value):\n    adjusted = value + 9\n    return adjusted * 2\n\ndef transform_10(value):\n    adjusted = value + 10\n    return adjusted * 2\n\ndef transform_11(value):\n    adjusted = value + 11\n    return adjusted * 2\n\ndef transform_12(value):\n    adjusted = value + 12\n    return adjusted * 2\n\ndef transform_13(value):\n    adjusted = value + 13\n    return adjusted * 2\n\ndef transform_14(value):\n    adjusted = value + 14\n    return adjusted * 2\n\ndef transform_15(value):\n    adjusted = value + 15\n    return adjusted * 2\n\ndef transform_16(value):\n    adjusted = value + 16\n    return adjusted * 2\n\ndef transform_17(value):\n    adjusted = value + 17\n    return adjusted * 2\n\ndef transform_18(value):\n    adjusted = value + 18\n    return adjusted * 2\n\ndef transform_19(value):\n    adjusted = value + 19\n    return adjusted * 2\n\ndef transform_20(value):\n    adjusted = value + 20\n    return adjusted * 2\n\ndef transform_21(value):\n    adjusted = value + 21\n    return adjusted * 2\n\ndef transform_22(value):\n    adjusted = value + 22\n    return adjusted * 2\n\ndef transform_23(value):\n    adjusted = value + 23\n    return adjusted * 2\n",
+    "limit": 512
+  },
+  {
+    "id": "prose",
+    "prompt": "Explain how a CPU cache works, including cache lines, locality, and why memory bandwidth matters.",
+    "limit": 256
+  }
+]

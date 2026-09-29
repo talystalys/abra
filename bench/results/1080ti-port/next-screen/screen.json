@@ -1,0 +1,344 @@
+[
+  {
+    "depth": 2048,
+    "config": "f16",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 74.77680982923312,
+        "min_tps": 74.68157715471884,
+        "max_tps": 74.78231806372402,
+        "spread_tps": 0.10074090900518229,
+        "median_ns": 1711760642,
+        "stddev_tps": 0.046246121386362644
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "q8",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 69.03849491062859,
+        "min_tps": 69.00972816012444,
+        "max_tps": 69.11276858588604,
+        "spread_tps": 0.10304042576160555,
+        "median_ns": 1854038101,
+        "stddev_tps": 0.04341202356740354
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "q4",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 67.61627791443081,
+        "min_tps": 67.60179275940541,
+        "max_tps": 67.63204481883461,
+        "spread_tps": 0.03025205942920195,
+        "median_ns": 1893035286,
+        "stddev_tps": 0.012354046077192116
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "cpu-kv",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 14.837372771575867,
+        "min_tps": 14.74600836448915,
+        "max_tps": 14.85068597817045,
+        "spread_tps": 0.10467761368130013,
+        "median_ns": 8626864201,
+        "stddev_tps": 0.04652609680855212
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "layers32",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 33.0315776822101,
+        "min_tps": 32.46698943769873,
+        "max_tps": 33.04354202053891,
+        "spread_tps": 0.5765525828401792,
+        "median_ns": 3875079817,
+        "stddev_tps": 0.2690138187305127
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "layers24",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 18.193675920436643,
+        "min_tps": 17.872697789173532,
+        "max_tps": 18.728630444279393,
+        "spread_tps": 0.8559326551058604,
+        "median_ns": 7035411676,
+        "stddev_tps": 0.3530539797263537
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "threads1",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 74.41055066081661,
+        "min_tps": 74.40398076503406,
+        "max_tps": 74.50949800803222,
+        "spread_tps": 0.10551724299816101,
+        "median_ns": 1720186168,
+        "stddev_tps": 0.04826734532388178
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "threads8",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 74.3196130869848,
+        "min_tps": 74.30683848255332,
+        "max_tps": 74.32841481191518,
+        "spread_tps": 0.0215763293618636,
+        "median_ns": 1722290990,
+        "stddev_tps": 0.008858134170621432
+      }
+    ]
+  },
+  {
+    "depth": 2048,
+    "config": "tensor",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 2048,
+        "samples": 3,
+        "median_tps": 86.4316398294388,
+        "min_tps": 85.5680592409494,
+        "max_tps": 86.53420320020277,
+        "spread_tps": 0.9661439592533725,
+        "median_ns": 1480939159,
+        "stddev_tps": 0.43329805341511446
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "f16",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 62.812261496966556,
+        "min_tps": 62.76083833440949,
+        "max_tps": 62.81768732573478,
+        "spread_tps": 0.05684899132528898,
+        "median_ns": 2037818683,
+        "stddev_tps": 0.025615943559291244
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "q8",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 55.3520183521485,
+        "min_tps": 55.33617858994226,
+        "max_tps": 55.40202109351707,
+        "spread_tps": 0.0658425035748138,
+        "median_ns": 2312472134,
+        "stddev_tps": 0.02806026745758734
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "q4",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 54.15936820345018,
+        "min_tps": 54.06355994843061,
+        "max_tps": 54.17489247864649,
+        "spread_tps": 0.11133253021588274,
+        "median_ns": 2363395369,
+        "stddev_tps": 0.04923318340592859
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "cpu-kv",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 5.137149910165765,
+        "min_tps": 5.136198663532096,
+        "max_tps": 5.148229171549386,
+        "spread_tps": 0.012030508017289776,
+        "median_ns": 24916539762,
+        "stddev_tps": 0.005460850830316706
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "layers32",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 22.50110761834094,
+        "min_tps": 22.203571696136237,
+        "max_tps": 22.778080262576882,
+        "spread_tps": 0.5745085664406453,
+        "median_ns": 5688608853,
+        "stddev_tps": 0.2345922144135171
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "layers24",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 12.401235403475138,
+        "min_tps": 12.349733376926734,
+        "max_tps": 12.54255701353339,
+        "spread_tps": 0.19282363660665602,
+        "median_ns": 10321552316,
+        "stddev_tps": 0.0815170132496312
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "threads1",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 62.82402974984418,
+        "min_tps": 62.806418100329225,
+        "max_tps": 62.831407325880164,
+        "spread_tps": 0.02498922555093941,
+        "median_ns": 2037436957,
+        "stddev_tps": 0.010483109273917495
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "threads8",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 62.553212655763446,
+        "min_tps": 62.54705713183847,
+        "max_tps": 62.562023189436,
+        "spread_tps": 0.014966057597526117,
+        "median_ns": 2046257811,
+        "stddev_tps": 0.006141831597953407
+      }
+    ]
+  },
+  {
+    "depth": 8192,
+    "config": "tensor",
+    "exit_code": 0,
+    "summary": [
+      {
+        "n_prompt": 0,
+        "n_gen": 128,
+        "n_depth": 8192,
+        "samples": 3,
+        "median_tps": 76.73233592222999,
+        "min_tps": 76.69203690775038,
+        "max_tps": 76.75476773992891,
+        "spread_tps": 0.0627308321785307,
+        "median_ns": 1668136366,
+        "stddev_tps": 0.02595370733337123
+      }
+    ]
+  }
+]

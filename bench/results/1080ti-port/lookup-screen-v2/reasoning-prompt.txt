@@ -1,0 +1,7 @@
+<|im_start|>user
+Explain step by step how to find the sum of the integers from 1 to 100, then generalize to n. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

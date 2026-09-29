@@ -1,0 +1,325 @@
+{
+  "results": [
+    {
+      "case": "prose",
+      "config": "baseline",
+      "samples": 8,
+      "median_tps": 78.97493009183215,
+      "min_tps": 78.84346492389757,
+      "max_tps": 79.32253596626313,
+      "spread_tps": 0.4790710423655611,
+      "generated_tokens": 256,
+      "p95_block_ms": 12.861,
+      "max_block_ms": 14.0235,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786448,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 74.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 1278.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2945.0
+          },
+          "temperature": {
+            "min": 67.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 746.0,
+            "max": 1911.0
+          }
+        }
+      },
+      "raw_files": [
+        "prose-block0-baseline.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "prose-block0-baseline-host-memory.csv",
+          "samples": 110,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 720204.0,
+          "rss_median_last_10_percent_kib": 720204.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "speedup_vs_baseline": 1.0
+    },
+    {
+      "case": "prose",
+      "config": "cpu-kv",
+      "samples": 8,
+      "median_tps": 42.6820792891498,
+      "min_tps": 42.45530998180724,
+      "max_tps": 42.94941699521852,
+      "spread_tps": 0.4941070134112806,
+      "generated_tokens": 256,
+      "p95_block_ms": 31.1157,
+      "max_block_ms": 32.8636,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786848,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 71.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2837.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 82.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "prose-block0-cpu-kv.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "prose-block0-cpu-kv-host-memory.csv",
+          "samples": 198,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 830132.0,
+          "rss_median_last_10_percent_kib": 830140.0
+        }
+      ],
+      "matches_baseline_tokens": true,
+      "speedup_vs_baseline": 0.5404509917200182
+    },
+    {
+      "case": "prose",
+      "config": "layers24",
+      "samples": 8,
+      "median_tps": 21.314950847955426,
+      "min_tps": 21.156849943388895,
+      "max_tps": 21.443050273901463,
+      "spread_tps": 0.28620033051256755,
+      "generated_tokens": 256,
+      "p95_block_ms": 48.418,
+      "max_block_ms": 50.9377,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2785660,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 64.0,
+            "max": 68.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2157.0
+          },
+          "temperature": {
+            "min": 69.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "prose-block0-layers24.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "prose-block0-layers24-host-memory.csv",
+          "samples": 394,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1533328.0,
+          "rss_median_last_10_percent_kib": 1533328.0
+        }
+      ],
+      "matches_baseline_tokens": false,
+      "speedup_vs_baseline": 0.26989515309694323
+    },
+    {
+      "case": "prose",
+      "config": "layers32",
+      "samples": 8,
+      "median_tps": 39.20446258393967,
+      "min_tps": 39.13391748858084,
+      "max_tps": 39.29218806837455,
+      "spread_tps": 0.15827057979370807,
+      "generated_tokens": 256,
+      "p95_block_ms": 26.1914,
+      "max_block_ms": 30.0556,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2785772,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 68.0,
+            "max": 71.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2641.0
+          },
+          "temperature": {
+            "min": 79.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1873.0,
+            "max": 1873.0
+          }
+        }
+      },
+      "raw_files": [
+        "prose-block0-layers32.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "prose-block0-layers32-host-memory.csv",
+          "samples": 216,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 1043972.0,
+          "rss_median_last_10_percent_kib": 1043972.0
+        }
+      ],
+      "matches_baseline_tokens": false,
+      "speedup_vs_baseline": 0.49641655318153083
+    },
+    {
+      "case": "prose",
+      "config": "q8",
+      "samples": 8,
+      "median_tps": 73.80020658549874,
+      "min_tps": 73.72719784808741,
+      "max_tps": 74.10688180820792,
+      "spread_tps": 0.3796839601205022,
+      "generated_tokens": 256,
+      "p95_block_ms": 13.7637,
+      "max_block_ms": 20.0206,
+      "blocks_all_single_token": true,
+      "accepted": 0,
+      "proposed": 0,
+      "acceptance_fraction": null,
+      "repeat_tokens_identical": true,
+      "text_repeats_identical": true,
+      "max_rss_kib": 2786300,
+      "gpu": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory": {
+            "min": 2.0,
+            "max": 2.0
+          },
+          "temperature": {
+            "min": 64.0,
+            "max": 65.0
+          },
+          "clock": {
+            "min": 139.0,
+            "max": 139.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory": {
+            "min": 2.0,
+            "max": 2895.0
+          },
+          "temperature": {
+            "min": 69.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 1695.0,
+            "max": 1898.0
+          }
+        }
+      },
+      "raw_files": [
+        "prose-block0-q8.json"
+      ],
+      "host_memory_windows": [
+        {
+          "file": "prose-block0-q8-host-memory.csv",
+          "samples": 117,
+          "max_swap_kib": 0.0,
+          "rss_median_20_to_30_percent_kib": 727840.0,
+          "rss_median_last_10_percent_kib": 727848.0
+        }
+      ],
+      "matches_baseline_tokens": false,
+      "speedup_vs_baseline": 0.9344763774995909
+    }
+  ],
+  "excluded_runs_per_block": 0,
+  "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
+  "percentile_method": "sorted[floor((N-1)*0.95)]",
+  "task_scoring": "Existing qualification scorer normalizes case and trailing punctuation, strips thinking/fences, and parses JSON; literal matching is additionally reported. Complete code equality remains literal after outer whitespace trimming.",
+  "analyzer_sha256": "8517e8574f59974a20a24f19b022ab4312e5f3be2b61643de30c82c89e219ea6",
+  "note": "p95 block equals token latency only where every block contains one token; telemetry includes initialization, prefill and excluded runs."
+}

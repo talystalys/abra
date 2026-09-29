@@ -1,0 +1,18 @@
+{
+  "shape": [
+    151936,
+    32
+  ],
+  "logits_checked": 4861952,
+  "max_absolute_error": 2.296679377555847,
+  "rms_error": 0.19117156041128144,
+  "tolerance_violations": 4817697,
+  "absolute_tolerance": 0.001,
+  "relative_tolerance": 0.0001,
+  "tokens_identical": true,
+  "prompt_lengths_identical": true,
+  "bit_identical": false,
+  "reference_sha256": "7cfb2ab0cfaf66fcbd7571f98e8d67b0e002dd1dae96c385b1dd254c0a66ef60",
+  "candidate_sha256": "36379640d76ebc7108d5cac6a59d4600210ba725215bd81541a641eb591059ca",
+  "accepted": false
+}

@@ -1,0 +1,4 @@
+run=0 tokens=512 ms=6641.9 accepted=0/0
+run=1 tokens=512 ms=6657.23 accepted=0/0
+run=2 tokens=512 ms=6663.15 accepted=0/0
+run=3 tokens=512 ms=6676.1 accepted=0/0

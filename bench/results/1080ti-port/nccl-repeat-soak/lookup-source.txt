@@ -1,0 +1,157 @@
+// One-model greedy prompt lookup with target verification and exact KV rollback.
+#include "llama.h"
+#include "ggml-backend.h"
+#include <algorithm>
+#include <chrono>
+#include <cmath>
+#include <cstdlib>
+#include <fstream>
+#include <iostream>
+#include <iterator>
+#include <stdexcept>
+#include <string>
+#include <vector>
+using clock_type = std::chrono::steady_clock;
+static int setting(const char *name, int fallback) {
+    const char *v = std::getenv(name); return v ? std::stoi(v) : fallback;
+}
+static ggml_type cache_type(const char *name) {
+    const char *v = std::getenv(name);
+    if (!v || std::string(v) == "f16") return GGML_TYPE_F16;
+    if (std::string(v) == "q8_0") return GGML_TYPE_Q8_0;
+    if (std::string(v) == "q4_0") return GGML_TYPE_Q4_0;
+    throw std::runtime_error("unsupported cache type");
+}
+static llama_token greedy(llama_context *ctx, int row, int vocab) {
+    if (setting("LEGACY_AI_TEST_BACKEND_SAMPLING",0)) {
+        auto token = llama_get_sampled_token_ith(ctx,row);
+        if (token == LLAMA_TOKEN_NULL) throw std::runtime_error("backend greedy sampling unavailable");
+        return token;
+    }
+    const float *p = llama_get_logits_ith(ctx, row);
+    if (!p) throw std::runtime_error("missing verification logits");
+    int best = 0;
+    for (int i = 0; i < vocab; ++i) {
+        if (!std::isfinite(p[i])) throw std::runtime_error("nonfinite logits");
+        if (p[i] > p[best]) best = i;
+    }
+    return best;
+}
+static std::vector<llama_token> draft(const std::vector<llama_token> &history, int key, int limit) {
+    std::vector<llama_token> result;
+    if (limit <= 0 || int(history.size()) < 2*key) return result;
+    const int suffix = int(history.size()) - key;
+    for (int pos = suffix-key; pos >= 0; --pos) {
+        if (std::equal(history.begin()+pos, history.begin()+pos+key, history.begin()+suffix)) {
+            int n = std::min(limit, suffix-pos-key);
+            if (n > 0) result.assign(history.begin()+pos+key, history.begin()+pos+key+n);
+            return result;
+        }
+    }
+    return result;
+}
+int main(int argc, char **argv) {
+    try {
+        if (argc != 8) throw std::runtime_error("usage: lookup_decode MODEL PROMPT OUTPUT_PREFIX TOKENS DRAFT_MAX KEY REPS");
+        const int limit = std::stoi(argv[4]), maxdraft = std::stoi(argv[5]);
+        const int key = std::stoi(argv[6]), reps = std::stoi(argv[7]);
+        if (limit < 1 || maxdraft < 0 || maxdraft > 64 || key < 1 || reps < 1) throw std::runtime_error("invalid dimensions");
+        std::ifstream prompt_file(argv[2]);
+        if (!prompt_file) throw std::runtime_error("missing prompt");
+        std::string prompt((std::istreambuf_iterator<char>(prompt_file)), {});
+        ggml_backend_load_all();
+        auto mp = llama_model_default_params();
+        mp.n_gpu_layers = setting("LEGACY_AI_TEST_GPU_LAYERS",99);
+        mp.split_mode = LLAMA_SPLIT_MODE_NONE;
+        if (setting("LEGACY_AI_TEST_TENSOR",0)) mp.split_mode = LLAMA_SPLIT_MODE_TENSOR;
+        auto *model = llama_model_load_from_file(argv[1],mp);
+        if (!model) throw std::runtime_error("model load failed");
+        auto *vocab = llama_model_get_vocab(model);
+        int n = -llama_tokenize(vocab,prompt.data(),prompt.size(),nullptr,0,true,true);
+        if (n <= 0) throw std::runtime_error("tokenization failed");
+        std::vector<llama_token> input(n);
+        if (llama_tokenize(vocab,prompt.data(),prompt.size(),input.data(),n,true,true) != n) throw std::runtime_error("tokenization failed");
+        auto cp = llama_context_default_params();
+        cp.n_ctx = n + limit + maxdraft + 256; cp.n_batch = 2048; cp.n_ubatch = 512;
+        cp.n_threads = cp.n_threads_batch = setting("LEGACY_AI_TEST_THREADS",4);
+        cp.type_k = cache_type("LEGACY_AI_TEST_CACHE_K"); cp.type_v = cache_type("LEGACY_AI_TEST_CACHE_V");
+        cp.offload_kqv = !setting("LEGACY_AI_TEST_CPU_KV",0);
+        cp.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED; cp.no_perf = false;
+        llama_sampler *sampler = nullptr;
+        llama_sampler_seq_config sampler_config = {};
+        if (setting("LEGACY_AI_TEST_BACKEND_SAMPLING",0)) {
+            cp.n_outputs_max_per_seq = maxdraft+1;
+            sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
+            llama_sampler_chain_add(sampler,llama_sampler_init_greedy());
+            sampler_config = {0,sampler}; cp.samplers = &sampler_config; cp.n_samplers = 1;
+        }
+        auto *ctx = llama_init_from_model(model,cp);
+        if (!ctx) throw std::runtime_error("context creation failed");
+        auto batch = llama_batch_init(maxdraft+1,0,1);
+        std::ofstream meta(std::string(argv[3])+".json");
+        if (!meta) throw std::runtime_error("cannot open results");
+        meta << "{\"prompt_tokens\":" << n << ",\"draft_max\":" << maxdraft << ",\"key\":" << key << ",\"runs\":[";
+        for (int rep = 0; rep < reps; ++rep) {
+            llama_memory_clear(llama_get_memory(ctx),false);
+            auto prefill_start = clock_type::now();
+            for (int pos = 0; pos < n; pos += cp.n_batch) {
+                auto b = llama_batch_get_one(input.data()+pos,std::min(int(cp.n_batch),n-pos));
+                if (llama_decode(ctx,b)) throw std::runtime_error("prefill failed");
+            }
+            llama_synchronize(ctx);
+            double prefill_ms = std::chrono::duration<double,std::milli>(clock_type::now()-prefill_start).count();
+            std::vector<llama_token> generated, history(input);
+            std::vector<double> blocks_ms; std::vector<int> blocks_tokens;
+            int position = n, proposed = 0, accepted = 0;
+            auto started = clock_type::now();
+            auto current = greedy(ctx,-1,llama_vocab_n_tokens(vocab));
+            while (int(generated.size()) < limit && !llama_vocab_is_eog(vocab,current)) {
+                auto block_start = clock_type::now();
+                history.push_back(current);
+                auto candidates = draft(history,key,std::min(maxdraft,limit-int(generated.size())-1));
+                batch.n_tokens = int(candidates.size())+1;
+                for (int j = 0; j < batch.n_tokens; ++j) {
+                    batch.token[j] = j == 0 ? current : candidates[j-1];
+                    batch.pos[j] = position+j; batch.n_seq_id[j] = 1; batch.seq_id[j][0] = 0; batch.logits[j] = true;
+                }
+                proposed += candidates.size();
+                if (llama_decode(ctx,batch)) throw std::runtime_error("verification failed");
+                llama_synchronize(ctx);
+                generated.push_back(current);
+                int kept = 1;
+                for (int j = 0; ; ++j) {
+                    current = greedy(ctx,j,llama_vocab_n_tokens(vocab));
+                    if (j == int(candidates.size()) || current != candidates[j] || llama_vocab_is_eog(vocab,current)) break;
+                    generated.push_back(current); history.push_back(current); ++kept; ++accepted;
+                }
+                if (kept < batch.n_tokens && !llama_memory_seq_rm(llama_get_memory(ctx),0,position+kept,-1))
+                    throw std::runtime_error("partial KV rollback unsupported");
+                position += kept;
+                blocks_ms.push_back(std::chrono::duration<double,std::milli>(clock_type::now()-block_start).count());
+                blocks_tokens.push_back(kept);
+            }
+            const double elapsed = std::chrono::duration<double,std::milli>(clock_type::now()-started).count();
+            meta << (rep ? "," : "") << "{\"prefill_ms\":" << prefill_ms << ",\"decode_ms\":" << elapsed
+                 << ",\"proposed\":" << proposed << ",\"accepted\":" << accepted << ",\"tokens\":[";
+            for (size_t i=0;i<generated.size();++i) meta << (i ? "," : "") << generated[i];
+            meta << "],\"block_ms\":[";
+            for (size_t i=0;i<blocks_ms.size();++i) meta << (i ? "," : "") << blocks_ms[i];
+            meta << "],\"block_tokens\":[";
+            for (size_t i=0;i<blocks_tokens.size();++i) meta << (i ? "," : "") << blocks_tokens[i];
+            meta << "]}"; meta.flush();
+            if (rep == reps-1) {
+                std::ofstream text(std::string(argv[3])+".txt");
+                for (auto token : generated) {
+                    char piece[256]; int bytes = llama_token_to_piece(vocab,token,piece,sizeof(piece),0,true);
+                    if (bytes >= 0) text.write(piece,bytes);
+                    else { std::vector<char> large(-bytes); bytes = llama_token_to_piece(vocab,token,large.data(),large.size(),0,true); if (bytes < 0) throw std::runtime_error("detokenization failed"); text.write(large.data(),bytes); }
+                }
+            }
+            std::cout << "run=" << rep << " tokens=" << generated.size() << " ms=" << elapsed << " accepted=" << accepted << "/" << proposed << '\n';
+        }
+        meta << "]}\n"; if (!meta) throw std::runtime_error("result write failed");
+        llama_batch_free(batch); llama_perf_context_print(ctx); llama_free(ctx);
+        if (sampler) llama_sampler_free(sampler);
+        llama_model_free(model);
+    } catch (const std::exception &e) { std::cerr << e.what() << '\n'; return 1; }
+}

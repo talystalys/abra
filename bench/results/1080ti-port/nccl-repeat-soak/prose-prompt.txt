@@ -1,0 +1,7 @@
+<|im_start|>user
+Explain how a CPU cache works, including cache lines, locality, and why memory bandwidth matters. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

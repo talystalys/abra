@@ -1,0 +1,1 @@
+Tensor mode requires both GPUs; other modes use one GPU

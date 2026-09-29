@@ -1,0 +1,37 @@
+Sure! Let's go step by step to find the **sum of the integers from 1 to 100**, and then generalize that to the sum of integers from 1 to **n**.
+
+---
+
+### Step 1: Understand the Problem
+
+We want to find the **sum of all integers from 1 to 100**. That is:
+
+$$
+1 + 2 + 3 + \dots + 99 + 100
+$$
+
+We can write this as:
+
+$$
+\sum_{i=1}^{100} i
+$$
+
+We want to find a **formula** that can compute this sum **efficiently**, without adding all the numbers one by one.
+
+---
+
+### Step 2: Use the Formula for the Sum of the First n Integers
+
+There is a well-known formula for the sum of the first **n** positive integers:
+
+$$
+\sum_{i=1}^{n} i = \frac{n(n + 1)}{2}
+$$
+
+This formula is derived from the **arithmetic series**.
+
+---
+
+### Step 3: Apply the Formula to n = 100
+
+Now, plug in $ n = 100 $ into the

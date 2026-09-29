@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-screen/d8192-cpu-kv", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 8192, "samples": 3, "median_tps": 5.137149910165765, "min_tps": 5.136198663532096, "max_tps": 5.148229171549386, "spread_tps": 0.012030508017289776, "median_ns": 24916539762, "stddev_tps": 0.005460850830316706}]}

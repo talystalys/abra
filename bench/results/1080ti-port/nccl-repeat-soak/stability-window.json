@@ -1,0 +1,19 @@
+{
+  "requests": 100,
+  "generated_tokens": 25600,
+  "gpu_memory_window": "20% to 90% of sampled records per GPU, excluding initial load and final cleanup; full telemetry retained",
+  "gpu": {
+    "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+      "min_mib": 1907.0,
+      "max_mib": 1907.0,
+      "total_samples": 1145
+    },
+    "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+      "min_mib": 1907.0,
+      "max_mib": 1907.0,
+      "total_samples": 1145
+    }
+  },
+  "total_prefill_ms": 5323.171,
+  "total_decode_ms": 287044.39
+}

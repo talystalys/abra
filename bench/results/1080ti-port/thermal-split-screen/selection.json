@@ -1,0 +1,11 @@
+{
+  "reference_mean_of_control_medians": 95.83923112922776,
+  "best_screen": {
+    "label": "four-five",
+    "ratio": "4/5",
+    "exit_code": 0,
+    "median_tps": 91.69990450300304
+  },
+  "requires_further_qualification": false,
+  "criterion": "Screen gain >5%; still requires balanced final comparison and fixed quality qualification"
+}

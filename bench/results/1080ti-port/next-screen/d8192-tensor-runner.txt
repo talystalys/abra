@@ -1,0 +1,1 @@
+{"out": "/home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/next-screen/d8192-tensor", "summary": [{"n_prompt": 0, "n_gen": 128, "n_depth": 8192, "samples": 3, "median_tps": 76.73233592222999, "min_tps": 76.69203690775038, "max_tps": 76.75476773992891, "spread_tps": 0.0627308321785307, "median_ns": 1668136366, "stddev_tps": 0.02595370733337123}]}
