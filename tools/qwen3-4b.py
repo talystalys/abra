@@ -14,6 +14,7 @@ DEVICES = {
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--gpu', choices=[*DEVICES,'both'], help='tensor uses both cards; other modes default to secondary')
 p.add_argument('--allreduce',choices=['nccl','none'],default='nccl',help='Communication implementation for tensor mode')
+p.add_argument('--unoptimized', action='store_true', help='Disable tied output splitting and activation reuse in tensor mode')
 p.add_argument('--runtime', choices=['baseline', 'flash', 'tensor', 'exact', 'graphs', 'packed'], default='tensor',
                help='tensor: two GPU Flash Attention; flash: single GPU attention; exact: validated QK/value kernels; packed: research only')
 p.add_argument('--completion', action='store_true', help='Use the noninteractive completion tool instead of chat')
@@ -41,6 +42,12 @@ source = ROOT / '.deps/llama.cpp' if control else ROOT / '.deps/llama.cpp-port'
 binary = source / ('build-default' if control else 'build-port') / ('bin/llama-completion' if a.completion else 'bin/llama-cli')
 if not binary.exists() or not a.model.exists():
     raise SystemExit('Build the runtime and provide the canonical model first')
+optimized = a.runtime == 'tensor' and not a.unoptimized
+if optimized:
+    required = {'libllama.so': b'legacy_ai: tied Qwen output row splitting active',
+                'libggml-cuda.so': b'legacy_ai: graph-local Q8 activation reuse active'}
+    if any(marker not in (binary.parent / name).read_bytes() for name, marker in required.items()):
+        raise SystemExit('Rebuild with tools/build-port.py --reuse-q8 --split-tied-output before using optimized tensor mode; --unoptimized keeps the previous mode')
 if a.runtime == 'tensor' and a.allreduce == 'nccl':
     dependencies = subprocess.check_output(['ldd', str(binary.parent / 'libggml-cuda.so')], text=True)
     if 'libnccl.so' not in dependencies or 'not found' in dependencies:
@@ -50,6 +57,7 @@ for key in list(env):
     if key.startswith('LEGACY_AI_'):
         del env[key]
 env.update(GGML_CUDA_ALLREDUCE=a.allreduce if a.runtime=='tensor' else 'none', CUDA_VISIBLE_DEVICES=uuid, LEGACY_AI_PASCAL_GRAPHS='1' if a.runtime == 'graphs' else '0',
+           LEGACY_AI_SPLIT_TIED_OUTPUT='1' if optimized else '0', LEGACY_AI_REUSE_Q8='1' if optimized else '0',
            LEGACY_AI_ATTENTION='1' if a.runtime == 'exact' else '0', LEGACY_AI_ATTENTION_ROWS='4',
            LEGACY_AI_ATTENTION_V='1' if a.runtime == 'exact' else '0', LEGACY_AI_ATTENTION_V_ROWS='2',
            LEGACY_AI_Q4K='1' if a.runtime == 'packed' else '0', LEGACY_AI_Q6K='0',

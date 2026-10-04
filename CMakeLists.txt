@@ -168,7 +168,7 @@ set_target_properties(dump_m4_occupancy PROPERTIES
 # End-to-end runtime validation for the hardware port (independent of timing).
 add_executable(runtime_logits tests/runtime_logits.cpp)
 target_include_directories(runtime_logits PRIVATE ${LLAMA_SOURCE_DIR}/include)
-target_link_libraries(runtime_logits PRIVATE llama ggml ggml-base)
+target_link_libraries(runtime_logits PRIVATE llama ggml ggml-base ${CMAKE_DL_LIBS})
 set_target_properties(runtime_logits PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
 
 add_executable(lookup_decode tests/lookup_decode.cpp)
@@ -185,6 +185,14 @@ set_target_properties(attention_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_
 add_executable(value_kernel_test tests/value_kernel_test.cu)
 target_link_libraries(value_kernel_test PRIVATE ggml-cuda ggml-base ggml)
 set_target_properties(value_kernel_test PROPERTIES BUILD_RPATH "${LLAMA_LIB_DIR}")
+option(LEGACY_AI_BUILD_Q8_REUSE_TEST "Build tests requiring the activation reuse runtime patch" OFF)
+if(LEGACY_AI_BUILD_Q8_REUSE_TEST)
+    set(REUSE_RUNTIME "${CMAKE_CURRENT_SOURCE_DIR}/.deps/llama.cpp-port")
+    add_executable(q8_reuse_test tests/q8_reuse_test.cu)
+    target_include_directories(q8_reuse_test BEFORE PRIVATE "${REUSE_RUNTIME}/ggml/src/ggml-cuda")
+    target_link_libraries(q8_reuse_test PRIVATE "${REUSE_RUNTIME}/build-port/bin/libggml-cuda.so" ggml-base ggml)
+    set_target_properties(q8_reuse_test PROPERTIES BUILD_RPATH "${REUSE_RUNTIME}/build-port/bin;${LLAMA_LIB_DIR}")
+endif()
 target_compile_options(dump_m4_occupancy PRIVATE
     $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>
 )

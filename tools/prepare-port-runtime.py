@@ -29,13 +29,21 @@ KERNEL_GUARD = '''
         const char * value = std::getenv("LEGACY_AI_Q6K");
         return value && std::strcmp(value, "1") == 0;
     }();
+    static const bool legacy_tensor_mmvq = [] {
+        const char * value = std::getenv("LEGACY_AI_TENSOR_MMVQ");
+        return value && std::strcmp(value, "1") == 0;
+    }();
     const bool canonical_q4 =
         (ncols_x == 2560 && (nrows_x == 4096 || nrows_x == 1024 || nrows_x == 9728)) ||
         (ncols_x == 4096 && nrows_x == 2560) ||
-        (ncols_x == 9728 && nrows_x == 2560);
+        (ncols_x == 9728 && nrows_x == 2560) ||
+        (legacy_tensor_mmvq && ((ncols_x == 2560 && (nrows_x == 512 || nrows_x == 2048 || nrows_x == 4864)) ||
+                              ((ncols_x == 2048 || ncols_x == 4864) && nrows_x == 2560)));
     const bool canonical_q6 =
         (ncols_x == 2560 && (nrows_x == 1024 || nrows_x == 151936)) ||
-        (ncols_x == 9728 && nrows_x == 2560);
+        (ncols_x == 9728 && nrows_x == 2560) ||
+        (legacy_tensor_mmvq && ((ncols_x == 2560 && (nrows_x == 512 || nrows_x == 75968)) ||
+                              (ncols_x == 4864 && nrows_x == 2560)));
     const bool supported_type = (legacy_q4k && type_x == GGML_TYPE_Q4_K && canonical_q4) ||
                                 (legacy_q6k && type_x == GGML_TYPE_Q6_K && canonical_q6);
     if (supported_type && ncols_dst == 1 && !ids &&
@@ -62,7 +70,7 @@ KERNEL_GUARD = '''
             static std::atomic_flag reported_q4 = ATOMIC_FLAG_INIT;
             static std::atomic_flag reported_q6 = ATOMIC_FLAG_INIT;
             if (!(q6 ? reported_q6 : reported_q4).test_and_set()) {
-                GGML_LOG_INFO("legacy_ai: Q%d_K runtime dispatch active, WPR=%d WPB=%d packed=%d\\n", q6 ? 6 : 4, wpr, wpb, packed);
+                GGML_LOG_INFO("legacy_ai: Q%d_K runtime dispatch active, WPR=%d WPB=%d packed=%d K=%d N=%d tensor=%d\\n", q6 ? 6 : 4, wpr, wpb, packed, ncols_x, nrows_x, legacy_tensor_mmvq);
             }
             return;
         }

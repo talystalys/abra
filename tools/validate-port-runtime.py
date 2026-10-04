@@ -25,6 +25,11 @@ def main():
     p.add_argument('--depths', type=int, nargs='+', default=[0, 2048])
     p.add_argument('--steps', type=int, default=32)
     p.add_argument('--kernels', action='store_true')
+    p.add_argument('--tensor-kernels', action='store_true')
+    p.add_argument('--q4k-wpr', type=int, choices=[1, 2, 4], default=2)
+    p.add_argument('--q4k-wpb', type=int, choices=[4, 8, 16], default=8)
+    p.add_argument('--q6k-wpr', type=int, choices=[1, 2, 4], default=2)
+    p.add_argument('--q6k-wpb', type=int, choices=[4, 8, 16], default=8)
     p.add_argument('--q6k', action='store_true')
     p.add_argument('--attention-v', action='store_true')
     p.add_argument('--attention-v-rows', choices=[2, 4], type=int, default=2)
@@ -35,6 +40,8 @@ def main():
     p.add_argument('--split-mode', choices=['row', 'layer', 'tensor'])
     p.add_argument('--reference-split-mode',choices=['none','tensor'],default='none')
     p.add_argument('--no-graphs',action='store_true',help='Omit graph-specific modes when qualifying communication changes')
+    p.add_argument('--reuse-q8', action='store_true', help='Compare graph-local activation reuse with the frozen reference')
+    p.add_argument('--split-tied-output', action='store_true')
     p.add_argument('--flash-attn', action='store_true')
     p.add_argument('--reference-flash-attn', action='store_true', help='Compare fallback/graphs against upstream Flash Attention, retaining strict checks')
     a = p.parse_args()
@@ -72,6 +79,18 @@ def main():
         modes['exact-attention-graphs'] = (a.runtime_lib, True, False)
     if a.flash_attn:
         modes['flash-attention'] = (a.runtime_lib, False, False)
+    if a.reuse_q8:
+        modes['reuse-q8'] = (a.runtime_lib, False, False)
+        if a.kernels:
+            modes['kernels-reuse-q8'] = (a.runtime_lib, False, True)
+    if a.split_tied_output:
+        modes['split-output'] = (a.runtime_lib, False, False)
+        if a.reuse_q8:
+            modes['split-output-reuse'] = (a.runtime_lib, False, False)
+        if a.kernels:
+            modes['split-output-kernels'] = (a.runtime_lib, False, True)
+            if a.reuse_q8:
+                modes['split-output-kernels-reuse'] = (a.runtime_lib, False, True)
     if a.split_mode:
         modes[a.split_mode] = (a.baseline_lib, False, False)
     if a.no_graphs: modes = {name:value for name,value in modes.items() if not value[1]}
@@ -80,14 +99,16 @@ def main():
     for depth in a.depths:
         for name, (libraries, graphs, kernels) in modes.items():
             prefix = a.out / f'{name}-d{depth}'
-            env = os.environ.copy()
-            env.pop('LEGACY_AI_PROFILE', None)
+            env = {key: value for key, value in os.environ.items() if not key.startswith('LEGACY_AI_')}
             env.update(LEGACY_AI_ATTENTION_V='1' if 'value' in name else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if name.startswith('exact-attention') else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_VALIDATE_SPLIT=a.split_mode if name == a.split_mode else a.reference_split_mode, LEGACY_AI_VALIDATE_FLASH_ATTN='1' if name == 'flash-attention' or a.reference_flash_attn else '0', CUDA_VISIBLE_DEVICES=UUIDS[a.gpu],
+                       LEGACY_AI_REUSE_Q8='1' if name in ['reuse-q8', 'kernels-reuse-q8', 'split-output-reuse', 'split-output-kernels-reuse'] else '0',
+                       LEGACY_AI_TENSOR_MMVQ='1' if kernels and a.tensor_kernels else '0',
+                       LEGACY_AI_SPLIT_TIED_OUTPUT='1' if name.startswith('split-output') else '0',
                        LD_LIBRARY_PATH=str(libraries) + ':/usr/local/cuda-12.9/lib64',
                        LEGACY_AI_PASCAL_GRAPHS='1' if graphs else '0',
-                       LEGACY_AI_PREPACK='1' if kernels and a.prepack else '0', LEGACY_AI_Q4K='1' if kernels else '0', LEGACY_AI_Q4K_WPR='2',
-                       LEGACY_AI_Q4K_WPB='8', LEGACY_AI_Q4K_SUMS='1' if kernels and a.q4k_sums else '0', LEGACY_AI_Q6K='1' if kernels and a.q6k else '0',
-                       LEGACY_AI_Q6K_WPR='2', LEGACY_AI_Q6K_WPB='8')
+                       LEGACY_AI_PREPACK='1' if kernels and a.prepack else '0', LEGACY_AI_Q4K='1' if kernels else '0', LEGACY_AI_Q4K_WPR=str(a.q4k_wpr),
+                       LEGACY_AI_Q4K_WPB=str(a.q4k_wpb), LEGACY_AI_Q4K_SUMS='1' if kernels and a.q4k_sums else '0', LEGACY_AI_Q6K='1' if kernels and a.q6k else '0',
+                       LEGACY_AI_Q6K_WPR=str(a.q6k_wpr), LEGACY_AI_Q6K_WPB=str(a.q6k_wpb))
             if graphs:
                 env.pop('GGML_CUDA_DISABLE_GRAPHS', None)
             else:
@@ -96,10 +117,14 @@ def main():
                        f'--membind={1 if a.gpu == "secondary" else 0}', str(a.probe),
                        '/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf',
                        str(prefix) + '.tmp', str(prefix) + '-tokens.json', str(a.steps), str(depth)]
-            commands.append({'mode': name, 'argv': command, 'environment': {k: env.get(k) for k in ['LEGACY_AI_VALIDATE_SPLIT', 'LEGACY_AI_VALIDATE_FLASH_ATTN', 'CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'LEGACY_AI_PASCAL_GRAPHS', 'LEGACY_AI_ATTENTION_V', 'LEGACY_AI_ATTENTION_V_ROWS', 'LEGACY_AI_ATTENTION', 'LEGACY_AI_ATTENTION_ROWS', 'LEGACY_AI_PREPACK', 'LEGACY_AI_Q4K', 'LEGACY_AI_Q4K_WPR', 'LEGACY_AI_Q4K_WPB', 'LEGACY_AI_Q4K_SUMS', 'LEGACY_AI_Q6K', 'LEGACY_AI_Q6K_WPR', 'LEGACY_AI_Q6K_WPB', 'GGML_CUDA_DISABLE_GRAPHS']}})
+            commands.append({'mode': name, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith(('LEGACY_AI_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_DISABLE_GRAPHS', 'GGML_CUDA_ALLREDUCE']}})
             (a.out / 'commands.json').write_text(json.dumps({'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'commands': commands}, indent=2) + '\n')
             with open(str(prefix) + '.txt', 'w') as f:
                 subprocess.run(command, env=env, stdout=f, stderr=subprocess.STDOUT, check=True, timeout=300)
+            if env['LEGACY_AI_REUSE_Q8'] == '1' and 'graph-local Q8 activation reuse active' not in Path(str(prefix) + '.txt').read_text():
+                raise SystemExit('Activation reuse candidate did not reuse any activations')
+            if name.startswith('split-output') and 'tied Qwen output row splitting active' not in Path(str(prefix) + '.txt').read_text():
+                raise SystemExit('Tied output did not split in the candidate')
             if kernels and a.prepack and 'packed=1' not in Path(str(prefix) + '.txt').read_text():
                 raise SystemExit('Packed Q4_K kernel did not dispatch')
             if name.startswith('exact-attention') and 'exact attention QK dispatch active' not in Path(str(prefix) + '.txt').read_text():
