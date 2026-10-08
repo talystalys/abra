@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <cstdint>
+#include <dlfcn.h>
 #include <fstream>
 #include <iostream>
 #include <stdexcept>
@@ -67,6 +68,34 @@ int main(int argc, char **argv) {
         }
         std::vector<llama_token> generated;
         std::vector<double> timings;
+        void * profiler_library = nullptr;
+        using profiler_function = int (*)();
+        profiler_function profiler_stop = nullptr;
+        using device_query = int (*)(int *);
+        using device_setter = int (*)(int);
+        device_query profiler_get_device = nullptr;
+        device_setter profiler_set_device = nullptr;
+        int profiler_device_count = 0;
+        if (std::getenv("LEGACY_AI_CUDA_PROFILE")) {
+            // Diagnostic only: exclude loading/prefill without synchronizing
+            // individual operations. Normal validation is unchanged.
+            llama_synchronize(ctx);
+            profiler_library = dlopen("libcudart.so.12", RTLD_NOW);
+            if (!profiler_library) throw std::runtime_error("CUDA profiler library unavailable");
+            auto profiler_start = reinterpret_cast<profiler_function>(dlsym(profiler_library, "cudaProfilerStart"));
+            profiler_stop = reinterpret_cast<profiler_function>(dlsym(profiler_library, "cudaProfilerStop"));
+            profiler_get_device = reinterpret_cast<device_query>(dlsym(profiler_library, "cudaGetDevice"));
+            profiler_set_device = reinterpret_cast<device_setter>(dlsym(profiler_library, "cudaSetDevice"));
+            auto get_count = reinterpret_cast<device_query>(dlsym(profiler_library, "cudaGetDeviceCount"));
+            int saved_device = 0;
+            if (!profiler_start || !profiler_stop || !profiler_get_device || !profiler_set_device || !get_count ||
+                get_count(&profiler_device_count) || profiler_get_device(&saved_device))
+                throw std::runtime_error("CUDA profiler functions unavailable");
+            // CUDA profiler control affects the current context only.
+            for (int device = 0; device < profiler_device_count; ++device)
+                if (profiler_set_device(device) || profiler_start()) throw std::runtime_error("CUDA profiler start failed");
+            if (profiler_set_device(saved_device)) throw std::runtime_error("CUDA device restore failed");
+        }
         for (int step = 0; step < steps; ++step) {
             const float *logits = llama_get_logits_ith(ctx, -1);
             if (!logits) throw std::runtime_error("missing logits");
@@ -80,6 +109,14 @@ int main(int argc, char **argv) {
             if (llama_decode(ctx, batch)) throw std::runtime_error("token decode failed");
             llama_synchronize(ctx);
             timings.push_back(std::chrono::duration<double, std::milli>(std::chrono::steady_clock::now() - start).count());
+        }
+        if (profiler_stop) {
+            int saved_device = 0;
+            if (profiler_get_device(&saved_device)) throw std::runtime_error("CUDA device query failed");
+            for (int device = 0; device < profiler_device_count; ++device)
+                if (profiler_set_device(device) || profiler_stop()) throw std::runtime_error("CUDA profiler stop failed");
+            if (profiler_set_device(saved_device)) throw std::runtime_error("CUDA device restore failed");
+            dlclose(profiler_library);
         }
         meta << "{\"vocab\":" << header[1] << ",\"steps\":" << steps << ",\"prompt_tokens\":" << input.size() << ",\"tokens\":[";
         for (int i = 0; i < steps; ++i) meta << (i ? "," : "") << generated[i];

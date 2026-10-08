@@ -119,7 +119,7 @@ int main() {
     double max_error = 0;
     ggml_backend_cuda_context ctx(0);
     for (auto type : {GGML_TYPE_Q4_K, GGML_TYPE_Q6_K}) {
-        for (int N : {1, 33, 64}) for (int K : {256, 768, 2560, 4096, 9728}) for (int pattern : {0, 1, 2}) {
+        for (int N : {1, 33, 64}) for (int K : {256, 768, 2048, 2560, 4096, 4864, 9728}) for (int pattern : {0, 1, 2}) {
             std::vector<float> weights(N * K), input(K), actual(N), reference(N);
             for (auto &value : weights) value = pattern == 0 ? 0 : distribution(random) * (pattern == 2 ? 100 : 1);
             for (auto &value : input) value = pattern == 0 ? 0 : distribution(random);
