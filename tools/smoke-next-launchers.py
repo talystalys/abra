@@ -23,6 +23,7 @@ lookup=['python3',str(root/'tools/qwen3-4b-lookup.py')]
 tests=[
  ('default-chat',normal+['--','--reasoning','off','--single-turn','--temp','0','--seed','1','-p','What is 17 times 23? Output only the integer. /no_think','-n','32'],'391',0),
  ('default-completion',normal+['--completion','--','-f',str(prompt),'-no-cnv','--no-display-prompt','--simple-io','--temp','0','--seed','1','-n','32'],'391',0),
+ ('unoptimized-completion',normal+['--unoptimized','--completion','--','-f',str(prompt),'-no-cnv','--no-display-prompt','--simple-io','--temp','0','--seed','1','-n','32'],'391',0),
  ('flash-completion',normal+['--runtime','flash','--gpu','secondary','--completion','--','-f',str(prompt),'-no-cnv','--no-display-prompt','--simple-io','--temp','0','--seed','1','-n','32'],'391',0),
  ('lookup-both',lookup+['--gpu','both','--allreduce','nccl','--prompt','What is the capital of France? Output only the city name.','--tokens','32'],'Paris',0),
  ('lookup-no-draft',lookup+['--draft','0','--prompt','What is the capital of France? Output only the city name.','--tokens','32'],'Paris',0),

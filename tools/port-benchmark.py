@@ -50,6 +50,13 @@ def main():
     p.add_argument('--ubatch', type=int, default=512)
     p.add_argument('--allreduce',choices=['nccl','internal','none'],help='Explicit multi GPU communication implementation')
     p.add_argument('--nccl-proof',action='store_true',help='Require untimed NCCL initialization evidence')
+    p.add_argument('--proof-timeout', type=int, default=300, help='Untimed initialization timeout in seconds')
+    p.add_argument('--cpu-nodes', choices=['0', '1', '0,1'], help='Explicit NUMA CPU binding; default preserves the qualified placement')
+    p.add_argument('--memory-policy', choices=['node0', 'node1', 'interleave'], help='Explicit NUMA memory placement')
+    p.add_argument('--nccl-option', action='append', default=[], metavar='KEY=VALUE', help='Recorded NCCL tuning option; never changes model/cache precision')
+    p.add_argument('--reuse-q8', action='store_true', help='Opt in to qualified graph-local shared activation quantization')
+    p.add_argument('--tensor-kernels', action='store_true', help='Opt in to the exact-output MMVQ kernel guard for equal Qwen3-4B tensor shards')
+    p.add_argument('--split-tied-output', action='store_true', help='Opt in to splitting the duplicated tied output by vocabulary rows')
     p.add_argument('--tensor-split',default='1/1',help='Two GPU weight proportions, e.g. 4/5; recorded in argv')
     p.add_argument('--warmup-samples', type=int, default=0, help='Exclude this many full workload samples per row before measured samples')
     p.add_argument('--depth', type=int, default=0)
@@ -94,10 +101,26 @@ def main():
         if row[0] != 'NVIDIA GeForce GTX 1080 Ti' or row[3] != '6.1' or row[2].lower().lstrip('0') != pci.lower().lstrip('0'):
             raise SystemExit(f'Physical identity mismatch: {row}')
     env = os.environ.copy()
+    # Experiments must not inherit an unrecorded communication configuration.
+    for key in list(env):
+        if key.startswith('NCCL_') or key.startswith('LEGACY_AI_'):
+            del env[key]
+    allowed_nccl = {'NCCL_IGNORE_CPU_AFFINITY', 'NCCL_PROTO', 'NCCL_MIN_NCHANNELS',
+                    'NCCL_MAX_NCHANNELS', 'NCCL_SHM_USE_CUDA_MEMCPY', 'NCCL_SHM_MEMCPY_MODE'}
+    for option in a.nccl_option:
+        key, separator, value = option.partition('=')
+        if not separator or key not in allowed_nccl or not value:
+            raise SystemExit('Unsupported NCCL option: ' + option)
+        if key == 'NCCL_PROTO' and value not in ['LL', 'Simple']:
+            raise SystemExit('Only Pascal-supported LL and Simple protocols are screened')
+        env[key] = value
     if a.allreduce: env['GGML_CUDA_ALLREDUCE'] = a.allreduce
     else: env.pop('GGML_CUDA_ALLREDUCE',None)
     env.pop('LEGACY_AI_PROFILE', None)
     env.update(CUDA_VISIBLE_DEVICES=','.join(DEVICES[r][0] for r in selected),
+               LEGACY_AI_REUSE_Q8='1' if a.reuse_q8 else '0',
+               LEGACY_AI_TENSOR_MMVQ='1' if a.tensor_kernels else '0',
+               LEGACY_AI_SPLIT_TIED_OUTPUT='1' if a.split_tied_output else '0',
                LEGACY_AI_PASCAL_GRAPHS='1' if a.graphs else '0',
                LEGACY_AI_ATTENTION_V='1' if a.attention_v else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if a.attention else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_PREPACK='1' if a.prepack else '0', LEGACY_AI_Q4K='1' if a.q4k else '0', LEGACY_AI_Q4K_WPR=str(a.q4k_wpr),
                LEGACY_AI_Q4K_WPB=str(a.q4k_wpb), LEGACY_AI_Q4K_SUMS='1' if a.q4k_sums else '0', LEGACY_AI_Q6K='1' if a.q6k else '0',
@@ -106,8 +129,14 @@ def main():
         env.pop('GGML_CUDA_DISABLE_GRAPHS', None)
     else:
         env['GGML_CUDA_DISABLE_GRAPHS'] = '1'
-    env['LD_LIBRARY_PATH'] = '/usr/local/cuda-12.9/lib64:' + env.get('LD_LIBRARY_PATH', '')
+    # Copied control executables retain their original absolute build RUNPATH.
+    # Select the requested runtime before every inherited/build search path.
+    env['LD_LIBRARY_PATH'] = str(a.binary.resolve().parent) + ':/usr/local/cuda-12.9/lib64'
     command = ['numactl', '--cpunodebind=0', '--membind=0'] if a.gpu == 'both' else ['numactl', f'--cpunodebind={DEVICES[a.gpu][2]}', f'--membind={DEVICES[a.gpu][2]}']
+    if a.cpu_nodes:
+        command[1] = '--cpunodebind=' + a.cpu_nodes
+    if a.memory_policy:
+        command[2] = {'node0': '--membind=0', 'node1': '--membind=1', 'interleave': '--interleave=0,1'}[a.memory_policy]
     command += [str(a.binary.resolve()), '-m', str(a.model.resolve()), '-p', str(a.prompt), '-n', str(a.gen), '-d', str(a.depth), '-b', str(a.batch), '-ub', str(a.ubatch), '-ctk', a.cache_k, '-ctv', a.cache_v, '-ngl', str(a.gpu_layers), '-nkvo', str(int(a.no_kv_offload)), '-r', str(a.reps + a.warmup_samples), '-t', str(a.threads), '-fa', a.flash_attn, '-sm', a.split_mode or ('layer' if a.gpu == 'both' else 'none'), '-o', 'json']
     if a.gpu == 'both':
         command += ['-ts', a.tensor_split]
@@ -116,7 +145,7 @@ def main():
     manifest = {
         'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'host': socket.gethostname(), 'argv': command,
-        'environment': {k: env.get(k) for k in ['CUDA_VISIBLE_DEVICES', 'LEGACY_AI_PASCAL_GRAPHS', 'LEGACY_AI_ATTENTION_V', 'LEGACY_AI_ATTENTION_V_ROWS', 'LEGACY_AI_ATTENTION', 'LEGACY_AI_ATTENTION_ROWS', 'LEGACY_AI_PREPACK', 'LEGACY_AI_Q4K', 'LEGACY_AI_Q4K_WPR', 'LEGACY_AI_Q4K_WPB', 'LEGACY_AI_Q4K_SUMS', 'LEGACY_AI_Q6K', 'LEGACY_AI_Q6K_WPR', 'LEGACY_AI_Q6K_WPB', 'GGML_CUDA_DISABLE_GRAPHS', 'LD_LIBRARY_PATH']},
+        'environment': {k: v for k, v in env.items() if k.startswith(('LEGACY_AI_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS', 'LD_LIBRARY_PATH']},
         'model_sha256': digest(a.model), 'binary_sha256': digest(a.binary),
         'source_commit': output(['git', '-C', str(a.source), 'rev-parse', 'HEAD']).strip(),
         'source_diff_sha256': hashlib.sha256(source_diff.encode()).hexdigest(),
@@ -130,6 +159,10 @@ def main():
     if runtime_kernel.exists():
         manifest['runtime_kernel_sha256'] = digest(runtime_kernel)
         (a.out / 'runtime-kernel.txt').write_text(runtime_kernel.read_text())
+    reuse_header = a.source / 'ggml/src/ggml-cuda/legacy-ai-q8-reuse.cuh'
+    if reuse_header.exists():
+        manifest['reuse_header_sha256'] = digest(reuse_header)
+        (a.out / 'reuse-implementation.txt').write_text(reuse_header.read_text())
     packed_header = a.source / 'ggml/src/ggml-cuda/legacy-ai-packed-q4.cuh'
     if packed_header.exists():
         manifest['packed_header_sha256'] = digest(packed_header)
@@ -140,8 +173,25 @@ def main():
         (a.out / 'attention-kernel.txt').write_text(attention_header.read_text())
     library_files = sorted(a.binary.parent.glob('lib*.so*'))
     manifest['library_sha256'] = {x.name: digest(x) for x in library_files if x.is_file() and not x.is_symlink()}
-    ldd = output(['ldd',str(a.binary.parent/'libggml-cuda.so')])
+    ldd = subprocess.check_output(['ldd', str(a.binary.resolve())], env=env, text=True)
     (a.out/'runtime-dependencies.txt').write_text(ldd)
+    resolved_libraries = {}
+    for line in ldd.splitlines():
+        if '=>' not in line:
+            continue
+        name, destination = line.split('=>', 1)
+        name = name.strip()
+        if not name.startswith(('libllama', 'libggml', 'libnccl')):
+            continue
+        resolved = Path(destination.strip().split()[0])
+        if not resolved.is_file():
+            raise SystemExit('Missing runtime dependency: ' + name)
+        if name.startswith(('libllama', 'libggml')) and resolved.resolve().parent != a.binary.resolve().parent:
+            raise SystemExit('Runtime dependency escaped the selected snapshot: ' + str(resolved))
+        resolved_libraries[name] = {'path': str(resolved.resolve()), 'sha256': digest(resolved)}
+    if not any(name.startswith('libggml-cuda') for name in resolved_libraries):
+        raise SystemExit('CUDA runtime dependency was not resolved')
+    manifest['resolved_runtime_libraries'] = resolved_libraries
     for line in ldd.splitlines():
         if 'libnccl.so' in line and '=>' in line:
             resolved = Path(line.split('=>',1)[1].strip().split()[0])
@@ -150,9 +200,9 @@ def main():
     if cache.exists():
         (a.out / 'CMakeCache.txt').write_text(cache.read_text())
     (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
-    if a.offload_proof or a.nccl_proof:
+    if a.offload_proof or a.nccl_proof or a.reuse_q8 or a.tensor_kernels or a.graphs or a.split_tied_output:
         proof = command.copy()
-        for flag, value in [('-p', '32'), ('-n', '0'), ('-d', '0'), ('-r', '1')]:
+        for flag, value in [('-p', '32'), ('-n', '4' if a.reuse_q8 or a.tensor_kernels or a.graphs else '0'), ('-d', '0'), ('-r', '1')]:
             proof[proof.index(flag) + 1] = value
         proof += ['-v']
         manifest['untimed_offload_proof_argv'] = proof
@@ -160,13 +210,31 @@ def main():
         if a.nccl_proof: proof_env['NCCL_DEBUG']='INFO'
         manifest['untimed_proof_nccl_debug'] = proof_env.get('NCCL_DEBUG')
         with open(a.out / 'offload.json', 'w') as raw, open(a.out / 'offload-stderr.txt', 'w') as err:
-            subprocess.run(proof, env=proof_env, stdout=raw, stderr=err, check=True, timeout=300)
+            try:
+                subprocess.run(proof, env=proof_env, stdout=raw, stderr=err, check=True, timeout=a.proof_timeout)
+            except (subprocess.TimeoutExpired, subprocess.CalledProcessError) as error:
+                manifest['proof_failure'] = str(error)
+                (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+                raise SystemExit('Untimed initialization failed: ' + str(error))
         if a.gpu_layers >= 37 and 'offloaded 37/37 layers' not in (a.out / 'offload-stderr.txt').read_text():
             raise SystemExit('Full Qwen3-4B GPU offload not confirmed')
         if a.nccl_proof:
             proof_text=(a.out/'offload.json').read_text()+(a.out/'offload-stderr.txt').read_text()
             if 'NCCL version 2.27.7' not in proof_text or 'Init COMPLETE' not in proof_text or 'NCCL init failed' in proof_text:
                 raise SystemExit('Pinned NCCL dispatch was not confirmed')
+        proof_text = (a.out / 'offload.json').read_text() + (a.out / 'offload-stderr.txt').read_text()
+        if a.reuse_q8:
+            manifest['activation_reuse_confirmed'] = 'graph-local Q8 activation reuse active' in proof_text
+            if not manifest['activation_reuse_confirmed']:
+                raise SystemExit('Activation reuse did not dispatch in the untimed proof')
+        if a.split_tied_output and 'tied Qwen output row splitting active' not in proof_text:
+            raise SystemExit('Tied output row split did not activate in the untimed proof')
+        if a.tensor_kernels:
+            for bits, active in [(4, a.q4k), (6, a.q6k)]:
+                if active and f'Q{bits}_K runtime dispatch active' not in proof_text:
+                    raise SystemExit(f'Q{bits}_K tensor kernel did not dispatch in the untimed proof')
+        if a.graphs and 'Pascal CUDA graph instantiated' not in proof_text:
+            raise SystemExit('CUDA graphs did not activate in the untimed proof')
     telemetry_args = ['nvidia-smi', '--query-gpu=timestamp,uuid,pstate,temperature.gpu,power.draw,power.limit,clocks.sm,clocks.mem,utilization.gpu,memory.used,pcie.link.gen.current,pcie.link.width.current', '--format=csv', '-lms', '250']
     with open(a.out / 'telemetry.csv', 'w') as telemetry, open(a.out / 'raw.json', 'w') as raw, open(a.out / 'stderr.txt', 'w') as stderr:
         sampler = subprocess.Popen(telemetry_args, stdout=telemetry, stderr=subprocess.STDOUT)
