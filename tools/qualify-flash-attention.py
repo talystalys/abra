@@ -28,6 +28,10 @@ p.add_argument('--candidate-cache-k', choices=['f16', 'q8_0', 'q4_0'], default='
 p.add_argument('--candidate-cache-v', choices=['f16', 'q8_0', 'q4_0'], default='f16')
 p.add_argument('--candidate-split', choices=['none','tensor'], default='none')
 p.add_argument('--runtime-bin',type=Path,help='Optional immutable runtime snapshot')
+p.add_argument('--baseline-runtime-bin', type=Path, help='Optional separate immutable reference runtime')
+p.add_argument('--baseline-split', choices=['none', 'tensor'], default='none')
+p.add_argument('--reuse-q8', action='store_true', help='Enable activation reuse only in the candidate')
+p.add_argument('--split-tied-output', action='store_true', help='Enable tied output row splitting only in the candidate')
 p.add_argument('--allreduce',choices=['none','nccl'],default='none')
 a = p.parse_args()
 if socket.gethostname() != 'BigBoy' or a.out.exists():
@@ -54,6 +58,7 @@ for key in list(env):
     if key.startswith('LEGACY_AI_'):
         del env[key]
 bins = a.runtime_bin.resolve() if a.runtime_bin else a.source / 'build-port/bin'
+baseline_bins = a.baseline_runtime_bin.resolve() if a.baseline_runtime_bin else bins.resolve()
 env.update(CUDA_VISIBLE_DEVICES=uuid, GGML_CUDA_DISABLE_GRAPHS='1',GGML_CUDA_ALLREDUCE=a.allreduce,
            LD_LIBRARY_PATH=str(bins.resolve()) + ':/usr/local/cuda-12.9/lib64')
 model = ROOT / 'models/Qwen3-4B-Q4_K_M.gguf'
@@ -67,12 +72,17 @@ manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'gp
             'candidate_cache':{'k':a.candidate_cache_k,'v':a.candidate_cache_v},
             'candidate_split':a.candidate_split,
             'runtime_bin':str(bins),'allreduce':a.allreduce,
+            'baseline_runtime_bin':str(a.baseline_runtime_bin.resolve()) if a.baseline_runtime_bin else str(bins),
+            'baseline_split':a.baseline_split,'reuse_q8':a.reuse_q8,
+            'split_tied_output':a.split_tied_output,
             'hardware_inventory':inventory,
             'prompt_template':'Qwen3 enable_thinking=false assistant prefix',
             'template_source':'https://huggingface.co/Qwen/Qwen3-4B/blob/main/tokenizer_config.json',
             'criterion':{'maximum_relative_ppl_regression':0.01,'lost_baseline_probe_successes':0},
             'binaries':{name:digest(bins/name) for name in ['llama-completion','llama-perplexity']},
             'libraries':{path.name:digest(path) for path in bins.glob('*.so') if not path.is_symlink()},
+            'baseline_binaries':{name:digest(baseline_bins/name) for name in ['llama-completion','llama-perplexity']},
+            'baseline_libraries':{path.name:digest(path) for path in baseline_bins.glob('*.so') if not path.is_symlink()},
             'environment':{key:env[key] for key in ['CUDA_VISIBLE_DEVICES','GGML_CUDA_DISABLE_GRAPHS','GGML_CUDA_ALLREDUCE','LD_LIBRARY_PATH']}, 'commands':[]}
 snapshot_diff = bins.parent/'source.diff'
 for line in subprocess.check_output(['ldd',str(bins/'libggml-cuda.so')],text=True).splitlines():
@@ -86,17 +96,23 @@ def run(label, binary, args):
     candidate = args[args.index('-fa')+1] == 'on'
     if not candidate:
         args[args.index('-fa')+1] = a.baseline_flash
-    split = a.candidate_split if candidate else 'none'
+    split = a.candidate_split if candidate else a.baseline_split
     run_node = 0 if split == 'tensor' else node
     run_env = dict(env)
+    run_env['LEGACY_AI_REUSE_Q8'] = '1' if candidate and a.reuse_q8 else '0'
+    run_env['LEGACY_AI_SPLIT_TIED_OUTPUT'] = '1' if candidate and a.split_tied_output else '0'
+    run_bins = a.baseline_runtime_bin.resolve() if not candidate and a.baseline_runtime_bin else bins.resolve()
+    run_env['LD_LIBRARY_PATH'] = str(run_bins) + ':/usr/local/cuda-12.9/lib64'
     if split == 'tensor': run_env['CUDA_VISIBLE_DEVICES'] = ','.join(x[0] for x in DEVICES.values())
-    command = ['numactl',f'--cpunodebind={run_node}',f'--membind={run_node}',str((bins/binary).resolve()),
+    command = ['numactl',f'--cpunodebind={run_node}',f'--membind={run_node}',str((run_bins/binary).resolve()),
                '-m',str(model.resolve()),'-ngl','99','-sm',split,'-t','4','-tb','4',
                '-ctk',a.candidate_cache_k if candidate else 'f16',
                '-ctv',a.candidate_cache_v if candidate else 'f16',
                '-c',str(a.context),'-b','2048','-ub','512',*args]
     if split == 'tensor': command += ['-ts','1,1']
-    manifest['commands'].append({'label':label,'argv':command,'cuda_visible_devices':run_env['CUDA_VISIBLE_DEVICES']})
+    manifest['commands'].append({'label':label,'argv':command,'cuda_visible_devices':run_env['CUDA_VISIBLE_DEVICES'],
+                                 'reuse_q8':run_env['LEGACY_AI_REUSE_Q8'],'ld_library_path':run_env['LD_LIBRARY_PATH']})
+    manifest['commands'][-1]['split_tied_output'] = run_env['LEGACY_AI_SPLIT_TIED_OUTPUT']
     (a.out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print('Executing',label,flush=True)
     with (a.out/(label+'-stdout.txt')).open('w') as out, (a.out/(label+'-stderr.txt')).open('w') as err:

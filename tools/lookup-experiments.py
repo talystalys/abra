@@ -27,6 +27,8 @@ p.add_argument('--cases',help='Comma-separated workload IDs; default all stage w
 p.add_argument('--reps',type=int,help='Explicit repetitions; recorded alongside stage warmups')
 p.add_argument('--complete-code',action='store_true',help='Allow 2048 generated tokens to finish code workloads; exploratory screens cap them at 512')
 p.add_argument('--runtime-bin',type=Path,help='An immutable runtime snapshot for validation during a separate build')
+p.add_argument('--baseline-runtime-bin', type=Path, help='Immutable libraries for the tensor-control configuration')
+p.add_argument('--require-identical', action='store_true', help='Fail if any run differs from its reference or a repeated run')
 p.add_argument('--allreduce',choices=['none','nccl'],default='none')
 a = p.parse_args()
 if socket.gethostname() != 'BigBoy' or a.out.exists(): raise SystemExit('Run on BigBoy with a fresh output directory')
@@ -69,6 +71,7 @@ if a.cases:
 manifest = {'utc':datetime.datetime.now(datetime.timezone.utc).isoformat(),'stage':a.stage,
  'complete_code':a.complete_code,
  'runtime_bin':str(libs),'allreduce':a.allreduce,
+ 'baseline_runtime_bin':str(a.baseline_runtime_bin.resolve()) if a.baseline_runtime_bin else None,
  'source_head':subprocess.check_output(['git','-C',str(source),'rev-parse','HEAD'],text=True).strip(),
  'model_sha256':digest(model),'binary_sha256':digest(binary),'runner_sha256':digest(Path(__file__)),
  'cpp_sha256':digest(ROOT/'tests/lookup_decode.cpp'),'libraries':{x.name:digest(x) for x in libs.glob('*.so') if not x.is_symlink()},
@@ -96,6 +99,10 @@ for case in workloads:
  configs = [('baseline',0,{}),('backend',0,{'LEGACY_AI_TEST_BACKEND_SAMPLING':'1'}),('lookup',a.draft,{}),('lookup-backend',a.draft,{'LEGACY_AI_TEST_BACKEND_SAMPLING':'1'})]
  tensor_env = {'LEGACY_AI_TEST_TENSOR':'1','CUDA_VISIBLE_DEVICES':','.join(x[0] for x in DEVICES.values())}
  configs += [('tensor',0,tensor_env),('tensor-lookup',a.draft,tensor_env)]
+ configs += [('tensor-control',0,{**tensor_env, 'LD_LIBRARY_PATH':str(a.baseline_runtime_bin.resolve())+':/usr/local/cuda-12.9/lib64' if a.baseline_runtime_bin else str(libs)+':/usr/local/cuda-12.9/lib64'}),
+             ('tensor-reuse',0,{**tensor_env,'LEGACY_AI_REUSE_Q8':'1'}),
+             ('tensor-output',0,{**tensor_env,'LEGACY_AI_SPLIT_TIED_OUTPUT':'1'}),
+             ('tensor-output-reuse',0,{**tensor_env,'LEGACY_AI_SPLIT_TIED_OUTPUT':'1','LEGACY_AI_REUSE_Q8':'1'})]
  wanted_configs = set(a.configs.split(','))
  if a.stage!='placement':
   if not wanted_configs <= {x[0] for x in configs}: raise SystemExit('Unknown config')
@@ -151,7 +158,14 @@ for case in workloads:
     if uuid in line: gpu_memory.append(int(line.split(',')[4].strip().split()[0]))
    record = {'samples':len(runs),'median_tps':statistics.median(tps),'min_tps':min(tps),'max_tps':max(tps),'spread_tps':max(tps)-min(tps),'p95_block_ms':percentile(latency,.95),'max_block_ms':max(latency),'tokens':runs[0]['tokens'],'repeat_tokens_identical':all(run['tokens']==runs[0]['tokens'] for run in data['runs']),'accepted':sum(run['accepted'] for run in runs),'proposed':sum(run['proposed'] for run in runs),'peak_gpu_mib':max(gpu_memory) if gpu_memory else None,'max_rss_kib':int(rss[1]) if rss else None}
    results[case['id']][label] = record
-   reference = next((v for k,v in results[case['id']].items() if k.endswith('-baseline') and 'tokens' in v),None)
+   reference = next((v for k,v in results[case['id']].items() if k.endswith('-tensor-control') and 'tokens' in v),None)
+   if reference is None:
+    reference = next((v for k,v in results[case['id']].items() if k.endswith('-baseline') and 'tokens' in v),None)
    if reference: record['matches_baseline_tokens']=record['tokens']==reference['tokens']
    (a.out/'report.json').write_text(json.dumps(results,indent=2)+'\n')
    print(json.dumps({k:v for k,v in record.items() if k!='tokens'}),flush=True)
+if a.require_identical:
+ for case, records in results.items():
+  for label, record in records.items():
+   if not record.get('repeat_tokens_identical') or not record.get('matches_baseline_tokens'):
+    raise SystemExit('Token equality failed or no reference was available: '+case+' '+label)
