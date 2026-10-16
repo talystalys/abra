@@ -1,0 +1,16 @@
+Executing default-chat
+default-chat True
+Executing default-completion
+default-completion True
+Executing unoptimized-completion
+unoptimized-completion True
+Executing flash-completion
+flash-completion True
+Executing lookup-both
+lookup-both True
+Executing lookup-no-draft
+lookup-no-draft True
+Executing invalid-gpu
+invalid-gpu True
+Executing existing-output
+existing-output True

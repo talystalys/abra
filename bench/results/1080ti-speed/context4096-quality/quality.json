@@ -1,0 +1,112 @@
+{
+  "perplexity": {},
+  "probes": {
+    "multiply": {
+      "off": {
+        "answer": "391",
+        "passed": true
+      },
+      "on": {
+        "answer": "391",
+        "passed": true
+      }
+    },
+    "sum": {
+      "off": {
+        "answer": "The sum of the integers from 1 to 8 is calculated as follows:\n\n$$\n1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 36\n$$\n\n**Answer: 36**",
+        "passed": false
+      },
+      "on": {
+        "answer": "The sum of the integers from 1 to 8 is calculated as follows:\n\n$$\n1 + 2 + 3 + 4 + 5 + 6 + 7 + 8 = 36\n$$\n\n**Answer: 36**",
+        "passed": false
+      }
+    },
+    "sort": {
+      "off": {
+        "answer": "[-2, 0, 5, 9]",
+        "passed": true
+      },
+      "on": {
+        "answer": "[-2, 0, 5, 9]",
+        "passed": true
+      }
+    },
+    "json": {
+      "off": {
+        "answer": "{\n  \"name\": \"Ada\",\n  \"count\": 3\n}",
+        "passed": true
+      },
+      "on": {
+        "answer": "{\n  \"name\": \"Ada\",\n  \"count\": 3\n}",
+        "passed": true
+      }
+    },
+    "code-trace": {
+      "off": {
+        "answer": "The expression `sum(i*i for i in range(4))` calculates the sum of the squares of the numbers from 0 to 3 (since `range(4)` includes 0, 1, 2, 3).\n\nLet's break it down:\n\n- `i` takes values 0, 1, 2, 3\n- `i*i` gives 0, 1, 4, 9\n- Summing these: 0 + 1 + 4 + 9 = **14**\n\nSo, the output of `print(sum(i*i for i in range(4",
+        "passed": false
+      },
+      "on": {
+        "answer": "The expression `sum(i*i for i in range(4))` calculates the sum of the squares of the numbers from 0 to 3 (since `range(4)` includes 0, 1, 2, 3).\n\nLet's break it down:\n\n- `i` takes values 0, 1, 2, 3\n- `i*i` gives 0, 1, 4, 9\n- Summing these: 0 + 1 + 4 + 9 = **14**\n\nSo, the output of `print(sum(i*i for i in range(4",
+        "passed": false
+      }
+    },
+    "fact": {
+      "off": {
+        "answer": "Paris",
+        "passed": true
+      },
+      "on": {
+        "answer": "Paris",
+        "passed": true
+      }
+    },
+    "translate": {
+      "off": {
+        "answer": "Buenos días",
+        "passed": true
+      },
+      "on": {
+        "answer": "Buenos días",
+        "passed": true
+      }
+    },
+    "logic": {
+      "off": {
+        "answer": "No.",
+        "passed": true
+      },
+      "on": {
+        "answer": "No.",
+        "passed": true
+      }
+    },
+    "extract": {
+      "off": {
+        "answer": "AZ731",
+        "passed": true
+      },
+      "on": {
+        "answer": "AZ731",
+        "passed": true
+      }
+    },
+    "long-retrieval": {
+      "off": {
+        "answer": "cobalt-orchid-731",
+        "passed": true
+      },
+      "on": {
+        "answer": "cobalt-orchid-731",
+        "passed": true
+      }
+    }
+  },
+  "limitations": "20 fixed corpus chunks and ten probes do not establish quality equivalence on all tasks.",
+  "scores": {
+    "off": 8,
+    "on": 8
+  },
+  "lost_successes": [],
+  "qualified": true
+}

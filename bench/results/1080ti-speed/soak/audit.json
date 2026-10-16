@@ -1,0 +1,86 @@
+{
+  "scope": "Reliability only. Sequential runs with no excluded warmups; not a balanced speed claim.",
+  "requests_per_runtime": 100,
+  "runtimes": {
+    "prose-block0-tensor-control": {
+      "tokens": 25600,
+      "all_ids_match": true,
+      "swap_max_kib": 0,
+      "rss_after_10s_min_max_kib": [
+        1107848,
+        1145560
+      ],
+      "gpu_sample_ranges": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory_mib": [
+            2.0,
+            1907.0
+          ],
+          "temperature_c": [
+            82.0,
+            91.0
+          ],
+          "clock_mhz": [
+            303.0,
+            1847.0
+          ]
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory_mib": [
+            2.0,
+            1907.0
+          ],
+          "temperature_c": [
+            71.0,
+            84.0
+          ],
+          "clock_mhz": [
+            721.0,
+            1898.0
+          ]
+        }
+      },
+      "median_tps_unbalanced": 86.07797636744192
+    },
+    "prose-block0-tensor-output-reuse": {
+      "tokens": 25600,
+      "all_ids_match": true,
+      "swap_max_kib": 0,
+      "rss_after_10s_min_max_kib": [
+        793984,
+        1145568
+      ],
+      "gpu_sample_ranges": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "memory_mib": [
+            2.0,
+            1755.0
+          ],
+          "temperature_c": [
+            89.0,
+            91.0
+          ],
+          "clock_mhz": [
+            683.0,
+            1556.0
+          ]
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "memory_mib": [
+            2.0,
+            1755.0
+          ],
+          "temperature_c": [
+            80.0,
+            84.0
+          ],
+          "clock_mhz": [
+            1657.0,
+            1873.0
+          ]
+        }
+      },
+      "median_tps_unbalanced": 80.3838811542874
+    }
+  }
+}

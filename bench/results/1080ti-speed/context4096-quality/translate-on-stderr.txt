@@ -1,0 +1,25 @@
+0.00.036.371 I llama_completion: llama backend init
+0.00.036.382 I llama_completion: load the model and apply lora adapter, if any
+0.00.036.498 W common_fit_params: failed to fit params to free device memory: llama_params_fit is not implemented for SPLIT_MODE_TENSOR, abort
+0.00.663.733 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.694.372 I cmn          init: llama threadpool init, n_threads = 4
+0.01.869.354 I 
+0.01.869.477 I system_info: n_threads = 4 (n_threads_batch = 4) / 64 | CUDA : ARCHS = 610 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.869.480 I 
+0.01.869.725 I sampler seed: 1
+0.01.869.743 I sampler params: 
+	repeat_last_n = 64, repeat_penalty = 1.000, frequency_penalty = 0.000, presence_penalty = 0.000
+	dry_multiplier = 0.000, dry_base = 1.750, dry_allowed_length = 2, dry_penalty_last_n = 64
+	top_k = 40, top_p = 0.950, min_p = 0.050, xtc_probability = 0.000, xtc_threshold = 0.100, typical_p = 1.000, top_n_sigma = -1.000, temp = 0.000
+	mirostat = 0, mirostat_lr = 0.100, mirostat_ent = 5.000, adaptive_target = -1.000, adaptive_decay = 0.900
+0.01.869.752 I sampler chain: logits -> ?penalties -> ?dry -> ?top-n-sigma -> top-k -> ?typical -> top-p -> min-p -> ?xtc -> temp-ext -> dist 
+0.01.869.753 I generate: n_ctx = 4096, n_batch = 2048, n_predict = 128, n_keep = 0
+0.01.869.753 I 
+0.01.987.799 I common_perf_print:    sampling time =       4.01 ms
+0.01.987.801 I common_perf_print:    samplers time =       0.77 ms /    32 tokens
+0.01.987.806 I common_perf_print:        load time =    1315.54 ms
+0.01.987.808 I common_perf_print: prompt eval time =      58.45 ms /    27 tokens (    2.16 ms per token,   461.93 tokens per second)
+0.01.987.811 I common_perf_print:        eval time =      55.41 ms /     4 runs   (   13.85 ms per token,    72.19 tokens per second)
+0.01.987.812 I common_perf_print:       total time =     118.46 ms /    31 tokens
+0.01.987.813 I common_perf_print: unaccounted time =       0.58 ms /   0.5 %      (total - sampling - prompt eval - eval) / (total)
+0.01.987.814 I common_perf_print:    graphs reused =          3

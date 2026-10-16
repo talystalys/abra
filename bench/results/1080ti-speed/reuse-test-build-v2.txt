@@ -1,0 +1,13 @@
+[ 50%] Building CUDA object CMakeFiles/q8_reuse_test.dir/tests/q8_reuse_test.cu.o
+In file included from /home/taly/legacy-ai-1080ti-port/tests/q8_reuse_test.cu:2:
+/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+ 1228 | #define USE_CUDA_GRAPH
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+In file included from /home/taly/legacy-ai-1080ti-port/tests/q8_reuse_test.cu:2:
+/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+ 1228 | #define USE_CUDA_GRAPH
+      |         ^~~~~~~~~~~~~~
+<command-line>: note: this is the location of the previous definition
+[100%] Linking CUDA executable q8_reuse_test
+[100%] Built target q8_reuse_test

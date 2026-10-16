@@ -1,0 +1,894 @@
+{
+  "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "results": [
+    {
+      "depth": 0,
+      "configuration": "baseline",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 105.42302870403903,
+      "min_tps": 103.14497049051806,
+      "max_tps": 106.68983267457627,
+      "spread_tps": 3.5448621840582035,
+      "stddev_tps": 0.914043436027914,
+      "median_ns": 1214156843.0,
+      "samples_ns": [
+        1213129111,
+        1218895193,
+        1219483337,
+        1218885304,
+        1216779850,
+        1201757758,
+        1203726937,
+        1240971803,
+        1199739439,
+        1201182516,
+        1204634544,
+        1205423989,
+        1203255124,
+        1202309944,
+        1205507620,
+        1215506069,
+        1215184575,
+        1220623301,
+        1221495582,
+        1229345051
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d0-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d0-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 59.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1936.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1905.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 53.0,
+            "max": 75.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1923.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1905.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 0,
+      "configuration": "baseline",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 2362.1829915692156,
+      "min_tps": 2350.4272023093167,
+      "max_tps": 2373.9441234385663,
+      "spread_tps": 23.516921129249567,
+      "stddev_tps": 6.328162202986926,
+      "median_ns": 216748661.0,
+      "samples_ns": [
+        215674832,
+        215811473,
+        216334396,
+        216181739,
+        215788770,
+        216691942,
+        216236416,
+        216742167,
+        216255821,
+        216898922,
+        217832741,
+        216968129,
+        217620665,
+        216816660,
+        217359246,
+        216755155,
+        217225846,
+        216714178,
+        217224190,
+        216770674
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d0-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d0-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 59.0,
+            "max": 84.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1936.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1905.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 53.0,
+            "max": 75.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1923.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1905.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 0,
+      "configuration": "split-output-reuse",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 115.37394988780753,
+      "min_tps": 113.34599723365989,
+      "max_tps": 115.86685752798564,
+      "spread_tps": 2.5208602943257574,
+      "stddev_tps": 0.5971045580652148,
+      "median_ns": 1109436428.0,
+      "samples_ns": [
+        1108659032,
+        1107967414,
+        1115938306,
+        1120785478,
+        1111254782,
+        1110213824,
+        1110903714,
+        1110432973,
+        1129285578,
+        1106000469,
+        1108547766,
+        1107977991,
+        1104716247,
+        1104931911,
+        1106095834,
+        1106202152,
+        1107854298,
+        1114591997,
+        1114174166,
+        1113755700
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d0-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d0-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.094390393693814,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 65.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1923.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1753.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 60.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1911.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1753.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 0,
+      "configuration": "split-output-reuse",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 2363.1571254637056,
+      "min_tps": 2353.0368334734785,
+      "max_tps": 2375.897058914154,
+      "spread_tps": 22.86022544067555,
+      "stddev_tps": 5.855775453593982,
+      "median_ns": 216659315.5,
+      "samples_ns": [
+        216170416,
+        215927852,
+        216351509,
+        216030544,
+        217040989,
+        216471835,
+        216232621,
+        215982035,
+        215879365,
+        215497552,
+        216934035,
+        216684109,
+        216847164,
+        216735357,
+        216637435,
+        217208874,
+        217591154,
+        216780382,
+        217446073,
+        216681196
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d0-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d0-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0004123871427264,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 65.0,
+            "max": 83.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1923.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1753.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 60.0,
+            "max": 74.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1911.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1753.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 2048,
+      "configuration": "baseline",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 94.22801602898555,
+      "min_tps": 89.62807439892573,
+      "max_tps": 98.08987810157043,
+      "spread_tps": 8.461803702644701,
+      "stddev_tps": 2.5909675207269736,
+      "median_ns": 1358407334.5,
+      "samples_ns": [
+        1307964900,
+        1315793251,
+        1333309248,
+        1317807168,
+        1304925671,
+        1329851515,
+        1364643401,
+        1400197519,
+        1426592265,
+        1370494499,
+        1369216155,
+        1357770987,
+        1408485088,
+        1359043682,
+        1331818587,
+        1408369585,
+        1428123954,
+        1374104548,
+        1352944294,
+        1333315011
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d2048-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d2048-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 78.0,
+            "max": 89.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2049.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 69.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1632.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2049.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 2048,
+      "configuration": "baseline",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 1806.5496800630845,
+      "min_tps": 1765.1149047398858,
+      "max_tps": 1815.3897410240872,
+      "spread_tps": 50.274836284201456,
+      "stddev_tps": 13.768857210898643,
+      "median_ns": 283413186.0,
+      "samples_ns": [
+        282033102,
+        283109547,
+        282933433,
+        282550404,
+        284358848,
+        282990072,
+        283421989,
+        282844032,
+        282695446,
+        282595777,
+        283404383,
+        283511208,
+        283692162,
+        289821506,
+        285330765,
+        283530653,
+        290066102,
+        282929134,
+        283914228,
+        286887512
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d2048-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d2048-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 78.0,
+            "max": 89.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2049.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 69.0,
+            "max": 79.0
+          },
+          "clock": {
+            "min": 1632.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2049.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 2048,
+      "configuration": "split-output-reuse",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 102.487624219061,
+      "min_tps": 99.27285603385192,
+      "max_tps": 105.77239753696874,
+      "spread_tps": 6.499541503116816,
+      "stddev_tps": 1.901129899765663,
+      "median_ns": 1248933577.5,
+      "samples_ns": [
+        1217540810,
+        1264379803,
+        1243304838,
+        1263236674,
+        1232278876,
+        1210145586,
+        1283417439,
+        1250626436,
+        1235306003,
+        1223075339,
+        1260531793,
+        1284056007,
+        1239570755,
+        1280150604,
+        1247240719,
+        1258802918,
+        1235364483,
+        1218079472,
+        1289375617,
+        1263213338
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d2048-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d2048-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0876555459634714,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 79.0,
+            "max": 88.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1897.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 68.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1897.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 2048,
+      "configuration": "split-output-reuse",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 1807.7092545236849,
+      "min_tps": 1757.667437992016,
+      "max_tps": 1821.7159471192294,
+      "spread_tps": 64.04850912721349,
+      "stddev_tps": 20.542579507172377,
+      "median_ns": 283231526.0,
+      "samples_ns": [
+        281282628,
+        287177303,
+        283429726,
+        282587479,
+        282034692,
+        281053696,
+        282007769,
+        281288965,
+        291295150,
+        283477866,
+        290128660,
+        290025965,
+        283856900,
+        289834446,
+        287188443,
+        282552207,
+        284398114,
+        283033326,
+        282477053,
+        282716193
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d2048-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d2048-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.000641872445246,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 79.0,
+            "max": 88.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1897.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 68.0,
+            "max": 78.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1898.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 1897.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 8192,
+      "configuration": "baseline",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 80.60234963576664,
+      "min_tps": 79.55458546113958,
+      "max_tps": 82.17736024305638,
+      "spread_tps": 2.622774781916803,
+      "stddev_tps": 0.7227617739372326,
+      "median_ns": 1588043206.5,
+      "samples_ns": [
+        1595775877,
+        1557606616,
+        1569094857,
+        1587522399,
+        1558183911,
+        1590696569,
+        1583234277,
+        1577274508,
+        1588564014,
+        1595366982,
+        1594995565,
+        1595774333,
+        1568213957,
+        1591795077,
+        1566720552,
+        1574382611,
+        1593084341,
+        1568131566,
+        1594352519,
+        1608958167
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d8192-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d8192-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 82.0,
+            "max": 91.0
+          },
+          "clock": {
+            "min": 734.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2481.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 72.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1657.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2481.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 8192,
+      "configuration": "baseline",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 1021.5472129323493,
+      "min_tps": 583.4518862173874,
+      "max_tps": 1076.8369927360068,
+      "spread_tps": 493.3851065186194,
+      "stddev_tps": 111.57834966996865,
+      "median_ns": 501200639.5,
+      "samples_ns": [
+        483080854,
+        491359464,
+        509037038,
+        500961663,
+        479244947,
+        475466578,
+        478234041,
+        479200805,
+        476048038,
+        501439616,
+        515164386,
+        502828219,
+        522806206,
+        535193969,
+        495104833,
+        477094283,
+        877535941,
+        615239779,
+        552166268,
+        531956704
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d8192-block0-baseline",
+        "bench/results/1080ti-speed/final-libraries/d8192-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 82.0,
+            "max": 91.0
+          },
+          "clock": {
+            "min": 734.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2481.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 72.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1657.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2481.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 8192,
+      "configuration": "split-output-reuse",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 20,
+      "median_tps": 86.90529277868167,
+      "min_tps": 85.55668396206619,
+      "max_tps": 90.03664876370674,
+      "spread_tps": 4.479964801640548,
+      "stddev_tps": 1.3276792480394695,
+      "median_ns": 1472877644.5,
+      "samples_ns": [
+        1421643317,
+        1458148751,
+        1483312019,
+        1489404893,
+        1488961905,
+        1427755537,
+        1467141867,
+        1496084164,
+        1492014280,
+        1433457132,
+        1491915693,
+        1455491323,
+        1446947398,
+        1476701893,
+        1485665573,
+        1489242527,
+        1458474184,
+        1463669156,
+        1469053396,
+        1479188899
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d8192-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d8192-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.078198007519599,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 83.0,
+            "max": 91.0
+          },
+          "clock": {
+            "min": 1025.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2329.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 71.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2329.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 8192,
+      "configuration": "split-output-reuse",
+      "prompt": 512,
+      "gen": 0,
+      "samples": 20,
+      "median_tps": 1044.7040377309136,
+      "min_tps": 738.101761048957,
+      "max_tps": 1088.2336830842,
+      "spread_tps": 350.13192203524306,
+      "stddev_tps": 78.77354699524295,
+      "median_ns": 490092002.0,
+      "samples_ns": [
+        479741773,
+        483696749,
+        470487183,
+        489375823,
+        495829868,
+        499023308,
+        488298629,
+        483941709,
+        490808181,
+        498735613,
+        497264362,
+        502740710,
+        494963009,
+        480366246,
+        481801623,
+        483765719,
+        488169249,
+        693671289,
+        585793162,
+        538284422
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/final-libraries/d8192-block0-split-output-reuse",
+        "bench/results/1080ti-speed/final-libraries/d8192-block1-split-output-reuse"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0226683842953206,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 83.0,
+            "max": 91.0
+          },
+          "clock": {
+            "min": 1025.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2329.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 71.0,
+            "max": 81.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1885.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2329.0
+          }
+        }
+      }
+    }
+  ],
+  "note": "Dynamic clocks. Screening is exploratory; final claims require balanced order and at least twenty measured samples. Telemetry extrema include initialization and excluded warmups."
+}

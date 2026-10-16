@@ -1,0 +1,126 @@
+{
+  "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
+  "results": [
+    {
+      "depth": 2048,
+      "configuration": "baseline",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 6,
+      "median_tps": 99.24720509826753,
+      "min_tps": 99.0204972096577,
+      "max_tps": 99.3849274153014,
+      "spread_tps": 0.3644302056436999,
+      "stddev_tps": 0.13546676593308254,
+      "median_ns": 1289709009.5,
+      "samples_ns": [
+        1288851844,
+        1287921653,
+        1289273689,
+        1290144330,
+        1292369814,
+        1292661657
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/reuse-screen-v3/d2048-block0-baseline",
+        "bench/results/1080ti-speed/reuse-screen-v3/d2048-block1-baseline"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.0,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 57.0,
+            "max": 75.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1936.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2031.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 51.0,
+            "max": 67.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1936.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2031.0
+          }
+        }
+      }
+    },
+    {
+      "depth": 2048,
+      "configuration": "reuse-q8",
+      "prompt": 0,
+      "gen": 128,
+      "samples": 6,
+      "median_tps": 99.98778671712105,
+      "min_tps": 99.81837446296555,
+      "max_tps": 100.09095695336683,
+      "spread_tps": 0.2725824904012768,
+      "stddev_tps": 0.10241185238205155,
+      "median_ns": 1280156440.5,
+      "samples_ns": [
+        1280498472,
+        1278836809,
+        1282051500,
+        1282329037,
+        1279814409,
+        1279339808
+      ],
+      "directories": [
+        "bench/results/1080ti-speed/reuse-screen-v3/d2048-block0-reuse-q8",
+        "bench/results/1080ti-speed/reuse-screen-v3/d2048-block1-reuse-q8"
+      ],
+      "blocks": [
+        0,
+        1
+      ],
+      "speedup_vs_baseline": 1.007461989666311,
+      "telemetry": {
+        "GPU-3007f159-e0cf-9303-0a81-41ea8e945315": {
+          "temperature": {
+            "min": 60.0,
+            "max": 73.0
+          },
+          "clock": {
+            "min": 1556.0,
+            "max": 1936.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2031.0
+          }
+        },
+        "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c": {
+          "temperature": {
+            "min": 54.0,
+            "max": 65.0
+          },
+          "clock": {
+            "min": 1531.0,
+            "max": 1923.0
+          },
+          "memory": {
+            "min": 2.0,
+            "max": 2031.0
+          }
+        }
+      }
+    }
+  ],
+  "note": "Dynamic clocks. Screening is exploratory; final claims require balanced order and at least twenty measured samples. Telemetry extrema include initialization and excluded warmups."
+}

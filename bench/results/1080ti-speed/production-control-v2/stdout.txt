@@ -1,0 +1,1 @@
+Validated finite logits for 8 steps, 151936 vocabulary entries per step

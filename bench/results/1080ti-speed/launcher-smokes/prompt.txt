@@ -1,0 +1,7 @@
+<|im_start|>user
+What is 17 times 23? Output only the integer. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

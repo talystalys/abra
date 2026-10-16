@@ -1,0 +1,9 @@
+0.00.045.572 W common_fit_params: failed to fit params to free device memory: llama_params_fit is not implemented for SPLIT_MODE_TENSOR, abort
+0.00.641.518 W load: control-looking token: 128247 '</s>' was not control-type; this is probably a bug in the model. its type will be overridden
+0.01.637.600 I cmn          init: llama threadpool init, n_threads = 4
+0.01.784.444 I 
+0.01.784.575 I system_info: n_threads = 4 (n_threads_batch = 4) / 64 | CUDA : ARCHS = 610 | USE_GRAPHS = 1 | CPU : SSE3 = 1 | SSSE3 = 1 | AVX = 1 | AVX2 = 1 | F16C = 1 | FMA = 1 | BMI2 = 1 | LLAMAFILE = 1 | OPENMP = 1 | REPACK = 1 | 
+0.01.784.598 I perplexity: tokenizing the input ..
+0.02.704.051 I perplexity: tokenization took 919.445 ms
+0.02.704.610 I perplexity: calculating perplexity over 20 chunks, n_ctx=2048, batch_size=2048, n_seq=1
+0.04.144.705 I perplexity: 1.44 seconds per pass - ETA 0.26.098.114 I Final estimate: PPL = 12.4064 +/- 0.29175

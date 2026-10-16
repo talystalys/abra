@@ -1,0 +1,7 @@
+<|im_start|>user
+Compute the sum of the integers from 1 to 8 inclusive. Output only the integer. /no_think<|im_end|>
+<|im_start|>assistant
+<think>
+
+</think>
+

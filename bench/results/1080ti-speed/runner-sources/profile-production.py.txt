@@ -1,0 +1,75 @@
+#!/usr/bin/env python3
+"""Collect a diagnostic CUDA timeline for ordinary decode, excluding prefill."""
+import argparse
+import datetime
+import json
+import os
+from pathlib import Path
+import runpy
+import socket
+import subprocess
+
+ROOT = Path(__file__).resolve().parent.parent
+
+
+def main():
+    p = argparse.ArgumentParser(description=__doc__)
+    p.add_argument('--out', type=Path, required=True)
+    p.add_argument('--control', action='store_true')
+    p.add_argument('--reuse-q8', action='store_true')
+    p.add_argument('--shapes', action='store_true', help='Synchronous one-step shape diagnostic instead of a CUDA timeline')
+    p.add_argument('--split-tied-output', action='store_true')
+    a = p.parse_args()
+    if socket.gethostname() != 'BigBoy':
+        raise SystemExit('Run on BigBoy')
+    a.out.mkdir(parents=True, exist_ok=False)
+    helpers = runpy.run_path(str(ROOT / 'tools/port-benchmark.py'))
+    devices, digest = helpers['DEVICES'], helpers['digest']
+    inventory = subprocess.check_output(['nvidia-smi', '--query-gpu=name,uuid,pci.bus_id,compute_cap,driver_version,power.limit', '--format=csv,noheader'], text=True)
+    for uuid, pci, _ in devices.values():
+        rows = [line for line in inventory.splitlines() if uuid in line]
+        if len(rows) != 1:
+            raise SystemExit('Missing identified device')
+        fields = [item.strip() for item in rows[0].split(',')]
+        if fields[0] != 'NVIDIA GeForce GTX 1080 Ti' or fields[3] != '6.1' or fields[2].lower().lstrip('0') != pci.lower().lstrip('0'):
+            raise SystemExit('Physical GPU identity mismatch')
+    source = ROOT / '.deps' / ('llama.cpp-speed-control' if a.control else 'llama.cpp-port')
+    libs = source / 'build-port/bin'
+    probe = ROOT / 'build-sm61/runtime_logits'
+    model = ROOT / 'models/Qwen3-4B-Q4_K_M.gguf'
+    env = {key: value for key, value in os.environ.items() if not key.startswith(('LEGACY_AI_', 'NCCL_'))}
+    env.update(CUDA_VISIBLE_DEVICES=','.join(value[0] for value in devices.values()),
+               LD_LIBRARY_PATH=str(libs) + ':/usr/local/cuda-12.9/lib64',
+               LEGACY_AI_CUDA_PROFILE='1', LEGACY_AI_VALIDATE_SPLIT='tensor',
+               LEGACY_AI_VALIDATE_FLASH_ATTN='1', GGML_CUDA_ALLREDUCE='nccl',
+               GGML_CUDA_DISABLE_GRAPHS='1', LEGACY_AI_REUSE_Q8='1' if a.reuse_q8 else '0')
+    env['LEGACY_AI_SPLIT_TIED_OUTPUT'] = '1' if a.split_tied_output else '0'
+    command = ['numactl', '--cpunodebind=0', '--membind=0', '/usr/local/cuda-12.9/bin/nvprof',
+               '--profile-from-start', 'off', '--csv', '--print-gpu-trace', '--profile-api-trace', 'none',
+               '--log-file', str(a.out / 'trace.csv'), str(probe), str(model),
+               str(a.out / 'logits.tmp'), str(a.out / 'tokens.json'), '8', '2048']
+    if a.shapes:
+        env.pop('LEGACY_AI_CUDA_PROFILE')
+        env['LEGACY_AI_PROFILE'] = '1'
+        command = ['numactl', '--cpunodebind=0', '--membind=0', str(probe), str(model),
+                   str(a.out / 'logits.tmp'), str(a.out / 'tokens.json'), '1', '2048']
+    manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'host': socket.gethostname(),
+                'hardware': inventory, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith('LEGACY_AI_') or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS']},
+                'model_sha256': digest(model), 'probe_sha256': digest(probe),
+                'probe_cpp_sha256': digest(ROOT / 'tests/runtime_logits.cpp'),
+                'libraries': {file.name: digest(file) for file in libs.glob('*.so') if not file.is_symlink()},
+                'source_commit': subprocess.check_output(['git', '-C', str(source), 'rev-parse', 'HEAD'], text=True).strip(),
+                'toolchain': subprocess.check_output(['/usr/local/cuda-12.9/bin/nvcc', '--version'], text=True),
+                'clocks': 'Dynamic; no clock/power changes',
+                'scope': 'Synchronous shape diagnostic only; never a throughput result.' if a.shapes else 'Diagnostic only. Normal token-boundary synchronization; no per-operation synchronization. Profiling overhead is not a throughput result.'}
+    (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    (a.out / 'source.diff').write_text(subprocess.check_output(['git', '-C', str(source), 'diff', 'HEAD'], text=True))
+    with (a.out / 'stdout.txt').open('w') as out, (a.out / 'stderr.txt').open('w') as err:
+        result = subprocess.run(command, env=env, stdout=out, stderr=err, timeout=300)
+    manifest['exit_code'] = result.returncode
+    (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
+    raise SystemExit(result.returncode)
+
+
+if __name__ == '__main__':
+    main()

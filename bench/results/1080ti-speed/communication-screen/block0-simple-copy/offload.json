@@ -1,0 +1,40 @@
+[
+BigBoy:3212429:3212429 [1] NCCL INFO cudaDriverVersion 12040
+BigBoy:3212429:3212429 [1] NCCL INFO Bootstrap: Using enp6s0:192.168.50.49<0>
+BigBoy:3212429:3212429 [0] NCCL INFO NCCL version 2.27.7+cuda12.9
+BigBoy:3212429:3212460 [0] NCCL INFO NET/Plugin: Could not find: libnccl-net.so. 
+BigBoy:3212429:3212460 [0] NCCL INFO Failed to open libibverbs.so[.1]
+BigBoy:3212429:3212460 [0] NCCL INFO NET/Socket : Using [0]enp6s0:192.168.50.49<0> [1]pterodactyl0:172.18.0.1<0> [2]flannel.1:10.42.0.0<0> [3]cni0:10.42.0.1<0> [4]vethd421de06:fe80::9cfe:35ff:fe57:fd78%vethd421de06<0> [5]veth8791e434:fe80::70f7:9cff:fef1:ff%veth8791e434<0> [6]veth76bbc523:fe80::e4cb:94ff:fe68:40e7%veth76bbc523<0> [7]vethdaa9adae:fe80::989c:3eff:fe2b:8e5%vethdaa9adae<0> [8]veth81b314b1:fe80::b0d3:13ff:fed7:e8ea%veth81b314b1<0> [9]vethbda69019:fe80::a05b:8fff:fe1a:6e29%vethbda69019<0> [10]veth785e4f81:fe80::eced:60ff:fe57:aa72%veth785e4f81<0> [11]vethb44d2c42:fe80::4072:17ff:fe70:3825%vethb44d2c42<0> [12]vethb84c7162:fe80::1c8e:cdff:fe32:eee%vethb84c7162<0> [13]veth60510ae8:fe80::bc25:1fff:fef6:ca29%veth60510ae8<0> [14]veth3f58e198:fe80::201a:4bff:fed9:946a%veth3f58e198<0> [15]vetha01e8619:fe80::644a:42ff:fe94:3d92%vetha01e8619<0>
+BigBoy:3212429:3212460 [0] NCCL INFO Initialized NET plugin Socket
+BigBoy:3212429:3212460 [0] NCCL INFO Assigned NET plugin Socket to comm
+BigBoy:3212429:3212460 [0] NCCL INFO Using network Socket
+BigBoy:3212429:3212461 [1] NCCL INFO Assigned NET plugin Socket to comm
+BigBoy:3212429:3212461 [1] NCCL INFO Using network Socket
+BigBoy:3212429:3212461 [1] NCCL INFO ncclCommInitAll comm 0x55f359d73ff0 rank 1 nranks 2 cudaDev 1 nvmlDev 1 busId 81000 commId 0x2ab0ebfde0838580 - Init START
+BigBoy:3212429:3212460 [0] NCCL INFO ncclCommInitAll comm 0x55f3597b7100 rank 0 nranks 2 cudaDev 0 nvmlDev 0 busId 3000 commId 0x2ab0ebfde0838580 - Init START
+BigBoy:3212429:3212460 [0] NCCL INFO RAS client listening socket at ::1<28028>
+BigBoy:3212429:3212460 [0] NCCL INFO Bootstrap timings total 0.037687 (create 0.036018, send 0.000232, recv 0.000633, ring 0.000111, delay 0.000000)
+BigBoy:3212429:3212461 [1] NCCL INFO Bootstrap timings total 0.037714 (create 0.036028, send 0.000236, recv 0.000461, ring 0.000070, delay 0.000002)
+BigBoy:3212429:3212461 [1] NCCL INFO NCCL_SHM_USE_CUDA_MEMCPY set by environment to 1.
+BigBoy:3212429:3212461 [1] NCCL INFO NCCL_SHM_MEMCPY_MODE set by environment to 3.
+BigBoy:3212429:3212461 [1] NCCL INFO Setting affinity for GPU 1 to 16-31,48-63
+BigBoy:3212429:3212460 [0] NCCL INFO Setting affinity for GPU 0 to 0-15,32-47
+BigBoy:3212429:3212460 [0] NCCL INFO comm 0x55f3597b7100 rank 0 nRanks 2 nNodes 1 localRanks 2 localRank 0 MNNVL 0
+BigBoy:3212429:3212461 [1] NCCL INFO comm 0x55f359d73ff0 rank 1 nRanks 2 nNodes 1 localRanks 2 localRank 1 MNNVL 0
+BigBoy:3212429:3212460 [0] NCCL INFO NCCL_MAX_NCHANNELS set by environment to 1.
+BigBoy:3212429:3212460 [0] NCCL INFO NCCL_MIN_NCHANNELS set by environment to 1.
+BigBoy:3212429:3212460 [0] NCCL INFO Channel 00/01 : 0 1
+BigBoy:3212429:3212461 [1] NCCL INFO Trees [0] -1/-1/-1->1->0
+BigBoy:3212429:3212461 [1] NCCL INFO P2P Chunksize set to 131072
+BigBoy:3212429:3212460 [0] NCCL INFO Trees [0] 1/-1/-1->0->-1
+BigBoy:3212429:3212460 [0] NCCL INFO P2P Chunksize set to 131072
+BigBoy:3212429:3212461 [1] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+BigBoy:3212429:3212460 [0] NCCL INFO PROFILER/Plugin: Could not find: libnccl-profiler.so. 
+BigBoy:3212429:3212460 [0] NCCL INFO Check P2P Type isAllDirectP2p 0 directMode 1
+BigBoy:3212429:3212464 [0] NCCL INFO [Proxy Service] Device 0 CPU core 38
+BigBoy:3212429:3212463 [1] NCCL INFO [Proxy Service] Device 1 CPU core 19
+BigBoy:3212429:3212465 [1] NCCL INFO [Proxy Service UDS] Device 1 CPU core 54
+BigBoy:3212429:3212466 [0] NCCL INFO [Proxy Service UDS] Device 0 CPU core 7
+BigBoy:3212429:3212461 [1] NCCL INFO NCCL_PROTO set by environment to Simple
+BigBoy:3212429:3212461 [1] NCCL INFO threadThresholds 8/8/64 | 16/8/64 | 512 | 512
+BigBoy:3212429:3212461 [1] NCCL INFO 1 coll channels, 1 collnet channels, 0 nvls channels, 1 p2p 

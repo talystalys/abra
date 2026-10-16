@@ -1,0 +1,16 @@
+Executing code-copy-block0-tensor-control
+{"samples": 3, "median_tps": 91.84705994274692, "min_tps": 90.21514017326064, "max_tps": 96.39262841458633, "spread_tps": 6.17748824132569, "p95_block_ms": 11.1891, "max_block_ms": 28.5094, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 2085, "max_rss_kib": 2907836, "matches_baseline_tokens": true}
+Executing code-copy-block0-tensor-output-reuse
+{"samples": 3, "median_tps": 98.52783457714673, "min_tps": 97.86448993433311, "max_tps": 102.98461437013563, "spread_tps": 5.1201244358025235, "p95_block_ms": 10.4098, "max_block_ms": 27.0978, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1933, "max_rss_kib": 2907712, "matches_baseline_tokens": true}
+Executing code-edit-block0-tensor-control
+{"samples": 3, "median_tps": 91.7093693815058, "min_tps": 90.64341461083077, "max_tps": 92.06921663141104, "spread_tps": 1.4258020205802637, "p95_block_ms": 11.2129, "max_block_ms": 28.4492, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 2085, "max_rss_kib": 2905668, "matches_baseline_tokens": true}
+Executing code-edit-block0-tensor-output-reuse
+{"samples": 3, "median_tps": 98.28710199276637, "min_tps": 97.42368478025547, "max_tps": 98.821769077161, "spread_tps": 1.3980842969055232, "p95_block_ms": 10.3646, "max_block_ms": 27.0839, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1933, "max_rss_kib": 2905636, "matches_baseline_tokens": true}
+Executing prose-block0-tensor-control
+{"samples": 3, "median_tps": 93.03407372950343, "min_tps": 91.77798332221958, "max_tps": 93.06654257794324, "spread_tps": 1.288559255723655, "p95_block_ms": 10.8657, "max_block_ms": 31.1756, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1907, "max_rss_kib": 2906128, "matches_baseline_tokens": true}
+Executing prose-block0-tensor-output-reuse
+{"samples": 3, "median_tps": 100.23335578142864, "min_tps": 99.33492165734108, "max_tps": 101.46972555610165, "spread_tps": 2.134803898760566, "p95_block_ms": 10.0609, "max_block_ms": 29.115, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1755, "max_rss_kib": 2905332, "matches_baseline_tokens": true}
+Executing reasoning-block0-tensor-control
+{"samples": 3, "median_tps": 92.56580850448366, "min_tps": 91.97450581666894, "max_tps": 93.13595302455369, "spread_tps": 1.1614472078847484, "p95_block_ms": 10.8747, "max_block_ms": 30.318, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1907, "max_rss_kib": 2905556, "matches_baseline_tokens": true}
+Executing reasoning-block0-tensor-output-reuse
+{"samples": 3, "median_tps": 100.08522882767356, "min_tps": 99.32374497076546, "max_tps": 100.13964786831637, "spread_tps": 0.815902897550913, "p95_block_ms": 10.0764, "max_block_ms": 30.1678, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1755, "max_rss_kib": 2906032, "matches_baseline_tokens": true}

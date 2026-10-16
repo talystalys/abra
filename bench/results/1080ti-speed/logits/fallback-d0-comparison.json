@@ -1,0 +1,18 @@
+{
+  "shape": [
+    151936,
+    32
+  ],
+  "logits_checked": 4861952,
+  "max_absolute_error": 0.0,
+  "rms_error": 0.0,
+  "tolerance_violations": 0,
+  "absolute_tolerance": 0.001,
+  "relative_tolerance": 0.0001,
+  "tokens_identical": true,
+  "prompt_lengths_identical": true,
+  "bit_identical": true,
+  "reference_sha256": "e1b5929f3303cfd487bbe10ac2a703bab69bf84e00d6e5eb4a12f66a0e75ef9d",
+  "candidate_sha256": "e1b5929f3303cfd487bbe10ac2a703bab69bf84e00d6e5eb4a12f66a0e75ef9d",
+  "accepted": true
+}

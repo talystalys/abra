@@ -1,0 +1,4 @@
+Executing prose-block0-tensor-control
+{"samples": 100, "median_tps": 86.07797636744192, "min_tps": 68.49534980789196, "max_tps": 96.85486525445211, "spread_tps": 28.359515446560152, "p95_block_ms": 14.7157, "max_block_ms": 52.6405, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1907, "max_rss_kib": 2907576, "matches_baseline_tokens": true}
+Executing prose-block0-tensor-output-reuse
+{"samples": 100, "median_tps": 80.3838811542874, "min_tps": 73.14975411967414, "max_tps": 96.01968403522723, "spread_tps": 22.869929915553087, "p95_block_ms": 14.7101, "max_block_ms": 30.0892, "repeat_tokens_identical": true, "accepted": 0, "proposed": 0, "peak_gpu_mib": 1755, "max_rss_kib": 2905408, "matches_baseline_tokens": true}

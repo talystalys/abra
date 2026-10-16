@@ -1,0 +1,102 @@
+"""Audit recorded results; never generate benchmark timings."""
+import datetime
+import hashlib
+import json
+from pathlib import Path
+import re
+
+root = Path(__file__).resolve().parent
+project = root.parents[2]
+inputs = {}
+
+def read(path):
+    path = Path(path)
+    inputs[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return json.loads(path.read_text())
+
+final = read(root / 'final-libraries/report.json')
+control = read(root / 'control-snapshot/manifest.json')['libraries_and_binaries']
+assert len(final['results']) == 12
+candidate_libraries = None
+for row in final['results']:
+    assert row['samples'] == 20 and row['blocks'] == [0, 1]
+    assert len(row['samples_ns']) == 20 and min(row['samples_ns']) > 0
+    for directory in row['directories']:
+        folder = project / directory
+        manifest = read(folder / 'manifest.json')
+        assert manifest['host'] == 'BigBoy' and manifest['exit_code'] == 0
+        assert manifest['model_sha256'] == final['model_sha256']
+        assert manifest['excluded_full_workload_warmup_samples'] == 5
+        libraries = manifest['resolved_runtime_libraries']
+        selected = 'llama.cpp-speed-control' if row['configuration'] == 'baseline' else 'llama.cpp-port'
+        for name, info in libraries.items():
+            if name.startswith(('libllama', 'libggml')):
+                assert '/.deps/' + selected + '/build-port/bin/' in info['path']
+                assert manifest['library_sha256'][Path(info['path']).name] == info['sha256']
+                if row['configuration'] == 'baseline':
+                    assert control[Path(info['path']).name] == info['sha256']
+        assert any(name.startswith('libggml-cuda') for name in libraries)
+        if row['configuration'] == 'baseline':
+            assert manifest['binary_sha256'] == control['llama-bench']
+        else:
+            assert manifest['activation_reuse_confirmed']
+            assert manifest['environment']['LEGACY_AI_SPLIT_TIED_OUTPUT'] == '1'
+            if candidate_libraries is None:
+                candidate_libraries = manifest['library_sha256']
+            assert candidate_libraries == manifest['library_sha256']
+
+checked_logits = 0
+for depth in [0, 2048, 8192]:
+    comparison = read(root / 'output-logits' / f'split-output-reuse-d{depth}-comparison.json')
+    assert comparison['accepted'] and comparison['bit_identical']
+    assert comparison['tolerance_violations'] == 0
+    assert comparison['tokens_identical'] and comparison['prompt_lengths_identical']
+    checked_logits += comparison['logits_checked']
+
+for campaign in ['final-quality', 'context4096-quality']:
+    result = read(root / campaign / 'quality.json')
+    assert result['qualified'] and result['scores'] == {'off': 8, 'on': 8}
+    assert not result['lost_successes']
+    assert all(v['off']['answer'] == v['on']['answer'] for v in result['probes'].values())
+assert read(root / 'final-quality/quality.json')['relative_ppl_change'] == 0
+
+for campaign, repetitions in [('full-decoding', 3), ('soak', 100)]:
+    result = read(root / campaign / 'report.json')
+    for records in result.values():
+        assert len(records) == 2
+        for record in records.values():
+            assert record['samples'] == repetitions
+            assert record['repeat_tokens_identical'] and record['matches_baseline_tokens']
+soak = read(root / 'soak/audit.json')
+assert all(r['tokens'] == 25600 and r['swap_max_kib'] == 0 for r in soak['runtimes'].values())
+smokes = read(root / 'launcher-smokes/report.json')
+assert smokes['all_passed'] and len(smokes['commands']) == 8
+assert read(root / 'installer-idempotence.json')['byte_identical']
+
+oracle_cases = 0
+for role in ['primary', 'secondary']:
+    envelope = read(root / 'final-oracles' / (role + '-envelope.json'))
+    assert envelope['passed_tests'] == envelope['total_tests'] == 756
+    oracle_cases += envelope['passed_tests']
+    for target, count in [('runtime_kernel_test', 2835), ('attention_kernel_test', 90),
+                          ('value_kernel_test', 48), ('q8_reuse_test', 42)]:
+        path = root / 'final-oracles' / f'{role}-{target}.txt'
+        inputs[str(path.relative_to(root))] = hashlib.sha256(path.read_bytes()).hexdigest()
+        assert re.search(r'PASS: ' + str(count) + r'\b', path.read_text())
+        oracle_cases += count
+
+result = {
+    'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    'accepted': True,
+    'scope': 'Audit of recorded matrix, resolved libraries, frozen control hashes, numerical comparisons, quality, repeated requests, oracles and launcher checks. No new timings are produced.',
+    'final_matrix': 'final-libraries/report.json',
+    'matrix_rows': len(final['results']),
+    'measured_samples_per_row': 20,
+    'selected_candidate_logits_checked': checked_logits,
+    'oracle_and_activation_cases': oracle_cases,
+    'model_sha256': final['model_sha256'],
+    'inputs_sha256': inputs,
+    'auditor_sha256': hashlib.sha256(Path(__file__).read_bytes()).hexdigest(),
+}
+(root / 'final-audit.json').write_text(json.dumps(result, indent=2) + '\n')
+print(json.dumps({k: v for k, v in result.items() if k != 'inputs_sha256'}))

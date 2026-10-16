@@ -1,0 +1,128 @@
+{
+  "scope": "exploratory only; requires final measurement and correctness",
+  "results": [
+    {
+      "case": "control",
+      "options": [],
+      "samples": 6,
+      "median_tps": 98.84434511906127,
+      "min_tps": 96.74633284763752,
+      "max_tps": 99.35996386588614,
+      "spread_tps": 2.6136310182486255
+    },
+    {
+      "case": "both-cpu",
+      "options": [
+        "--cpu-nodes",
+        "0,1"
+      ],
+      "samples": 6,
+      "median_tps": 98.00244741526862,
+      "min_tps": 91.16859116677492,
+      "max_tps": 99.53591031882911,
+      "spread_tps": 8.367319152054193
+    },
+    {
+      "case": "both-interleave",
+      "options": [
+        "--cpu-nodes",
+        "0,1",
+        "--memory-policy",
+        "interleave"
+      ],
+      "samples": 6,
+      "median_tps": 98.60821719481845,
+      "min_tps": 98.23730448403938,
+      "max_tps": 99.28780970451851,
+      "spread_tps": 1.050505220479124
+    },
+    {
+      "case": "ignore-affinity",
+      "options": [
+        "--nccl-option",
+        "NCCL_IGNORE_CPU_AFFINITY=1"
+      ],
+      "samples": 6,
+      "median_tps": 98.75589698791,
+      "min_tps": 98.37146228631498,
+      "max_tps": 99.11684590478274,
+      "spread_tps": 0.7453836184677556
+    },
+    {
+      "case": "ll-one",
+      "options": [
+        "--cpu-nodes",
+        "0,1",
+        "--nccl-option",
+        "NCCL_PROTO=LL",
+        "--nccl-option",
+        "NCCL_MIN_NCHANNELS=1",
+        "--nccl-option",
+        "NCCL_MAX_NCHANNELS=1"
+      ],
+      "samples": 6,
+      "median_tps": 98.73653798335916,
+      "min_tps": 97.03363765277993,
+      "max_tps": 98.84551168327808,
+      "spread_tps": 1.8118740304981458
+    },
+    {
+      "case": "ll-two",
+      "options": [
+        "--cpu-nodes",
+        "0,1",
+        "--nccl-option",
+        "NCCL_PROTO=LL",
+        "--nccl-option",
+        "NCCL_MIN_NCHANNELS=2",
+        "--nccl-option",
+        "NCCL_MAX_NCHANNELS=2"
+      ],
+      "samples": 6,
+      "median_tps": 98.50391509679943,
+      "min_tps": 98.354522990568,
+      "max_tps": 98.95812709003623,
+      "spread_tps": 0.6036040994682281
+    },
+    {
+      "case": "simple-one",
+      "options": [
+        "--cpu-nodes",
+        "0,1",
+        "--nccl-option",
+        "NCCL_PROTO=Simple",
+        "--nccl-option",
+        "NCCL_MIN_NCHANNELS=1",
+        "--nccl-option",
+        "NCCL_MAX_NCHANNELS=1"
+      ],
+      "samples": 6,
+      "median_tps": 87.79382206950396,
+      "min_tps": 87.66397550041727,
+      "max_tps": 87.84807851984246,
+      "spread_tps": 0.18410301942519425
+    },
+    {
+      "case": "simple-copy",
+      "options": [
+        "--cpu-nodes",
+        "0,1",
+        "--nccl-option",
+        "NCCL_PROTO=Simple",
+        "--nccl-option",
+        "NCCL_MIN_NCHANNELS=1",
+        "--nccl-option",
+        "NCCL_MAX_NCHANNELS=1",
+        "--nccl-option",
+        "NCCL_SHM_USE_CUDA_MEMCPY=1",
+        "--nccl-option",
+        "NCCL_SHM_MEMCPY_MODE=3"
+      ],
+      "samples": 0,
+      "median_tps": null,
+      "min_tps": null,
+      "max_tps": null,
+      "spread_tps": null
+    }
+  ]
+}

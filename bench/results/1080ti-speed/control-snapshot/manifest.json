@@ -1,0 +1,29 @@
+{
+  "upstream_pin": "169e4a7ff201e666c2325bcd35afb64573e39d09",
+  "project_before_changes": "80040d28149ee1788c7dbb450a7ee1692ff456e8",
+  "description": "Preserved starting runtime, equal tensor splitting, NCCL 2.27.7 FP32, Flash Attention and F16 KV; new speed flags absent",
+  "libraries_and_binaries": {
+    "llama-cli": "5c64ae6e5664976b0a4bc58d4916ac27395b4bf66e9b77f286c9aee93e56e7db",
+    "libmtmd.so.0.1.2": "a917e0e6f0061096833ecf390456585c8dd5870752d26111c416d552cfaee643",
+    "libllama-perplexity-impl.so": "1ce784c05208e653e2ee424a680c490f9d963f583ef6ba16019dec0518ceaf9a",
+    "libllama-completion-impl.so": "e91796cc8137a173a2d1a55e9465db54d3e95683cbb020a3334413ac3d620ff6",
+    "libllama-server-impl.so": "69b82825e0de6a73eab45b764d73c1d00f85f65b1bd6e2a9985e7ccb2d772ce2",
+    "llama-completion": "ebad8b7bbf030c064b48bad14db58375eab1502d4823baf2365faf15ed87f728",
+    "libggml-cuda.so.0.20.2": "55c5073eff0f03a717f68a162d9eb54d530c9aa36adb0126bf924f535af755f9",
+    "libggml-cpu.so.0.20.2": "43728a32eeab7ced72059e8113cff05d74d974f18ca1b16c53f45a78d394a03a",
+    "libllama.so.0.1.2": "af9a55fe050fae1f4dc76ff145684f6aaeda24b270aa5ddb3ec04c54a97d3398",
+    "libllama-cli-impl.so": "4738f65651118385e878b9dbd297045f3dda068dedd23ee7290acc04d70dfb02",
+    "libggml.so.0.20.2": "897788ad3b4b4f07743a20bb7236a3e029a4e659b654555a5c71c5cbe063a9ae",
+    "libllama-bench-impl.so": "0d2339fb3a7aa8b8c22c95e0cc7ae0a6d9d74448012a348ab0c94c49d9aff349",
+    "libllama-common.so.0.1.2": "ba5d54c5d53e531a9b75157a00a8494dc3edb9ddb435a746a8c3b42f7ba0d095",
+    "llama-bench": "9ba9f1df51dc27e183dc4b0f4e40b2acfa5ed79a09a1767fd228977d80727e14",
+    "libggml-base.so.0.20.2": "4e054676f5c77aa101b2e28a49e7ec20bedb209ca1faffc56f716cfa1e638394",
+    "llama-perplexity": "864a403c715f10a7be05df58d5ff021bd003d4dd6e4050a267c30c66ac15d6d8"
+  },
+  "cuda_headers": {
+    "legacy-ai-packed-q4.cuh": "676675b08e7b6888fec5a8242c5aac1c7d7235725c9ce006513a3b07e89ca2e1",
+    "legacy-ai-q4k.cuh": "d5bd5d353a70b71d87008cf923e74141cd366cfe757053ade4a91f5f3b786212",
+    "legacy-ai-attention.cuh": "0f5a395c8f7916b28b680b66a94e9211d719ec70dc737fb8a6d5e4fab7501c09",
+    "legacy-ai-mmvq.cuh": "ec9c461c5d7bd9b919a609fc65984ec772821692d5650655a4c06604ada17852"
+  }
+}
