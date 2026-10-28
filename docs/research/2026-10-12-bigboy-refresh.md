@@ -1,6 +1,6 @@
 # BigBoy connection, hardware and repository audit — 2026-10-12
 
-Collected through public-key SSH to `taly@BigBoy` at `82.128.141.4`.
+Collected through public-key SSH to `taly@BigBoy` at `<experimental-host-ip>`.
 This inventory records the current machine and checkout. Historical M0–M4
 measurements retain their original device identities and benchmark conditions.
 

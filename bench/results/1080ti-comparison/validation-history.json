@@ -1,0 +1,16 @@
+{
+  "canonical_workloads": "workloads-v3/workloads.json",
+  "canonical_campaign": "campaign",
+  "preliminary_runs": {
+    "client-validation": "Port collision during harness validation; no valid performance result. Occupied-port and process locking guards added.",
+    "client-validation-v2": "Validated streaming, timing fields and three input lengths. Preliminary only, during compiler activity.",
+    "ollama-current-compatibility": "Interrupted initial import during client validation. Superseded by compatibility-v2 and the CUDA-specific check.",
+    "ollama-current-compatibility-v2": "Established official current Ollama can load on Vulkan. Preliminary timing only; not a final performance comparison.",
+    "ollama-cuda-check": "Current official CUDA-only attempt fell back to CPU and was rejected. Ollama 0.11.10 loaded all layers using CUDA. Preliminary timings during compilation.",
+    "placement-screen": "26 configurations screened. Row splitting failed model load on both stock revisions. Alternating two prompts allowed current Ollama to reuse whole prefixes; its timings must not be treated as fresh-prefill measurements. Used to establish compatibility; stock dual placement screens informed selection alongside a new NCCL screen.",
+    "workloads": "Initial two-variant fixtures. Superseded after multiple-prefix caching was identified.",
+    "workloads-v2": "Rejected numeric IDs before final measurements: numeric token merges did not preserve identifier lengths.",
+    "workloads-v3": "Delimited unique IDs verified: 1000 labels have 11 tokens, and first 24 full prompts have exactly 512, 2048 and 8192 tokens. Used for the final campaign."
+  },
+  "scope": "No final comparative speed claims are drawn from preliminary timing runs. Preserve failures and superseded evidence."
+}

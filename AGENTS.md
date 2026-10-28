@@ -83,6 +83,20 @@ Model weights remain unchanged. Cache precision experiments are labeled
 separately and require quality qualification; strict custom kernel checks
 remain frozen. Earlier experimental failures and milestones remain unchanged.
 
+After the subsequent research-only round, the user explicitly authorized
+implementation and testing of further speed improvements on 2026-10-12.
+See `docs/1080ti-speed-plan.md` for placement/communication screens,
+graph-local activation reuse, strict qualification and balanced measurements.
+The unchanged model and precision constraints remain in force.
+
+On 2026-10-20 the user authorized the runtime comparison described in
+`docs/1080ti-comparison-plan.md`: isolated Ollama and clean pinned/current
+llama.cpp installations, HTTP benchmarks on each GPU and supported dual-GPU
+placements, quality checks, concurrency and sustained-load measurements.
+Do not change the system driver, services, power or clock settings to make a
+competitor run. Record compatibility failures and distinguish older compatible
+releases or source builds from current official binaries.
+
 - **Active Milestone**: Only the currently authorized milestone may be implemented.
 - **Milestone Authorization**: The technical lead determines PASS/PARTIAL/FAIL for each milestone. Agents must never declare milestone PASS or proceed to subsequent milestones without explicit authorization.
 - **No Speculative Infrastructure**: Do not implement unrequested runtime, compiler, autotuner, or model infrastructure ahead of the roadmap.

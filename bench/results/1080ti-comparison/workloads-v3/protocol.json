@@ -1,0 +1,26 @@
+{
+  "runner_sha256": "6458571a722e5fe1f6de4a90bf5d8288cd9fc138b4c3b0fd2644afbfb564dc63",
+  "stage": "workloads",
+  "configs": [
+    {
+      "name": "legacy-secondary",
+      "kind": "llama",
+      "family": "legacy",
+      "source": "llama.cpp-port",
+      "gpu": "secondary",
+      "split": "none"
+    }
+  ],
+  "warmups_per_depth_block": 2,
+  "repetitions_per_depth_block": 10,
+  "blocks": 1,
+  "context_per_slot": 10240,
+  "target_output_tokens": 128,
+  "eos": "honored, actual output count reported",
+  "streaming": "TTFT is first nonempty content chunk; chunk intervals are not token latency",
+  "decode_rate_definition": "API output token count / API generation duration. Native llama.cpp rate is retained separately because it may exclude the first token. Client total latency is independent of backend timing conventions.",
+  "cache": "Unique six-digit early document ID for every fresh request, including warmups; repeated-history requests separately labeled. Multiple cached prefixes must not turn the fresh table into cached prefill.",
+  "cached_field_semantics": "Ollama prompt_eval_cached_count means reused input tokens when exposed; llama.cpp tokens_cached is final KV state length, not a cache-hit count. Inspect evaluated input counts and server logs.",
+  "soak_seconds_per_configuration": 1800,
+  "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5"
+}
