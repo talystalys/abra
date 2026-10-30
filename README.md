@@ -38,7 +38,7 @@
 
 ## Quick Start
 
-### 1. Build the Optimized Runtime
+### 1. Build repo
 
 ```bash
 # Clone repository
@@ -50,7 +50,7 @@ python3 tools/fetch-nccl.py
 python3 tools/build-port.py --profile --reuse-q8 --split-tied-output --nccl-prefix .deps/nccl-2.27.7-cuda12
 ```
 
-### 2. Run Inference
+### 2. Run inference
 
 Download `Qwen3-4B-Q4_K_M.gguf` to `models/` (or pass via `--model`):
 
@@ -64,7 +64,7 @@ python3 tools/qwen3-4b.py --runtime flash --gpu secondary -p "Hello world!"
 
 ---
 
-## Technical Architecture & Kernel Design
+## Architecture
 
 ```mermaid
 flowchart TD
