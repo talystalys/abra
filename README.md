@@ -17,9 +17,9 @@
 
 ---
 
-## Performance Highlights (Qwen3-4B Q4_K_M, Dual GTX 1080 Ti)
+## Performance (Qwen3-4B Q4_K_M, Dual GTX 1080 Ti)
 
-*Empirically measured across 20-sample balanced blocks with dynamic thermal/clock monitoring on dual Xeon E5-2683 v4 (64 threads):*
+*Measured across 20-sample balanced blocks with dynamic thermal/clock monitoring on dual Xeon E5-2683 v4 (64 threads):*
 
 ### Decode Throughput (tg128)
 
@@ -36,7 +36,7 @@
 
 ---
 
-## ⚡ Quick Start (For People Who Just Want to Run It)
+## Quick Start
 
 ### 1. Build the Optimized Runtime
 
