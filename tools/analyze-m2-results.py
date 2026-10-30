@@ -12,19 +12,19 @@ def compute_stats(samples):
     min_val = s[0]
     max_val = s[-1]
     mean_val = sum(s) / n
-    
+
     if n % 2 == 1:
         median_val = s[n // 2]
     else:
         median_val = (s[n // 2 - 1] + s[n // 2]) / 2.0
-        
+
     if n > 1:
         variance = sum((x - mean_val) ** 2 for x in s) / (n - 1)
         std_dev = math.sqrt(variance)
     else:
         variance = 0.0
         std_dev = 0.0
-        
+
     return {
         "count": n,
         "min": min_val,
@@ -49,7 +49,6 @@ def process_benchmark_file(file_path):
     raw_results = data.get("results", [])
     device_info = data.get("device", {})
 
-    # Group by shape
     shapes = {}
     for item in raw_results:
         shape = item["shape_name"]
@@ -60,18 +59,18 @@ def process_benchmark_file(file_path):
                 "K": item["K"],
                 "variants": {}
             }
-        
+
         var_id = item["variant_id"]
         latencies = item.get("latencies_us", [])
         stats = compute_stats(latencies)
-        
+
         median_us = stats["median"]
         median_sec = median_us * 1e-6 if median_us > 0 else 1.0
         N = item["N"]
         K = item["K"]
         total_macs = N * K
         gmac_s = (total_macs / median_sec) / 1e9
-        gops_s = (2.0 * total_macs / median_sec) / 1e9 # 1 MAC = 2 ops
+        gops_s = (2.0 * total_macs / median_sec) / 1e9
         effective_bytes = (N * K * 1) + (K * 1) + (N * 4)
         throughput_gbps = (effective_bytes / median_sec) / (1024.0 * 1024.0 * 1024.0)
 
@@ -85,7 +84,6 @@ def process_benchmark_file(file_path):
             "verified_correct": item.get("verified_correct", False)
         }
 
-    # Calculate speedups
     for shape, sdata in shapes.items():
         vars_map = sdata["variants"]
         scalar_med = vars_map.get(0, {}).get("stats_us", {}).get("median", None)

@@ -6,7 +6,7 @@ import socket
 import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
-BASE_SOURCE = Path('/home/taly/legacy-ai/.deps/llama.cpp')
+BASE_SOURCE = Path('/home/taly/abra/.deps/llama.cpp')
 PORT_SOURCE = ROOT / '.deps/llama.cpp-port'
 
 p = argparse.ArgumentParser(description=__doc__)
@@ -61,7 +61,7 @@ elif a.stage in ['screen', 'sums', 'packed', 'attention', 'exact-attention', 'va
                 for wpr in [1, 2, 4] for wpb in [4, 8, 16]]
     jobs = [(0, 0, config, 3) for config in configs]
 else:
-    # Forward/reverse order: twenty measured samples/config/depth.
+
     configs = [base] if a.skip_exact else [base, optimized]
     if a.include_graphs:
         configs += [graphs]

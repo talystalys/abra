@@ -6,8 +6,8 @@
 #include "kernels/dp4a/dp4a_gemv.cuh"
 #include "smoke/smoke.h"
 
-using namespace legacy_ai;
-using namespace legacy_ai::dp4a;
+using namespace abra;
+using namespace abra::dp4a;
 
 int main(int argc, char** argv) {
     int device_count = 0;

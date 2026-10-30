@@ -2,18 +2,18 @@
 Generated: Wed Aug 19 05:31:39 PM UTC 2026
 Pinned llama.cpp Source SHA: 169e4a7ff201e666c2325bcd35afb64573e39d09
 Worktree Status: Clean (git diff-index --quiet HEAD -- returned 0)
-Build Command: cmake -S /home/taly/legacy-ai/.deps/llama.cpp -B /home/taly/legacy-ai/.deps/llama.cpp/build-default -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="61;75" -DCMAKE_BUILD_TYPE=Release
+Build Command: cmake -S /home/taly/abra/.deps/llama.cpp -B /home/taly/abra/.deps/llama.cpp/build-default -DGGML_CUDA=ON -DCMAKE_CUDA_ARCHITECTURES="61;75" -DCMAKE_BUILD_TYPE=Release
 
 --- Compiled Dynamic Libraries & SHA256 ---
 Library: libggml-cuda.so
-  Symlink: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-cuda.so
-  Real Path: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-cuda.so.0.20.2
+  Symlink: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-cuda.so
+  Real Path: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-cuda.so.0.20.2
   SHA256: 5a713dbb249ae30802cbc4653dcc0b5b12a2000f4f14099a76deec22400b029c
 Library: libggml-base.so
-  Symlink: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-base.so
-  Real Path: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-base.so.0.20.2
+  Symlink: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-base.so
+  Real Path: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-base.so.0.20.2
   SHA256: 84f2c10afea97499de3656a6b8b4f62b6659b4e9aa908f22687331c733784feb
 Library: libggml.so
-  Symlink: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml.so
-  Real Path: /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml.so.0.20.2
+  Symlink: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml.so
+  Real Path: /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml.so.0.20.2
   SHA256: 0f6c66224ba85911b7a80c3b8b57673e945ebee6e7d9793506fb0e87875d5dea

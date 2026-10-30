@@ -3,7 +3,7 @@ ggml_cuda_init: found 1 CUDA devices (Total VRAM: 5929 MiB):
 The following devices will have suboptimal performance due to a lack of tensor cores:
   Device 0: NVIDIA GeForce GTX 1660 SUPER
 Consider compiling with CMAKE_CUDA_ARCHITECTURES=61-virtual;80-virtual and DGGML_CUDA_FORCE_MMQ to force the use of the Pascal code for Turing.
-llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
+llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
 llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
 llama_model_loader: - kv   0:                       general.architecture str              = qwen3
 llama_model_loader: - kv   1:                               general.type str              = model

@@ -59,7 +59,7 @@ for (case,config),entry in sorted(groups.items()):
     try:value=json.loads(value)
     except ValueError:pass
    literal_successes.append(value==fixture['expected'])
-   # Match the existing qualification scorer; retain literal equality too.
+
    answer=re.sub(r'<think>.*?</think>','',raw_text,flags=re.S).replace('[end of text]','').strip()
    answer=re.sub(r'^```(?:json)?\s*|\s*```$','',answer).strip()
    if fixture['kind']=='json':

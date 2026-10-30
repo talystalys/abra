@@ -35,8 +35,8 @@ for role in roles:
 model=ROOT/'models/Qwen3-4B-Q4_K_M.gguf'; binary=ROOT/'build-sm61/lookup_decode'; libs=ROOT/'.deps/llama.cpp-port/build-port/bin'
 if not model.exists() or not binary.exists(): raise SystemExit('Build the port and provide the canonical model first')
 node=0 if a.gpu=='both' else DEVICES[a.gpu][2]
-env={k:v for k,v in os.environ.items() if not k.startswith('LEGACY_AI_')}
-env.update(CUDA_VISIBLE_DEVICES=','.join(DEVICES[role][0] for role in roles),GGML_CUDA_DISABLE_GRAPHS='1',GGML_CUDA_ALLREDUCE=a.allreduce,LEGACY_AI_TEST_TENSOR='1' if a.gpu=='both' else '0',LD_LIBRARY_PATH=str(libs)+':/usr/local/cuda-12.9/lib64')
+env={k:v for k,v in os.environ.items() if not k.startswith('ABRA_')}
+env.update(CUDA_VISIBLE_DEVICES=','.join(DEVICES[role][0] for role in roles),GGML_CUDA_DISABLE_GRAPHS='1',GGML_CUDA_ALLREDUCE=a.allreduce,ABRA_TEST_TENSOR='1' if a.gpu=='both' else '0',LD_LIBRARY_PATH=str(libs)+':/usr/local/cuda-12.9/lib64')
 prompt=a.file.read_text() if a.file else a.prompt
 with tempfile.TemporaryDirectory(prefix='qwen3-lookup-') as directory:
  dest=Path(directory); input_file=dest/'prompt.txt'; prefix=dest/'result'

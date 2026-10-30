@@ -1,7 +1,7 @@
 # Qwen3-4B runtime comparison on BigBoy
 
 Authorized by the user on 2026-10-20. This measures alternatives to running
-Legacy AI, including Ollama. No performance outcome is assumed.
+Abra, including Ollama. No performance outcome is assumed.
 
 ## Milestones
 
@@ -12,7 +12,7 @@ Legacy AI, including Ollama. No performance outcome is assumed.
    drivers. Record unsupported configurations, including silent CPU fallback.
 2. **HTTP comparison:** official Ollama defaults and tuned F16/Flash Attention,
    clean stock llama.cpp at the port's pin and a current release, and the
-   optimized Legacy AI runtime. Run each physical GPU separately and supported
+   optimized Abra runtime. Run each physical GPU separately and supported
    dual-GPU placements. Keep the previous port available as an attribution
    control. Same SHA-256 checked Qwen3-4B Q4_K_M GGUF in every case.
 3. **Quality and stability:** deterministic fixed task probes, full responses
@@ -20,7 +20,7 @@ Legacy AI, including Ollama. No performance outcome is assumed.
    Record differences rather than requiring numerical identity between
    independently versioned backends. Existing strict custom kernel tolerances
    remain unchanged. No claim of universal quality equivalence.
-4. **Serving:** strongest compatible Ollama, current upstream and Legacy AI
+4. **Serving:** strongest compatible Ollama, current upstream and Abra
    configurations each undergo 30 minutes total of continuous requests in two
    opposing 15-minute blocks, plus a separate concurrency sweep. The block
    design balances order because primary-card thermal drift confounded earlier

@@ -8,10 +8,10 @@ measurements retain their original device identities and benchmark conditions.
 
 | Location | Observed state |
 | --- | --- |
-| GitHub | `https://github.com/talystalys/legacy-ai`; default branch `m0/reproducible-baseline`; published branches M0–M3 |
-| Local working copy | `/home/taly/legacy-ai`; `m4/autotuned-kernel-family`, HEAD `815e3ff338b72e31c4a2ace6815776762469c3f3`; existing uncommitted September research |
-| Local older copy | `/home/taly/legacy-ai-bigboy`; separate older checkout |
-| BigBoy working copy | `/home/taly/legacy-ai`; clean tracked worktree on `exp/qwen38-27b`, HEAD `fb1d5f26162cf659ddc47b5752c257dff0bfa43a` (M3) |
+| GitHub | `https://github.com/talystalys/abra`; default branch `m0/reproducible-baseline`; published branches M0–M3 |
+| Local working copy | `/home/taly/abra`; `m4/autotuned-kernel-family`, HEAD `815e3ff338b72e31c4a2ace6815776762469c3f3`; existing uncommitted September research |
+| Local older copy | `/home/taly/abra-bigboy`; separate older checkout |
+| BigBoy working copy | `/home/taly/abra`; clean tracked worktree on `exp/qwen38-27b`, HEAD `fb1d5f26162cf659ddc47b5752c257dff0bfa43a` (M3) |
 | BigBoy M4 branch | `m4/autotuned-kernel-family` exists at `815e3ff` but is not checked out |
 
 GitHub's branch listing did not contain M4 or `exp/qwen38-27b` at collection.

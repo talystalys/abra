@@ -1,6 +1,6 @@
 import argparse,hashlib,json,subprocess
 from pathlib import Path
-root=Path('/home/taly/legacy-ai-1080ti-port')
+root=Path('/home/taly/abra-1080ti-port')
 p=argparse.ArgumentParser(description='Record isolated runtime installation provenance')
 p.add_argument('--out',type=Path,default=root/'bench/results/1080ti-comparison/setup/provenance.json')
 a=p.parse_args()

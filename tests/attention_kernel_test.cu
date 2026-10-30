@@ -3,7 +3,7 @@
 #include <atomic>
 #include <cstdlib>
 #include <cstring>
-#include "kernels/q4k/legacy-ai-attention.cuh"
+#include "kernels/q4k/abra-attention.cuh"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -49,9 +49,9 @@ int main(int argc, char **argv) {
         CUDA_CHECK(cudaMemcpy(upstream.data(), dy, actual.size() * sizeof(float), cudaMemcpyDeviceToHost));
         for (int rows : {1, 4, 8}) {
             const dim3 grid((N + rows - 1) / rows, 32), block(32, rows * 2);
-            if (rows == 1) legacy_ai_attention_qk<1><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
-            else if (rows == 4) legacy_ai_attention_qk<4><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
-            else legacy_ai_attention_qk<8><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+            if (rows == 1) abra_attention_qk<1><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+            else if (rows == 4) abra_attention_qk<4><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+            else abra_attention_qk<8><<<grid, block>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
             CUDA_CHECK(cudaGetLastError());
             CUDA_CHECK(cudaMemcpy(actual.data(), dy, actual.size() * sizeof(float), cudaMemcpyDeviceToHost));
             for (int head = 0; head < 32; ++head) for (int row = 0; row < N; ++row) {
@@ -72,9 +72,9 @@ int main(int argc, char **argv) {
             for (int rows : {0, 1, 4, 8}) {
                 auto launch = [&] {
                     if (!rows) ggml_cuda_mul_mat_vec_f(ctx, &w, &x, nullptr, &y);
-                    else if (rows == 1) legacy_ai_attention_qk<1><<<dim3(N, 32), dim3(32, 2), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
-                    else if (rows == 4) legacy_ai_attention_qk<4><<<dim3((N + 3) / 4, 32), dim3(32, 8), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
-                    else legacy_ai_attention_qk<8><<<dim3((N + 7) / 8, 32), dim3(32, 16), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+                    else if (rows == 1) abra_attention_qk<1><<<dim3(N, 32), dim3(32, 2), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+                    else if (rows == 4) abra_attention_qk<4><<<dim3((N + 3) / 4, 32), dim3(32, 8), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
+                    else abra_attention_qk<8><<<dim3((N + 7) / 8, 32), dim3(32, 16), 0, ctx.stream()>>>(dw, dx, dy, N, row_stride, head_stride, 128, N);
                 };
                 for (int warmup = 0; warmup < 10; ++warmup) launch();
                 CUDA_CHECK(cudaStreamSynchronize(ctx.stream()));

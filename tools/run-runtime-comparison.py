@@ -9,19 +9,15 @@ import sys
 ROOT = Path(__file__).resolve().parent.parent
 TOOL = ROOT / 'tools/compare-runtimes.py'
 
-
 def read(path):
     return json.loads(Path(path).read_text())
-
 
 def save(path, value):
     Path(path).write_text(json.dumps(value, indent=2) + '\n')
 
-
 def run(argv):
     print('Executing:', ' '.join(map(str, argv)), flush=True)
     subprocess.run(list(map(str, argv)), check=True)
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -54,7 +50,7 @@ def main():
             raise RuntimeError('Perplexity is incomplete')
         save(a.out / 'qualification-reuse.json', {'reason': 'Restart matrix after fixing identifier domains; unchanged weights, runtime libraries and completed quality/corpus requests.', 'selected': selected})
     else:
-        # Compare stock NCCL builds without modifying upstream source or arithmetic.
+
         nccl_configs = ['stock-pinned-nccl-both-tensor', 'stock-current-nccl-both-tensor']
         nccl = stage('screen-nccl', nccl_configs, ['--depths', '2048', '--warmups', '2', '--reps', '5', '--blocks', '1'])
         initial = read(a.screen / 'report.json')
@@ -85,7 +81,6 @@ def main():
         decisions['unsupported_screen_configurations'] = {k: v for k, v in screen.items() if 'error' in v}
         save(a.out / 'selection.json', decisions)
 
-        # Quality first: every selected runtime receives identical probes and full responses.
         stage('quality', selected, ['--reps', '2', '--blocks', '1', '--warmups', '0'])
         state['stage'] = 'perplexity'
         save(a.out / 'state.json', state)
@@ -115,15 +110,13 @@ def main():
     stage('cache', serving, ['--reps', '10', '--blocks', '2', '--warmups', '2'])
     for parallel in [2, 4]:
         stage(f'concurrency-p{parallel}', serving, ['--parallel', str(parallel), '--reps', '10', '--blocks', '1', '--warmups', '2'])
-    # Two opposing 15-minute blocks total 30 minutes per runtime and balance order.
-    # They are reported as two blocks, never as a continuous 30-minute session.
+
     stage('soak', serving, ['--seconds', '900', '--blocks', '2', '--warmups', '2'])
     state['stage'] = 'real-tasks'
     save(a.out / 'state.json', state)
     run([sys.executable, ROOT / 'tools/compare-real-workloads.py', '--out', a.out / 'real-tasks', '--configs', ','.join(serving)])
     state.update(status='complete', stage='complete')
     save(a.out / 'state.json', state)
-
 
 if __name__ == '__main__':
     main()

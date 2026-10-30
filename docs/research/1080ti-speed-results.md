@@ -28,7 +28,7 @@ quantization nor KV precision.
 
 Source installers are [prepare-output-split.py](../../tools/prepare-output-split.py)
 and [prepare-q8-reuse.py](../../tools/prepare-q8-reuse.py). The host cache is in
-[legacy-ai-q8-reuse.cuh](../../kernels/q4k/legacy-ai-q8-reuse.cuh).
+[abra-q8-reuse.cuh](../../kernels/q4k/abra-q8-reuse.cuh).
 
 ## Hardware and workload
 
@@ -43,7 +43,7 @@ limits extrapolation to other machines or cooling conditions.
 | Primary | GTX 1080 Ti, 11 GiB | 6.1 | 0000:03:00.0 | GPU-3007f159-e0cf-9303-0a81-41ea8e945315 | 250 W |
 | Secondary | GTX 1080 Ti, 11 GiB | 6.1 | 0000:81:00.0 | GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c | 280 W |
 
-Unchanged model: `/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf`,
+Unchanged model: `/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf`,
 2,497,280,256 bytes, SHA256
 `7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5`.
 Upstream revision: `169e4a7ff201e666c2325bcd35afb64573e39d09`.
@@ -254,7 +254,7 @@ Its runnable source is preserved beside the audit.
 
 ## Reproduction
 
-Run from `/home/taly/legacy-ai-1080ti-port` on BigBoy. The original clean pinned
+Run from `/home/taly/abra-1080ti-port` on BigBoy. The original clean pinned
 checkout, CUDA/glibc overlay, canonical model and extracted NCCL package are
 required. Preserve/build the original runtime from starting project revision
 80040d2 before building the candidate; the recorded control source diff and

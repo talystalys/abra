@@ -15,8 +15,7 @@ for line in a.log.read_text().replace('\\n','\n').splitlines():
  fields=line.split(',')
  if len(fields)!=9: raise SystemExit('Unexpected profiling record')
  records.append(fields)
-# Repetition alone cannot identify decoding: two prompt norms per microbatch
-# can create eight records in a four-microbatch prefill. Use decode boundaries.
+
 starts=[i for i,fields in enumerate(records) if fields[1:7]==['norm-0','RMS_NORM','f32',str(a.hidden),'1','1'] and i+1<len(records) and records[i+1][1]=='Qcur-0']
 if len(starts)<a.steps: raise SystemExit('Not enough identifiable single-token decode steps')
 for fields in records[starts[-a.steps]:]:

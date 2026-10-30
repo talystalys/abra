@@ -28,10 +28,10 @@ def format_exp(val):
 def generate_report(summary, manifest, envelope):
     pascal = summary["pascal"]
     turing = summary["turing"]
-    
+
     host_info = manifest.get("observed_execution_environment", {}).get("host", {})
     toolchain_info = manifest.get("observed_execution_environment", {}).get("toolchain", {})
-    
+
     hostname = host_info.get("hostname", "BigBoy")
     os_name = host_info.get("os", "Debian GNU/Linux 13 (trixie)")
     kernel_ver = host_info.get("kernel", "Linux")
@@ -39,17 +39,16 @@ def generate_report(summary, manifest, envelope):
     ram_data = host_info.get("ram", {})
     ram_str = f"{ram_data.get('total_gib', 62.77)} GiB Total ({ram_data.get('total_kib', 65820952):,} KiB)" if isinstance(ram_data, dict) else str(ram_data)
     numa_nodes = host_info.get("numa_nodes_count", 2)
-    
+
     driver_ver = toolchain_info.get("nvidia_driver", "550.163.01")
     cuda_path = toolchain_info.get("cuda_toolkit_path", "/usr/local/cuda-12.9")
     nvcc_ver = toolchain_info.get("nvcc_version", "12.9.86")
     gcc_ver = toolchain_info.get("host_compiler", "gcc 14.2.0")
     glibc_ver = toolchain_info.get("glibc_version", "glibc 2.41")
-    
+
     pascal_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in pascal["shapes"]}
     turing_shapes = {s["shape_name"]: {v["variant_id"]: v for v in s["variants"]} for s in turing["shapes"]}
-    
-    # Key speedups on Pascal
+
     q_u = pascal_shapes["attn_q"][0]["median_us"]
     q_b = pascal_shapes["attn_q"][2]["median_us"]
     q_b_sp = pascal_shapes["attn_q"][2]["speedup_mode1_vs_upstream"]
@@ -159,7 +158,7 @@ Secondary Control Device (Turing):
 
 The canonical GGUF model `Qwen3-4B-Q4_K_M.gguf` was parsed via `tools/extract-qwen3-tensor-map.py` to establish the exact tensor structure in `bench/results/m3/qwen3-q4k-tensor-map.json`.
 
-- **Model File**: `/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf`
+- **Model File**: `/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf`
 - **SHA256**: `7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5`
 - **Total Tensors**: 398
 - **Tensor Breakdown by Type**:
@@ -368,10 +367,10 @@ python3 tools/check_m3_documentation_consistency.py .
 def generate_current_status(summary, manifest):
     pascal = summary["pascal"]
     turing = summary["turing"]
-    
+
     host_info = manifest.get("observed_execution_environment", {}).get("host", {})
     toolchain_info = manifest.get("observed_execution_environment", {}).get("toolchain", {})
-    
+
     hostname = host_info.get("hostname", "BigBoy")
     os_name = host_info.get("os", "Debian GNU/Linux 13 (trixie)")
     kernel_ver = host_info.get("kernel", "Linux")
@@ -379,7 +378,7 @@ def generate_current_status(summary, manifest):
     ram_data = host_info.get("ram", {})
     ram_str = f"{ram_data.get('total_gib', 62.77)} GiB Total ({ram_data.get('total_kib', 65820952):,} KiB)" if isinstance(ram_data, dict) else str(ram_data)
     numa_nodes = host_info.get("numa_nodes_count", 2)
-    
+
     driver_ver = toolchain_info.get("nvidia_driver", "550.163.01")
     cuda_path = toolchain_info.get("cuda_toolkit_path", "/usr/local/cuda-12.9")
     nvcc_ver = toolchain_info.get("nvcc_version", "12.9.86")
@@ -529,27 +528,27 @@ def main():
     script_dir = os.path.dirname(os.path.abspath(__file__))
     repo_dir = os.path.dirname(script_dir)
     results_dir = os.path.join(repo_dir, "bench", "results", "m3")
-    
+
     summary_path = os.path.join(results_dir, "analysis-m3-summary.json")
     manifest_path = os.path.join(results_dir, "manifest.json")
     envelope_path = os.path.join(results_dir, "numerical-envelope.json")
-    
+
     summary = json.load(open(summary_path))
     manifest = json.load(open(manifest_path))
     envelope = json.load(open(envelope_path))
-    
+
     report_file = os.path.join(repo_dir, "docs", "reports", "m3-q4k-q8-microkernel.md")
     status_file = os.path.join(repo_dir, "CURRENT_STATUS.md")
     milestones_file = os.path.join(repo_dir, "MILESTONES.md")
-    
+
     with open(report_file, "w", encoding="utf-8") as f:
         f.write(generate_report(summary, manifest, envelope))
     print(f"Updated: {report_file}")
-    
+
     with open(status_file, "w", encoding="utf-8") as f:
         f.write(generate_current_status(summary, manifest))
     print(f"Updated: {status_file}")
-    
+
     with open(milestones_file, "w", encoding="utf-8") as f:
         f.write(generate_milestones(summary))
     print(f"Updated: {milestones_file}")

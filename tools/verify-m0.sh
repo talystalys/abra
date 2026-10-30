@@ -9,7 +9,6 @@ CUDA_ROOT="${CUDA_ROOT:-/usr/local/cuda-12.9}"
 NVCC="${CUDA_ROOT}/bin/nvcc"
 CUOBJDUMP="${CUDA_ROOT}/bin/cuobjdump"
 
-# Pinned Hardware Identities
 PASCAL_UUID="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"
 PASCAL_PCI="0000:03:00.0"
 PASCAL_NAME="GeForce GTX 1060 6GB"
@@ -29,18 +28,15 @@ echo
 
 mkdir -p "${EVIDENCE_DIR}"
 
-# Step 1: Collect Live Hardware & Toolchain Inventory
 echo "--- Step 1: Collecting Live Environment Inventory ---"
 "${REPO_ROOT}/tools/collect-hardware.sh" > "${EVIDENCE_DIR}/hardware-inventory-raw.txt" 2>&1
 echo "Saved raw hardware inventory to: docs/evidence/hardware-inventory-raw.txt"
 echo
 
-# Step 2: Establish CUDA compatibility overlay via canonical patch
 echo "--- Step 2: Applying Canonical CUDA Compatibility Patch ---"
 "${REPO_ROOT}/tools/setup-cuda-compat.sh"
 echo
 
-# Step 3: Clean Configure & Build
 echo "--- Step 3: Clean Configure and Build (sm_61 + sm_75) ---"
 rm -rf "${BUILD_DIR}"
 mkdir -p "${BUILD_DIR}"
@@ -53,7 +49,6 @@ cmake --build "${BUILD_DIR}" --parallel
 echo "Build completed successfully."
 echo
 
-# Step 4: Inspect Binary Architectures with cuobjdump
 echo "--- Step 4: Inspecting Generated Binary Architectures ---"
 SM61_ARTIFACT_VERIFIED="NO"
 SM75_ARTIFACT_VERIFIED="NO"
@@ -78,12 +73,10 @@ else
 fi
 echo
 
-# Step 5: Enumerate Hardware Devices
 echo "--- Step 5: Enumerating Visible CUDA Devices ---"
 "${BUILD_DIR}/list_cuda_devices"
 echo
 
-# Step 6: Execute Correctness Suite on GTX 1060 (Pascal SM 6.1) by immutable identity
 echo "--- Step 6: Pascal Correctness Qualification (Pinned: ${PASCAL_UUID} / ${PASCAL_PCI}) ---"
 PASCAL_DETECTED="NO"
 PASCAL_CC_VERIFIED="NO"
@@ -105,7 +98,6 @@ else
 fi
 echo
 
-# Step 7: Execute Correctness Suite on GTX 1660 SUPER (Turing SM 7.5 Control) by immutable identity
 echo "--- Step 7: Turing Control Correctness (Pinned: ${TURING_UUID} / ${TURING_PCI}) ---"
 TURING_DETECTED="NO"
 TURING_CC_VERIFIED="NO"
@@ -127,7 +119,6 @@ else
 fi
 echo
 
-# Step 8: Benchmark Timing Harness Validation on Pascal GPU
 echo "--- Step 8: Timing Harness Infrastructure Smoke Validation on Pascal GPU ---"
 "${BUILD_DIR}/timer_smoke" \
     --uuid "${PASCAL_UUID}" \
@@ -139,7 +130,6 @@ echo "--- Step 8: Timing Harness Infrastructure Smoke Validation on Pascal GPU -
     --warmup 5
 echo
 
-# Final Evaluation
 M0_STATUS="FAIL"
 if [[ "${PASCAL_DETECTED}" == "YES" && \
       "${PASCAL_CC_VERIFIED}" == "YES" && \

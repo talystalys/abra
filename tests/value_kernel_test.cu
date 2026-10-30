@@ -3,7 +3,7 @@
 #include <atomic>
 #include <cstdlib>
 #include <cstring>
-#include "kernels/q4k/legacy-ai-attention.cuh"
+#include "kernels/q4k/abra-attention.cuh"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -56,7 +56,7 @@ int main() {
         const int warps = K == 256 ? 4 : 8;
         for (int rows : {2, 4}) {
             const dim3 grid(128 / rows, 32), block(32, rows * warps);
-            #define TEST_VALUE(R, W) legacy_ai_attention_value<R, W><<<grid, block>>>(dw, dx, dy, K, row_stride, head_stride, K, 128)
+            #define TEST_VALUE(R, W) abra_attention_value<R, W><<<grid, block>>>(dw, dx, dy, K, row_stride, head_stride, K, 128)
             if (rows == 2 && warps == 4) { TEST_VALUE(2, 4); }
             else if (rows == 2) { TEST_VALUE(2, 8); }
             else if (warps == 4) { TEST_VALUE(4, 4); }

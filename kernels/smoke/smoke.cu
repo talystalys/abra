@@ -5,7 +5,7 @@
 #include <algorithm>
 #include <cstring>
 
-namespace legacy_ai {
+namespace abra {
 
 __global__ void smoke_vector_kernel(const int32_t * __restrict__ a,
                                     const int32_t * __restrict__ b,
@@ -149,22 +149,18 @@ int find_device_by_spec(const std::string &spec) {
         return -1;
     }
 
-    // Check if numeric index
     char *endptr = nullptr;
     long idx = strtol(spec.c_str(), &endptr, 10);
     if (*endptr == '\0' && idx >= 0 && idx < static_cast<long>(devs.size())) {
         return static_cast<int>(idx);
     }
 
-    // UUID match
     int by_uuid = find_device_by_uuid(spec);
     if (by_uuid >= 0) return by_uuid;
 
-    // PCI match
     int by_pci = find_device_by_pci(spec);
     if (by_pci >= 0) return by_pci;
 
-    // Check target arch strings
     if (spec == "sm_61" || spec == "6.1" || spec == "pascal" || spec == "Pascal") {
         for (const auto &d : devs) {
             if (d.cc_major == 6 && d.cc_minor == 1) return d.index;
@@ -176,7 +172,6 @@ int find_device_by_spec(const std::string &spec) {
         }
     }
 
-    // Substring match on name
     for (const auto &d : devs) {
         if (d.name.find(spec) != std::string::npos) {
             return d.index;
@@ -270,4 +265,4 @@ SmokeTestResult execute_smoke_test(int device_index, size_t n, int block_size) {
     return res;
 }
 
-} // namespace legacy_ai
+}

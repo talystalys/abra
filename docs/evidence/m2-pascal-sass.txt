@@ -16,7 +16,7 @@ host = linux
 compile_size = 64bit
 
 	code for sm_61
-		Function : _ZN9legacy_ai4dp4a23gemv_dp4a_shared_kernelEPKaS2_Piii
+		Function : _ZN9abra4dp4a23gemv_dp4a_shared_kernelEPKaS2_Piii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                                  /* 0x001c5800fe0007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                                        /* 0x4c98078000870001 */
@@ -2021,7 +2021,7 @@ compile_size = 64bit
 		..........
 
 
-		Function : _ZN9legacy_ai4dp4a20gemv_dp4a_opt_kernelEPKaS2_Piii
+		Function : _ZN9abra4dp4a20gemv_dp4a_opt_kernelEPKaS2_Piii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                                  /* 0x001cfc00e22007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                                        /* 0x4c98078000870001 */
@@ -3618,7 +3618,7 @@ compile_size = 64bit
 		..........
 
 
-		Function : _ZN9legacy_ai4dp4a22gemv_dp4a_basic_kernelEPKaS2_Piii
+		Function : _ZN9abra4dp4a22gemv_dp4a_basic_kernelEPKaS2_Piii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                                  /* 0x001cfc00e22007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                                        /* 0x4c98078000870001 */
@@ -4543,7 +4543,7 @@ compile_size = 64bit
 		..........
 
 
-		Function : _ZN9legacy_ai4dp4a18gemv_scalar_kernelEPKaS2_Piii
+		Function : _ZN9abra4dp4a18gemv_scalar_kernelEPKaS2_Piii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                                  /* 0x001cfc00e22007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                                        /* 0x4c98078000870001 */

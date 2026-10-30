@@ -6,7 +6,7 @@
 #include <numeric>
 #include <cmath>
 
-using namespace legacy_ai;
+using namespace abra;
 
 int main(int argc, char **argv) {
     std::string target_spec = "";
@@ -17,7 +17,7 @@ int main(int argc, char **argv) {
     std::string assert_uuid = "";
     int iterations = 50;
     int warmup_iterations = 10;
-    size_t n = 1048576; // 1M elements
+    size_t n = 1048576;
     int block_size = 256;
 
     for (int i = 1; i < argc; ++i) {
@@ -85,7 +85,6 @@ int main(int argc, char **argv) {
     CUDA_CHECK(cudaSetDevice(dev_idx));
     GpuDevice dev = get_device_info(dev_idx);
 
-    // Verify assertions if specified
     std::string identity_err;
     if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
         std::cerr << "BLOCKER: Physical GPU assertion failure on device " << dev.index << ":\n" << identity_err;
@@ -106,7 +105,6 @@ int main(int argc, char **argv) {
     std::cout << "Measured Iterations: " << iterations << "\n";
     std::cout << "============================================================\n\n";
 
-    // Allocate host and device memory
     std::vector<int32_t> h_a(n), h_b(n), h_c(n);
     generate_deterministic_inputs(h_a.data(), h_b.data(), n);
 
@@ -119,12 +117,10 @@ int main(int argc, char **argv) {
     CUDA_CHECK(cudaMemcpy(d_a, h_a.data(), bytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemcpy(d_b, h_b.data(), bytes, cudaMemcpyHostToDevice));
 
-    // CUDA Events for timing
     cudaEvent_t ev_start, ev_stop;
     CUDA_CHECK(cudaEventCreate(&ev_start));
     CUDA_CHECK(cudaEventCreate(&ev_stop));
 
-    // Warm-up phase
     if (warmup_iterations > 0) {
         std::cout << "Executing " << warmup_iterations << " warm-up iterations...\n";
         for (int i = 0; i < warmup_iterations; ++i) {
@@ -134,7 +130,6 @@ int main(int argc, char **argv) {
         std::cout << "Warm-up completed.\n\n";
     }
 
-    // Measurement phase
     std::vector<float> raw_times_ms;
     raw_times_ms.reserve(iterations);
 
@@ -150,7 +145,6 @@ int main(int argc, char **argv) {
         raw_times_ms.push_back(ms);
     }
 
-    // Copy back and verify correctness
     CUDA_CHECK(cudaMemcpy(h_c.data(), d_c, bytes, cudaMemcpyDeviceToHost));
     size_t mismatches = 0;
     for (size_t i = 0; i < n; ++i) {
@@ -159,13 +153,11 @@ int main(int argc, char **argv) {
         }
     }
 
-    // Statistical summary
     std::vector<float> sorted_times = raw_times_ms;
     std::sort(sorted_times.begin(), sorted_times.end());
     float min_time = sorted_times.front();
     float max_time = sorted_times.back();
-    
-    // Conventional median calculation
+
     size_t num_samples = sorted_times.size();
     float median_time = 0.0f;
     if (num_samples % 2 == 1) {
@@ -204,7 +196,6 @@ int main(int argc, char **argv) {
     std::cout << "HARNESS VALIDATION COMPLETE — " << (mismatches == 0 ? "SUCCESS" : "FAIL") << "\n";
     std::cout << "============================================================\n";
 
-    // Clean up
     CUDA_CHECK(cudaEventDestroy(ev_start));
     CUDA_CHECK(cudaEventDestroy(ev_stop));
     CUDA_CHECK(cudaFree(d_a));

@@ -3,7 +3,7 @@
 This round implements and measures further acceleration beyond the first
 port's single-GPU Flash Attention configuration. Work remains on branch
 `port/1080ti-runtime` and the isolated BigBoy checkout
-`/home/taly/legacy-ai-1080ti-port`. The original research checkouts are preserved.
+`/home/taly/abra-1080ti-port`. The original research checkouts are preserved.
 
 ## Hardware and fixed conditions
 

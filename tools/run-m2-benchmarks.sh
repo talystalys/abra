@@ -43,9 +43,6 @@ cleanup_all() {
 }
 trap cleanup_all EXIT INT TERM
 
-# =============================================================================
-# 1. Benchmark on Primary GPU: Pascal GTX 1060 (CC 6.1, NUMA 0)
-# =============================================================================
 echo "======================================================================"
 echo "Starting Canonical M2 Microbenchmark on Pascal GTX 1060 (NUMA node 0)"
 echo "======================================================================"
@@ -59,9 +56,6 @@ cleanup_process "${TEL_PID_PASCAL}"
 TEL_PID_PASCAL=""
 echo "Completed Pascal benchmark. Output saved to ${PASCAL_JSON}"
 
-# =============================================================================
-# 2. Benchmark on Control GPU: Turing GTX 1660 SUPER (CC 7.5, NUMA 1)
-# =============================================================================
 echo "======================================================================"
 echo "Starting Canonical M2 Microbenchmark on Turing GTX 1660 SUPER (NUMA node 1)"
 echo "======================================================================"
@@ -69,11 +63,9 @@ TURING_JSON="${RESULTS_DIR}/turing-dp4a-bench.json"
 TURING_CSV="${RESULTS_DIR}/turing-telemetry.csv"
 
 TEL_PID_TURING=$(start_telemetry "${TURING_UUID}" "${TURING_CSV}")
-# Run canonical benchmark
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" numactl --cpunodebind=1 --membind=1 \
     "${BUILD_DIR}/dp4a_bench" "${TURING_JSON}" 10 100 --arch turing
 
-# If runtime was brief, run a short repeated envelope so telemetry has representative samples
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" numactl --cpunodebind=1 --membind=1 \
     "${BUILD_DIR}/dp4a_bench" "" 10 100 --arch turing > /dev/null 2>&1 || true
 
@@ -81,9 +73,6 @@ cleanup_process "${TEL_PID_TURING}"
 TEL_PID_TURING=""
 echo "Completed Turing benchmark. Output saved to ${TURING_JSON}"
 
-# =============================================================================
-# 3. Analyze Results & Generate Live Manifest
-# =============================================================================
 echo "======================================================================"
 echo "Analyzing benchmark results and generating live M2 manifest"
 echo "======================================================================"

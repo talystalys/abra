@@ -11,7 +11,7 @@ Loading model... |-\|/-\|/-\|/-\|/-\|/- 
                                     ▀▀    ▀▀
 
 build      : b10489-169e4a7ff
-model      : /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf
+model      : /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf
 ftype      : Q4_K - Medium
 modalities : text
 

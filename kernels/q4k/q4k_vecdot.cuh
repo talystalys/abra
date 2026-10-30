@@ -4,7 +4,6 @@
 #include <cuda_fp16.h>
 #include <cstdint>
 
-// Native DP4A hardware SIMD dot product primitive for Pascal SM 6.1+
 static __device__ __forceinline__ int ggml_cuda_dp4a(int a, int b, int c) {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 610
     return __dp4a(a, b, c);
@@ -33,11 +32,11 @@ static __device__ __forceinline__ float vec_dot_q4_K_q8_1_impl_vmmq(
         const int v0i = (v[0] >> (4*i)) & 0x0F0F0F0F;
         const int v1i = (v[1] >> (4*i)) & 0x0F0F0F0F;
 
-        const int dot1 = ggml_cuda_dp4a(v1i, u[2*i+1], ggml_cuda_dp4a(v0i, u[2*i+0], 0)); // SIMD dot product
-        const int dot2 = ggml_cuda_dp4a(0x01010101, u[2*i+1], ggml_cuda_dp4a(0x01010101, u[2*i+0], 0)); // sum of u
+        const int dot1 = ggml_cuda_dp4a(v1i, u[2*i+1], ggml_cuda_dp4a(v0i, u[2*i+0], 0));
+        const int dot2 = ggml_cuda_dp4a(0x01010101, u[2*i+1], ggml_cuda_dp4a(0x01010101, u[2*i+0], 0));
 
         sumf_d += d8[i] * (dot1 * sc[i]);
-        sumf_m += d8[i] * (dot2 * m[i]);  // multiply constant part of q4_K with sum of q8_1 values
+        sumf_m += d8[i] * (dot2 * m[i]);
     }
 
     const float2 dm4f = __half22float2(dm4);

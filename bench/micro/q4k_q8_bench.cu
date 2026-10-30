@@ -66,7 +66,6 @@ static inline void get_scale_min_k4(int j, const uint8_t * q, uint8_t * d, uint8
     }
 }
 
-// Independent Reference: High-precision double oracle directly from quantized blocks
 void independent_q4k_q8_oracle_f64(
     const block_q4_K * w_q4,
     const block_q8_1 * x_q8,
@@ -124,7 +123,7 @@ void independent_q4k_q8_oracle_f64(
 
 int main(int argc, char ** argv) {
     std::string arch_type = "pascal";
-    std::string bench_mode = "m4-final"; // "m3", "autotune", "m4-final", "custom"
+    std::string bench_mode = "m4-final";
     std::string output_json_path = "";
     std::string assert_name = "";
     std::string assert_cc = "";
@@ -178,9 +177,9 @@ int main(int argc, char ** argv) {
 
     int dev_id = 0;
     cudaGetDevice(&dev_id);
-    legacy_ai::GpuDevice dev = legacy_ai::get_device_info(dev_id);
+    abra::GpuDevice dev = abra::get_device_info(dev_id);
     std::string err_msg;
-    if (!legacy_ai::verify_device_identity(dev, assert_name, cc_major, cc_minor, assert_pci, assert_uuid, err_msg)) {
+    if (!abra::verify_device_identity(dev, assert_name, cc_major, cc_minor, assert_pci, assert_uuid, err_msg)) {
         std::cerr << "CRITICAL ERROR: In-binary GPU physical identity assertion FAILED:\n  "
                   << err_msg << "\nAborting execution." << std::endl;
         return 2;
@@ -214,7 +213,7 @@ int main(int argc, char ** argv) {
             {"synth_4096", 4096, 4096, "synthetic", 0}
         };
     } else {
-        // M4 canonical and guardrail workload shapes
+
         shapes = {
             {"attn_q", 4096, 2560, "canonical_q4k_workload", 36},
             {"attn_kv", 1024, 2560, "canonical_q4k_workload", 54},
@@ -242,14 +241,14 @@ int main(int argc, char ** argv) {
     } else if (bench_mode == "m4-final") {
         candidates_to_bench = {
             CANDIDATE_UPSTREAM_MMVQ,
-            CANDIDATE_WPR4_WPB4,     // M3 Variant A
-            CANDIDATE_WPR2_WPB4,     // M3 Variant B
-            CANDIDATE_WPR1_WPB4,     // M3 Variant C
+            CANDIDATE_WPR4_WPB4,
+            CANDIDATE_WPR2_WPB4,
+            CANDIDATE_WPR1_WPB4,
             CANDIDATE_WPR1_WPB8,
             CANDIDATE_WPR2_WPB8,
             CANDIDATE_WPR1_WPB4_U2,
             CANDIDATE_WPR2_WPB4_U2,
-            CANDIDATE_AUTOTUNED_DISPATCH // M4 dynamic shape-aware autotuned selector
+            CANDIDATE_AUTOTUNED_DISPATCH
         };
     }
 
@@ -261,7 +260,6 @@ int main(int argc, char ** argv) {
     json_results << "[\n";
     bool first_json_entry = true;
 
-    // Track winning candidates for each shape
     std::map<std::string, std::pair<Q4KCandidateID, double>> shape_winners;
     std::map<std::string, double> shape_upstream_meds;
 
@@ -308,12 +306,10 @@ int main(int argc, char ** argv) {
 
         independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), s.N, s.K);
 
-        // Run Upstream MMVQ baseline reference
         cudaMemset(d_y, 0, s.N * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
         cudaMemcpy(h_y_upstream.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
 
-        // Quantize-only benchmark
         std::vector<float> quantize_only_lats(timed_iters);
         for (int w = 0; w < warmup_iters; ++w) {
             launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, s.K, 0);
@@ -340,7 +336,7 @@ int main(int argc, char ** argv) {
         Q4KCandidateID best_cand_id = CANDIDATE_UPSTREAM_MMVQ;
 
         for (auto cand : candidates_to_bench) {
-            // Warmup
+
             for (int w = 0; w < warmup_iters; ++w) {
                 launch_q4k_candidate(cand, d_w_q4, d_x_q8, d_y, s.N, s.K, 0);
             }
@@ -369,7 +365,6 @@ int main(int argc, char ** argv) {
                 shape_upstream_meds[s.shape_name] = mul_stats.median_us;
             }
 
-            // Verify correctness
             cudaMemcpy(h_y_check.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
 
             double max_abs_vs_oracle = 0.0;
@@ -397,7 +392,6 @@ int main(int argc, char ** argv) {
 
             bool is_verified = (!has_nan && !has_inf && (max_rel_vs_oracle <= 5e-3 || max_abs_vs_oracle <= 0.05));
 
-            // Combined pipeline timing
             for (int w = 0; w < warmup_iters; ++w) {
                 launch_q4k_candidate_combined_pipeline(cand, d_w_q4, d_x_f32, d_x_q8, d_y, s.N, s.K, 0);
             }
@@ -439,7 +433,7 @@ int main(int argc, char ** argv) {
             json_results << "      \"classification\": \"" << s.classification << "\",\n";
             json_results << "      \"occurrence_count\": " << s.occurrence_count << ",\n";
             json_results << "      \"candidate_id\": " << (int)cand << ",\n";
-            json_results << "      \"variant_id\": " << (int)cand << ",\n"; // Backwards compatibility with M3
+            json_results << "      \"variant_id\": " << (int)cand << ",\n";
             json_results << "      \"variant_name\": \"" << get_candidate_name(cand) << "\",\n";
             json_results << "      \"median_us\": " << mul_stats.median_us << ",\n";
             json_results << "      \"mean_us\": " << mul_stats.mean_us << ",\n";

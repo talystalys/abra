@@ -68,14 +68,13 @@ def main():
 
     action = sys.argv[1] if len(sys.argv) > 1 else "all"
 
-    # Step 1: Coarse Autotuning Search on Pascal GTX 1060
     if action in ("all", "autotune", "pascal-autotune"):
         print("======================================================================")
         print("PHASE 1: Coarse Autotuning Search on Pascal GTX 1060 (All Candidates)")
         print("======================================================================")
         raw_json = os.path.join(results_dir, "pascal-autotune-raw.json")
         telem_csv = os.path.join(results_dir, "pascal-telemetry-autotune.csv")
-        
+
         env = os.environ.copy()
         env["CUDA_VISIBLE_DEVICES"] = PASCAL_UUID
 
@@ -97,14 +96,12 @@ def main():
         finally:
             stop_telemetry(t_proc, t_file)
 
-    # Step 2: Winner Selection & Tuning Table Synthesis
     if action in ("all", "autotune", "select", "table"):
         print("======================================================================")
         print("PHASE 2: Winner Selection & Deterministic Tuning Table Synthesis")
         print("======================================================================")
         synthesize_tuning_table(results_dir)
 
-    # Step 3: Qualification Final Benchmarking on Pascal GTX 1060 (100 samples)
     if action in ("all", "final", "pascal-final"):
         print("======================================================================")
         print("PHASE 3: Final Qualification Benchmarking on Pascal GTX 1060 (100 Samples)")
@@ -133,7 +130,6 @@ def main():
         finally:
             stop_telemetry(t_proc, t_file)
 
-    # Step 4: Control Benchmarking on Turing GTX 1660 SUPER (100 samples)
     if action in ("all", "final", "turing-final", "control"):
         print("======================================================================")
         print("PHASE 4: Control Benchmarking on Turing GTX 1660 SUPER (100 Samples)")
@@ -162,7 +158,6 @@ def main():
         finally:
             stop_telemetry(t_proc, t_file)
 
-    # Step 5: Statistical Analysis & Aggregation Summary
     if action in ("all", "analyze", "summary"):
         print("======================================================================")
         print("PHASE 5: Statistical Analysis & Model-Weighted Aggregate Synthesis")
@@ -179,7 +174,6 @@ def synthesize_tuning_table(results_dir):
     with open(raw_path, "r") as f:
         data = json.load(f)
 
-    # Group by shape
     by_shape = {}
     for r in data.get("results", []):
         s = r["shape_name"]
@@ -194,23 +188,18 @@ def synthesize_tuning_table(results_dir):
     for s, runs in by_shape.items():
         n = runs[0]["N"]
         k = runs[0]["K"]
-        
-        # Upstream median
+
         u_run = next((r for r in runs if r["candidate_id"] == 0), None)
         u_med = u_run["median_us"] if u_run else 1.0
 
-        # Exclude upstream from candidate winners
         custom_runs = [r for r in runs if r["candidate_id"] != 0 and r["candidate_id"] != 999]
-        
-        # Sort by median latency ascending
+
         custom_runs.sort(key=lambda r: r["median_us"])
-        
-        # Pick winner (if top candidates are within 0.5% noise tie, prefer lower WPR / zero smem)
+
         best = custom_runs[0]
         threshold = best["median_us"] * 1.005
         tied = [r for r in custom_runs if r["median_us"] <= threshold]
-        
-        # Tie-breaking priority: 1) zero shared memory (WPR=1), 2) lower warps/block
+
         tied.sort(key=lambda r: (
             0 if "WPR1" in r["variant_name"] else (1 if "WPR2" in r["variant_name"] else 2),
             r["candidate_id"]

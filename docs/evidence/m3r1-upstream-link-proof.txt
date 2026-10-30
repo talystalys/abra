@@ -1,10 +1,10 @@
 === Pinned ggml-cuda Binary Link Proof ===
-Target Binary: /home/taly/legacy-ai/build/q4k_q8_bench
+Target Binary: /home/taly/abra/build/q4k_q8_bench
 Date: Wed Aug 19 05:33:35 PM UTC 2026
 
 --- Dynamic Library Linkage (ldd) ---
-	libggml-cuda.so.0 => /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-cuda.so.0 (0x00007f84da000000)
-	libggml-base.so.0 => /home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/libggml-base.so.0 (0x00007f84de7c7000)
+	libggml-cuda.so.0 => /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-cuda.so.0 (0x00007f84da000000)
+	libggml-base.so.0 => /home/taly/abra/.deps/llama.cpp/build-default/bin/libggml-base.so.0 (0x00007f84de7c7000)
 	libcudart.so.12 => /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcudart.so.12 (0x00007f84d9600000)
 	libcublas.so.12 => /usr/local/cuda-12.9/targets/x86_64-linux/lib/libcublas.so.12 (0x00007f84d2e00000)
 	libcuda.so.1 => /lib/x86_64-linux-gnu/libcuda.so.1 (0x00007f84d1200000)

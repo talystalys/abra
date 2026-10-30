@@ -5,7 +5,6 @@
 #include <stdexcept>
 #include <cuda_fp16.h>
 
-// Pinned upstream vec_dot primitives from vecdotq.cuh
 static __device__ __forceinline__ int ggml_cuda_dp4a(int a, int b, int c) {
 #if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 610
     return __dp4a(a, b, c);
@@ -34,11 +33,11 @@ static __device__ __forceinline__ float vec_dot_q4_K_q8_1_impl_vmmq(
         const int v0i = (v[0] >> (4*i)) & 0x0F0F0F0F;
         const int v1i = (v[1] >> (4*i)) & 0x0F0F0F0F;
 
-        const int dot1 = ggml_cuda_dp4a(v1i, u[2*i+1], ggml_cuda_dp4a(v0i, u[2*i+0], 0)); // SIMD dot product
-        const int dot2 = ggml_cuda_dp4a(0x01010101, u[2*i+1], ggml_cuda_dp4a(0x01010101, u[2*i+0], 0)); // sum of u
+        const int dot1 = ggml_cuda_dp4a(v1i, u[2*i+1], ggml_cuda_dp4a(v0i, u[2*i+0], 0));
+        const int dot2 = ggml_cuda_dp4a(0x01010101, u[2*i+1], ggml_cuda_dp4a(0x01010101, u[2*i+0], 0));
 
         sumf_d += d8[i] * (dot1 * sc[i]);
-        sumf_m += d8[i] * (dot2 * m[i]);  // multiply constant part of q4_K with sum of q8_1 values
+        sumf_m += d8[i] * (dot2 * m[i]);
     }
 
     const float2 dm4f = __half22float2(dm4);
@@ -89,10 +88,6 @@ static __device__ __forceinline__ float vec_dot_q4_K_q8_1(
     return vec_dot_q4_K_q8_1_impl_vmmq(v, u, sc, m, dm, d8);
 }
 
-// =============================================================================
-// Variant A — Custom 4-Warp Control Kernel (Frozen Source)
-// (128 threads/block = 4 warps/row, 1 output row per block)
-// =============================================================================
 __global__ void q4k_q8_mmvq_4warp_kernel(
     const block_q4_K * __restrict__ d_w,
     const block_q8_1 * __restrict__ d_x,
@@ -108,7 +103,7 @@ __global__ void q4k_q8_mmvq_4warp_kernel(
     const int tid = warp_id * 32 + lane;
 
     const int blocks_per_row = K / QK_K;
-    const int blocks_per_iter = 4 * 2; // 4 warps * 2 blocks/iter = 8
+    const int blocks_per_iter = 4 * 2;
     const int kbx_start = tid / 16;
     const int kqs = 2 * (lane % 16);
 
@@ -116,11 +111,10 @@ __global__ void q4k_q8_mmvq_4warp_kernel(
 
     float sum = 0.0f;
     for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
-        const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+        const int kby = kbx * (QK_K / QK8_1);
         sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
     }
 
-    // Warp-level shuffle reduction
 #pragma unroll
     for (int mask = 16; mask > 0; mask >>= 1) {
         sum += __shfl_xor_sync(0xffffffff, sum, mask, 32);
@@ -144,10 +138,6 @@ __global__ void q4k_q8_mmvq_4warp_kernel(
     }
 }
 
-// =============================================================================
-// Variant B — Custom 2-Warp per Row Kernel (Frozen Source)
-// (128 threads/block = 2 independent 2-warp groups = 2 output rows per block)
-// =============================================================================
 __global__ void q4k_q8_mmvq_2warp_kernel(
     const block_q4_K * __restrict__ d_w,
     const block_q8_1 * __restrict__ d_x,
@@ -157,15 +147,15 @@ __global__ void q4k_q8_mmvq_2warp_kernel(
 ) {
     const int lane = threadIdx.x;
     const int warp_id = threadIdx.y;
-    const int group_id = warp_id / 2;       // 0 or 1
-    const int warp_in_group = warp_id % 2;  // 0 or 1
+    const int group_id = warp_id / 2;
+    const int warp_in_group = warp_id % 2;
 
     const int row = blockIdx.x * 2 + group_id;
     if (row >= N) return;
 
     const int tid_in_group = warp_in_group * 32 + lane;
     const int blocks_per_row = K / QK_K;
-    const int blocks_per_iter = 2 * 2; // 2 warps * 2 blocks/iter = 4
+    const int blocks_per_iter = 2 * 2;
     const int kbx_start = tid_in_group / 16;
     const int kqs = 2 * (lane % 16);
 
@@ -173,11 +163,10 @@ __global__ void q4k_q8_mmvq_2warp_kernel(
 
     float sum = 0.0f;
     for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
-        const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+        const int kby = kbx * (QK_K / QK8_1);
         sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
     }
 
-    // Warp-level shuffle reduction
 #pragma unroll
     for (int mask = 16; mask > 0; mask >>= 1) {
         sum += __shfl_xor_sync(0xffffffff, sum, mask, 32);
@@ -195,10 +184,6 @@ __global__ void q4k_q8_mmvq_2warp_kernel(
     }
 }
 
-// =============================================================================
-// Variant C — Custom 1-Warp per Row Kernel (Frozen Source)
-// (128 threads/block = 4 independent warps = 4 output rows per block, zero smem)
-// =============================================================================
 __global__ void q4k_q8_mmvq_1warp_kernel(
     const block_q4_K * __restrict__ d_w,
     const block_q8_1 * __restrict__ d_x,
@@ -213,7 +198,7 @@ __global__ void q4k_q8_mmvq_1warp_kernel(
     if (row >= N) return;
 
     const int blocks_per_row = K / QK_K;
-    const int blocks_per_iter = 1 * 2; // 1 warp * 2 blocks/iter = 2
+    const int blocks_per_iter = 1 * 2;
     const int kbx_start = lane / 16;
     const int kqs = 2 * (lane % 16);
 
@@ -221,11 +206,10 @@ __global__ void q4k_q8_mmvq_1warp_kernel(
 
     float sum = 0.0f;
     for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
-        const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+        const int kby = kbx * (QK_K / QK8_1);
         sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
     }
 
-    // Intra-warp shuffle reduction ONLY (zero shared memory, zero __syncthreads)
 #pragma unroll
     for (int mask = 16; mask > 0; mask >>= 1) {
         sum += __shfl_xor_sync(0xffffffff, sum, mask, 32);
@@ -236,10 +220,6 @@ __global__ void q4k_q8_mmvq_1warp_kernel(
     }
 }
 
-// =============================================================================
-// Standalone Custom Reference Activation Quantizer
-// (Retained for development/smoke checks only, NOT used for canonical Mode 2)
-// =============================================================================
 __global__ void CUSTOM_REFERENCE_Q8_1_QUANTIZER(
     const float * __restrict__ x,
     block_q8_1 * __restrict__ y,
@@ -289,7 +269,7 @@ void launch_q4k_q8_mmvq(
 
     switch (variant) {
         case VARIANT_UPSTREAM_MMVQ: {
-            // Invokes actual compiled pinned llama.cpp MMVQ in libggml-cuda.so
+
             launch_pinned_upstream_mmvq(
                 (const void *)d_w,
                 (const void *)d_x,
@@ -332,7 +312,7 @@ void launch_quantize_f32_to_q8_1(
     if (K % QK8_1 != 0) {
         throw std::invalid_argument("K must be a multiple of QK8_1=32");
     }
-    // Invokes actual compiled pinned llama.cpp CUDA quantizer in libggml-cuda.so
+
     launch_pinned_upstream_q8_1_quantize(d_x_f32, (void *)d_x_q8, K, stream);
 }
 
@@ -362,7 +342,7 @@ void launch_q4k_q8_combined_pipeline(
     int K,
     cudaStream_t stream
 ) {
-    // Canonical Mode 2 pipeline: Exact pinned CUDA activation quantization + selected multiply
+
     launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8_scratch, K, stream);
     launch_q4k_q8_mmvq(variant, d_w, d_x_q8_scratch, d_y, N, K, stream);
 }

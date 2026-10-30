@@ -1,6 +1,6 @@
 Local capture UTC: 2026-10-11T16:02:03.797429+00:00
 
-Command: git -C /home/taly/legacy-ai status --short
+Command: git -C /home/taly/abra status --short
  M CURRENT_STATUS.md
 ?? bench/results/research-2026-09-05/
 ?? docs/research/
@@ -10,7 +10,7 @@ Command: git -C /home/taly/legacy-ai status --short
 
 Exit code: 0
 
-Command: git -C /home/taly/legacy-ai branch -vv
+Command: git -C /home/taly/abra branch -vv
   m0/reproducible-baseline   a2e207f [origin/m0/reproducible-baseline] m0: harden reproducibility and device qualification
   m1/existing-baseline       3ef60d1 [origin/m1/existing-baseline] m1: harden baseline provenance and interpretation
   m2/dp4a-microkernel        f10ead5 [origin/m2/dp4a-microkernel] m2: finalize canonical provenance validation
@@ -20,19 +20,19 @@ Command: git -C /home/taly/legacy-ai branch -vv
 
 Exit code: 0
 
-Command: git -C /home/taly/legacy-ai rev-parse HEAD
+Command: git -C /home/taly/abra rev-parse HEAD
 815e3ff338b72e31c4a2ace6815776762469c3f3
 
 
 Exit code: 0
 
-Command: gh api repos/talystalys/legacy-ai --jq {full_name,html_url,default_branch,pushed_at}
-{"default_branch":"m0/reproducible-baseline","full_name":"talystalys/legacy-ai","html_url":"https://github.com/talystalys/legacy-ai","pushed_at":"2026-08-19T17:35:49Z"}
+Command: gh api repos/talystalys/abra --jq {full_name,html_url,default_branch,pushed_at}
+{"default_branch":"m0/reproducible-baseline","full_name":"talystalys/abra","html_url":"https://github.com/talystalys/abra","pushed_at":"2026-08-19T17:35:49Z"}
 
 
 Exit code: 0
 
-Command: gh api repos/talystalys/legacy-ai/branches --jq .[] | {name,sha:.commit.sha}
+Command: gh api repos/talystalys/abra/branches --jq .[] | {name,sha:.commit.sha}
 {"name":"m0/reproducible-baseline","sha":"a2e207f0b2dfaa8ac40f3a1d638e0aef5524d4f2"}
 {"name":"m1/existing-baseline","sha":"3ef60d1f11ba6d9e867b6108dad33d0c96d2195f"}
 {"name":"m2/dp4a-microkernel","sha":"f10ead5fa94925e0a36980b1f3bdaa4a6998aa84"}

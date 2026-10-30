@@ -4,26 +4,26 @@
 [  7%] Built target ggml-cpu
 [  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/mmvq.cu.o
 [  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/ggml-cuda.cu.o
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   106 | __nv_cvt_double_to_fp4(const double x,
       |                                       
   107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
       |                                                    
   335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   106 | __nv_cvt_double_to_fp4(const double x,
       |                                       
   107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
       |                                                    
   335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {

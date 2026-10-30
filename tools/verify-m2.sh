@@ -15,7 +15,6 @@ echo "======================================================================"
 echo "Milestone M2 Automated Qualification & Verification Suite (Hardened)"
 echo "======================================================================"
 
-# Step 1: Check Lineage & Branch
 echo "[1/8] Verifying Git branch and lineage from accepted M1 base..."
 CURRENT_BRANCH=$(git -C "${REPO_DIR}" rev-parse --abbrev-ref HEAD)
 if [[ "${CURRENT_BRANCH}" != "m2/dp4a-microkernel" ]]; then
@@ -35,7 +34,6 @@ if [[ "${MERGE_BASE}" != "${ACCEPTED_M1_HEAD}" ]]; then
 fi
 echo "  Lineage verified: Direct descendant of accepted M1 commit ${ACCEPTED_M1_HEAD}."
 
-# Step 2: Toolchain Gates
 echo "[2/8] Verifying toolchain gates..."
 NVCC_BIN="$(which nvcc 2>/dev/null || echo /usr/local/cuda-12.9/bin/nvcc)"
 if [[ ! -x "${NVCC_BIN}" ]]; then
@@ -46,7 +44,6 @@ echo "  NVCC: $("${NVCC_BIN}" --version | grep "release" | head -n 1)"
 echo "  Host Compiler: $(gcc --version | head -n 1)"
 echo "  glibc: $(ldd --version | head -n 1)"
 
-# Step 3: Build & Device Architecture Image Verification
 echo "[3/8] Checking build and verifying dual-arch device images (sm_61 and sm_75)..."
 mkdir -p "${BUILD_DIR}"
 cd "${BUILD_DIR}"
@@ -67,7 +64,6 @@ if ! echo "${ARCH_DUMP}" | grep -q "sm_75"; then
 fi
 echo "  Verified: Object contains both sm_61 (Pascal) and sm_75 (Turing) ELF images."
 
-# Step 4: SASS & Instruction Verification
 echo "[4/8] Verifying Pascal SM 6.1 SASS disassembly instruction gates..."
 "${CUOBJDUMP_BIN}" -sass -arch sm_61 "${OBJ_FILE}" > /tmp/verify_sass.txt
 
@@ -104,17 +100,14 @@ if not scalar_checked or not dp4a_checked:
     raise RuntimeError("FAIL: Missing expected kernel symbols in SASS dump!")
 '
 
-# Step 5: Correctness Suite on Pascal GTX 1060 with Strict Identity Assertion
 echo "[5/8] Running 156-test Correctness Suite on Pascal GTX 1060 (NUMA 0)..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" numactl --cpunodebind=0 --membind=0 \
     "${BUILD_DIR}/dp4a_test" --arch pascal
 
-# Step 6: Correctness Suite on Turing GTX 1660 SUPER with Strict Identity Assertion
 echo "[6/8] Running 156-test Correctness Suite on Turing GTX 1660 SUPER (NUMA 1)..."
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" numactl --cpunodebind=1 --membind=1 \
     "${BUILD_DIR}/dp4a_test" --arch turing
 
-# Step 7: Benchmark Result Parsing & Mathematical Integrity Gates
 echo "[7/8] Parsing and verifying benchmark JSON integrity and statistics..."
 python3 -c '
 import json
@@ -164,7 +157,6 @@ def verify_bench_json(filepath, expected_arch, expected_name, expected_cc, expec
             if not math.isfinite(val) or val <= 0.0:
                 raise ValueError(f"Invalid non-positive latency sample in {shape} ({var_name}): {val}")
 
-        # Recompute stats
         s = sorted(lats)
         n = len(s)
         recomp_min = s[0]
@@ -175,7 +167,6 @@ def verify_bench_json(filepath, expected_arch, expected_name, expected_cc, expec
         recomp_sd = math.sqrt(recomp_var)
         recomp_spread = recomp_max - recomp_min
 
-        # Check tolerances
         eps = 1e-3
         if abs(r["min_us"] - recomp_min) > eps:
             raise ValueError(f"Min mismatch in {shape}: reported {r['min_us']} vs recomp {recomp_min}")
@@ -210,7 +201,6 @@ verify_bench_json(
 )
 ' "${RESULTS_DIR}/pascal-dp4a-bench.json" "${RESULTS_DIR}/turing-dp4a-bench.json"
 
-# Step 8: Evidence Files & Manifest Re-generation Check
 echo "[8/9] Verifying evidence files, telemetry traces, and live manifest..."
 test -s "${RESULTS_DIR}/pascal-telemetry.csv"
 test -s "${RESULTS_DIR}/turing-telemetry.csv"
@@ -224,7 +214,6 @@ test -s "${RESULTS_DIR}/original-423ef719/pascal-dp4a-bench.json"
 
 python3 "${REPO_DIR}/tools/generate-m2-manifest.py" "${RESULTS_DIR}"
 
-# Step 9: Documentation Consistency Gate
 echo "[9/9] Verifying mechanical synchronization between reports and raw benchmark JSON..."
 python3 "${REPO_DIR}/tools/check_m2_documentation_consistency.py" "${REPO_DIR}"
 

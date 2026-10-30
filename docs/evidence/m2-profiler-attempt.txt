@@ -11,12 +11,12 @@
 CUDA_VISIBLE_DEVICES="GPU-5078520c-bf92-4143-0d48-b02fd9d250dd" \
 numactl --cpunodebind=0 --membind=0 \
 /usr/local/cuda-12.9/bin/ncu --metrics sm__cycles_elapsed.avg \
-/home/taly/legacy-ai/build/dp4a_bench "" 1 1
+/home/taly/abra/build/dp4a_bench "" 1 1
 ```
 
 ### Observed Output
 ```text
-==PROF== Connected to process 2791612 (/home/taly/legacy-ai/build/dp4a_bench)
+==PROF== Connected to process 2791612 (/home/taly/abra/build/dp4a_bench)
 ==ERROR== ERR_NVGPUCTRPERM - The user does not have permission to access NVIDIA GPU Performance Counters on the target device 0. For instructions on enabling permissions and to get more information see https://developer.nvidia.com/ERR_NVGPUCTRPERM
 ```
 

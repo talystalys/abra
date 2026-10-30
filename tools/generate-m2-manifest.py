@@ -91,7 +91,7 @@ def get_live_gpus():
                 pci_id = pci_id[4:]
             elif not pci_id.startswith("0000:"):
                 pci_id = "0000:" + pci_id
-                
+
             gpus.append({
                 "index": int(parts[0]),
                 "name": parts[1],
@@ -108,13 +108,13 @@ def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "bench/results/m2"
     analysis_file = os.path.join(results_dir, "analysis-m2-summary.json")
     manifest_file = os.path.join(results_dir, "manifest.json")
-    
+
     if os.path.isfile(analysis_file):
         with open(analysis_file, "r") as f:
             analysis_data = json.load(f)
     else:
         analysis_data = {}
-        
+
     live_gpus = get_live_gpus()
     driver_version = run_cmd("nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1")
     nvcc_raw = run_cmd("/usr/local/cuda-12.9/bin/nvcc --version 2>/dev/null || nvcc --version 2>/dev/null")
@@ -131,7 +131,7 @@ def main():
         "milestone": "M2",
         "title": "Pascal DP4A INT8 Microkernel Characterization",
         "generated_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        
+
         "mathematical_contract": {
             "operation": "y[n] = sum(k=0..K-1) W[n,k] * x[k]",
             "operands": {
@@ -206,7 +206,7 @@ def main():
 
         "benchmarks": analysis_data
     }
-    
+
     with open(manifest_file, "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"Generated M2 live manifest: {manifest_file}")

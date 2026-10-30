@@ -21,9 +21,9 @@
     "llama-perplexity": "864a403c715f10a7be05df58d5ff021bd003d4dd6e4050a267c30c66ac15d6d8"
   },
   "cuda_headers": {
-    "legacy-ai-packed-q4.cuh": "676675b08e7b6888fec5a8242c5aac1c7d7235725c9ce006513a3b07e89ca2e1",
-    "legacy-ai-q4k.cuh": "d5bd5d353a70b71d87008cf923e74141cd366cfe757053ade4a91f5f3b786212",
-    "legacy-ai-attention.cuh": "0f5a395c8f7916b28b680b66a94e9211d719ec70dc737fb8a6d5e4fab7501c09",
-    "legacy-ai-mmvq.cuh": "ec9c461c5d7bd9b919a609fc65984ec772821692d5650655a4c06604ada17852"
+    "abra-packed-q4.cuh": "676675b08e7b6888fec5a8242c5aac1c7d7235725c9ce006513a3b07e89ca2e1",
+    "abra-q4k.cuh": "d5bd5d353a70b71d87008cf923e74141cd366cfe757053ade4a91f5f3b786212",
+    "abra-attention.cuh": "0f5a395c8f7916b28b680b66a94e9211d719ec70dc737fb8a6d5e4fab7501c09",
+    "abra-mmvq.cuh": "ec9c461c5d7bd9b919a609fc65984ec772821692d5650655a4c06604ada17852"
   }
 }

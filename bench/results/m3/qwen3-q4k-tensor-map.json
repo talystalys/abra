@@ -1,5 +1,5 @@
 {
-  "model_path": "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+  "model_path": "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
   "gguf_version": 3,
   "n_tensors": 398,
   "type_counts": {

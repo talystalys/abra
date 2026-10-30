@@ -2,7 +2,7 @@
 #include <cstdio>
 #include <algorithm>
 
-namespace legacy_ai {
+namespace abra {
 namespace dp4a {
 
 const char* get_variant_name(KernelVariant variant) {
@@ -20,11 +20,6 @@ const char* get_variant_name(KernelVariant variant) {
     }
 }
 
-// -----------------------------------------------------------------------------
-// Variant A: Scalar INT8 Baseline Kernel
-// Non-DP4A baseline: walks K element-by-element with 32-bit scalar MAC
-// Uses inline PTX mul.lo.s32 to prevent NVCC from auto-vectorizing into IDP.4A
-// -----------------------------------------------------------------------------
 __global__ void gemv_scalar_kernel(
     const int8_t* __restrict__ W,
     const int8_t* __restrict__ x,
@@ -32,7 +27,7 @@ __global__ void gemv_scalar_kernel(
     int N, int K
 ) {
     int warp_id = (blockIdx.x * blockDim.y) + threadIdx.y;
-    int lane_id = threadIdx.x; // 0..31
+    int lane_id = threadIdx.x;
     int row = warp_id;
 
     if (row >= N) return;
@@ -48,7 +43,6 @@ __global__ void gemv_scalar_kernel(
         acc += prod;
     }
 
-    // Warp reduction
     #pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         acc += __shfl_down_sync(0xffffffff, acc, offset);
@@ -59,10 +53,6 @@ __global__ void gemv_scalar_kernel(
     }
 }
 
-// -----------------------------------------------------------------------------
-// Variant B: Basic Explicit DP4A Kernel
-// 1 warp per row, 32-bit (4 x int8) loads, __dp4a intrinsic, scalar tail
-// -----------------------------------------------------------------------------
 __global__ void gemv_dp4a_basic_kernel(
     const int8_t* __restrict__ W,
     const int8_t* __restrict__ x,
@@ -70,7 +60,7 @@ __global__ void gemv_dp4a_basic_kernel(
     int N, int K
 ) {
     int warp_id = (blockIdx.x * blockDim.y) + threadIdx.y;
-    int lane_id = threadIdx.x; // 0..31
+    int lane_id = threadIdx.x;
     int row = warp_id;
 
     if (row >= N) return;
@@ -92,7 +82,6 @@ __global__ void gemv_dp4a_basic_kernel(
             acc = __dp4a(w4, x4, acc);
         }
 
-        // Scalar tail for remainder elements (0 to 3)
         int tail_start = K_vec * 4;
         if (lane_id == 0) {
             for (int k = tail_start; k < K; ++k) {
@@ -100,13 +89,12 @@ __global__ void gemv_dp4a_basic_kernel(
             }
         }
     } else {
-        // Scalar fallback for unaligned rows
+
         for (int k = lane_id; k < K; k += 32) {
             acc += static_cast<int32_t>(row_W[k]) * static_cast<int32_t>(x[k]);
         }
     }
 
-    // Warp reduction
     #pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         acc += __shfl_down_sync(0xffffffff, acc, offset);
@@ -117,10 +105,6 @@ __global__ void gemv_dp4a_basic_kernel(
     }
 }
 
-// -----------------------------------------------------------------------------
-// Variant C: Optimized DP4A Kernel
-// Multi-warp block, vectorized 128-bit (int4 = 16 bytes) loads, unrolled 4x DP4A
-// -----------------------------------------------------------------------------
 __global__ void gemv_dp4a_opt_kernel(
     const int8_t* __restrict__ W,
     const int8_t* __restrict__ x,
@@ -128,7 +112,7 @@ __global__ void gemv_dp4a_opt_kernel(
     int N, int K
 ) {
     int warp_id = (blockIdx.x * blockDim.y) + threadIdx.y;
-    int lane_id = threadIdx.x; // 0..31
+    int lane_id = threadIdx.x;
     int row = warp_id;
 
     if (row >= N) return;
@@ -140,7 +124,7 @@ __global__ void gemv_dp4a_opt_kernel(
     uintptr_t x_addr = reinterpret_cast<uintptr_t>(x);
 
     if ((w_addr & 15) == 0 && (x_addr & 15) == 0) {
-        // Vectorized 16-byte chunks: each thread loads int4 = 4 x int32 = 16 x int8
+
         int K_vec16 = K / 16;
         const int4* W_vec16 = reinterpret_cast<const int4*>(row_W);
         const int4* x_vec16 = reinterpret_cast<const int4*>(x);
@@ -155,7 +139,6 @@ __global__ void gemv_dp4a_opt_kernel(
             acc = __dp4a(w4.w, x4.w, acc);
         }
 
-        // Handle remaining 4-byte chunks: (K_vec16 * 16) .. (K_vec4 * 4)
         int k_rem_start = K_vec16 * 16;
         int K_vec4 = K / 4;
         const int32_t* W_vec4 = reinterpret_cast<const int32_t*>(row_W);
@@ -166,7 +149,6 @@ __global__ void gemv_dp4a_opt_kernel(
             acc = __dp4a(w4, x4, acc);
         }
 
-        // Scalar tail for remainder elements (0 to 3)
         int tail_start = K_vec4 * 4;
         if (lane_id == 0) {
             for (int k = tail_start; k < K; ++k) {
@@ -174,7 +156,7 @@ __global__ void gemv_dp4a_opt_kernel(
             }
         }
     } else if ((w_addr & 3) == 0 && (x_addr & 3) == 0) {
-        // 4-byte aligned fallback
+
         int K_vec4 = K / 4;
         const int32_t* W_vec4 = reinterpret_cast<const int32_t*>(row_W);
         const int32_t* x_vec4 = reinterpret_cast<const int32_t*>(x);
@@ -190,13 +172,12 @@ __global__ void gemv_dp4a_opt_kernel(
             }
         }
     } else {
-        // Unaligned scalar fallback
+
         for (int k = lane_id; k < K; k += 32) {
             acc += static_cast<int32_t>(row_W[k]) * static_cast<int32_t>(x[k]);
         }
     }
 
-    // Warp reduction
     #pragma unroll
     for (int offset = 16; offset > 0; offset /= 2) {
         acc += __shfl_down_sync(0xffffffff, acc, offset);
@@ -207,10 +188,6 @@ __global__ void gemv_dp4a_opt_kernel(
     }
 }
 
-// -----------------------------------------------------------------------------
-// Variant D: Shared-Memory x-Staged DP4A Kernel
-// Cooperatively loads chunks of x into shared memory, reusing x across 8 warps
-// -----------------------------------------------------------------------------
 constexpr int SHARED_WARPS_PER_BLOCK = 8;
 constexpr int SHARED_TILE_K = 2048;
 
@@ -231,7 +208,6 @@ __global__ void gemv_dp4a_shared_kernel(
     for (int k_tile = 0; k_tile < K; k_tile += SHARED_TILE_K) {
         int cur_tile_size = min(SHARED_TILE_K, K - k_tile);
 
-        // Cooperatively load tile of x into shared memory
         uintptr_t x_tile_addr = reinterpret_cast<uintptr_t>(x + k_tile);
         if ((x_tile_addr & 3) == 0) {
             int vec4_loads = cur_tile_size / 4;
@@ -322,9 +298,6 @@ __global__ void gemv_dp4a_shared_kernel(
     }
 }
 
-// -----------------------------------------------------------------------------
-// Launch Dispatchers
-// -----------------------------------------------------------------------------
 cudaError_t launch_gemv_scalar(
     const int8_t* __restrict__ d_W,
     const int8_t* __restrict__ d_x,
@@ -462,5 +435,5 @@ KernelOccupancyInfo get_kernel_occupancy_info(KernelVariant variant, int device_
     return info;
 }
 
-} // namespace dp4a
-} // namespace legacy_ai
+}
+}

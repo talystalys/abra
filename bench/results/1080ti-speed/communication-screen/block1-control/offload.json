@@ -53,7 +53,7 @@ BigBoy:3219225:3219245 [0] NCCL INFO Connected all rings, use ring PXN 0 GDR 1
     "cpu_info": "Intel(R) Xeon(R) CPU E5-2683 v4 @ 2.10GHz",
     "gpu_info": "NVIDIA GeForce GTX 1080 Ti, NVIDIA GeForce GTX 1080 Ti",
     "backends": "CUDA",
-    "model_filename": "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+    "model_filename": "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
     "model_type": "qwen3 4B Q4_K - Medium",
     "model_size": 2491323904,
     "model_n_params": 4022468096,

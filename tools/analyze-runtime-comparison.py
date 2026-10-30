@@ -11,7 +11,6 @@ ROOT = Path(__file__).resolve().parent.parent
 helpers = runpy.run_path(str(ROOT / 'tools/compare-runtimes.py'))
 summarise = helpers['summarise']
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('directory', type=Path)
@@ -108,7 +107,6 @@ def main():
     print('\n'.join(lines))
     if failures:
         print('Recorded failed configurations:', ', '.join(failures))
-
 
 if __name__ == '__main__':
     main()

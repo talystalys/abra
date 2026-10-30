@@ -16,7 +16,7 @@ host = linux
 compile_size = 64bit
 
 	code for sm_61
-		Function : _Z22legacy_ai_attention_qkILi1EEvPK6__halfPKfPfiiiii
+		Function : _Z22abra_attention_qkILi1EEvPK6__halfPKfPfiiiii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                  /* 0x001c4400fe0007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                        /* 0x4c98078000870001 */
@@ -133,7 +133,7 @@ compile_size = 64bit
 		..........
 
 
-		Function : _Z22legacy_ai_attention_qkILi8EEvPK6__halfPKfPfiiiii
+		Function : _Z22abra_attention_qkILi8EEvPK6__halfPKfPfiiiii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                  /* 0x001c4400fe0007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                        /* 0x4c98078000870001 */
@@ -250,7 +250,7 @@ compile_size = 64bit
 		..........
 
 
-		Function : _Z22legacy_ai_attention_qkILi4EEvPK6__halfPKfPfiiiii
+		Function : _Z22abra_attention_qkILi4EEvPK6__halfPKfPfiiiii
 	.headerflags	@"EF_CUDA_TEXMODE_UNIFIED EF_CUDA_64BIT_ADDRESS EF_CUDA_SM61 EF_CUDA_VIRTUAL_SM(EF_CUDA_SM61)"
                                                                                  /* 0x001c4400fe0007f6 */
         /*0008*/                   MOV R1, c[0x0][0x20] ;                        /* 0x4c98078000870001 */

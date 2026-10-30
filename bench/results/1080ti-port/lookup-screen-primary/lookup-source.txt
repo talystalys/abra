@@ -23,7 +23,7 @@ static ggml_type cache_type(const char *name) {
     throw std::runtime_error("unsupported cache type");
 }
 static llama_token greedy(llama_context *ctx, int row, int vocab) {
-    if (setting("LEGACY_AI_TEST_BACKEND_SAMPLING",0)) {
+    if (setting("ABRA_TEST_BACKEND_SAMPLING",0)) {
         auto token = llama_get_sampled_token_ith(ctx,row);
         if (token == LLAMA_TOKEN_NULL) throw std::runtime_error("backend greedy sampling unavailable");
         return token;
@@ -61,9 +61,9 @@ int main(int argc, char **argv) {
         std::string prompt((std::istreambuf_iterator<char>(prompt_file)), {});
         ggml_backend_load_all();
         auto mp = llama_model_default_params();
-        mp.n_gpu_layers = setting("LEGACY_AI_TEST_GPU_LAYERS",99);
+        mp.n_gpu_layers = setting("ABRA_TEST_GPU_LAYERS",99);
         mp.split_mode = LLAMA_SPLIT_MODE_NONE;
-        if (setting("LEGACY_AI_TEST_TENSOR",0)) mp.split_mode = LLAMA_SPLIT_MODE_TENSOR;
+        if (setting("ABRA_TEST_TENSOR",0)) mp.split_mode = LLAMA_SPLIT_MODE_TENSOR;
         auto *model = llama_model_load_from_file(argv[1],mp);
         if (!model) throw std::runtime_error("model load failed");
         auto *vocab = llama_model_get_vocab(model);
@@ -73,13 +73,13 @@ int main(int argc, char **argv) {
         if (llama_tokenize(vocab,prompt.data(),prompt.size(),input.data(),n,true,true) != n) throw std::runtime_error("tokenization failed");
         auto cp = llama_context_default_params();
         cp.n_ctx = n + limit + maxdraft + 256; cp.n_batch = 2048; cp.n_ubatch = 512;
-        cp.n_threads = cp.n_threads_batch = setting("LEGACY_AI_TEST_THREADS",4);
-        cp.type_k = cache_type("LEGACY_AI_TEST_CACHE_K"); cp.type_v = cache_type("LEGACY_AI_TEST_CACHE_V");
-        cp.offload_kqv = !setting("LEGACY_AI_TEST_CPU_KV",0);
+        cp.n_threads = cp.n_threads_batch = setting("ABRA_TEST_THREADS",4);
+        cp.type_k = cache_type("ABRA_TEST_CACHE_K"); cp.type_v = cache_type("ABRA_TEST_CACHE_V");
+        cp.offload_kqv = !setting("ABRA_TEST_CPU_KV",0);
         cp.flash_attn_type = LLAMA_FLASH_ATTN_TYPE_ENABLED; cp.no_perf = false;
         llama_sampler *sampler = nullptr;
         llama_sampler_seq_config sampler_config = {};
-        if (setting("LEGACY_AI_TEST_BACKEND_SAMPLING",0)) {
+        if (setting("ABRA_TEST_BACKEND_SAMPLING",0)) {
             sampler = llama_sampler_chain_init(llama_sampler_chain_default_params());
             llama_sampler_chain_add(sampler,llama_sampler_init_greedy());
             sampler_config = {0,sampler}; cp.samplers = &sampler_config; cp.n_samplers = 1;

@@ -21,7 +21,6 @@ DEVICES = {
     'secondary': ('GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c', '0000:81:00.0', 1),
 }
 
-
 def digest(path):
     h = hashlib.sha256()
     with open(path, 'rb') as f:
@@ -29,10 +28,8 @@ def digest(path):
             h.update(chunk)
     return h.hexdigest()
 
-
 def output(argv):
     return subprocess.check_output(argv, text=True, stderr=subprocess.STDOUT)
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -40,7 +37,7 @@ def main():
     p.add_argument('--source', type=Path, required=True)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--gpu', choices=[*DEVICES, 'both'], default='primary')
-    p.add_argument('--model', type=Path, default=Path('/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf'))
+    p.add_argument('--model', type=Path, default=Path('/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf'))
     p.add_argument('--split-mode', choices=['none', 'layer', 'row', 'tensor'], help='Explicit placement; splitting requires both GPUs')
     p.add_argument('--gpu-layers', type=int, default=99)
     p.add_argument('--no-kv-offload', action='store_true')
@@ -101,9 +98,9 @@ def main():
         if row[0] != 'NVIDIA GeForce GTX 1080 Ti' or row[3] != '6.1' or row[2].lower().lstrip('0') != pci.lower().lstrip('0'):
             raise SystemExit(f'Physical identity mismatch: {row}')
     env = os.environ.copy()
-    # Experiments must not inherit an unrecorded communication configuration.
+
     for key in list(env):
-        if key.startswith('NCCL_') or key.startswith('LEGACY_AI_'):
+        if key.startswith('NCCL_') or key.startswith('ABRA_'):
             del env[key]
     allowed_nccl = {'NCCL_IGNORE_CPU_AFFINITY', 'NCCL_PROTO', 'NCCL_MIN_NCHANNELS',
                     'NCCL_MAX_NCHANNELS', 'NCCL_SHM_USE_CUDA_MEMCPY', 'NCCL_SHM_MEMCPY_MODE'}
@@ -116,21 +113,20 @@ def main():
         env[key] = value
     if a.allreduce: env['GGML_CUDA_ALLREDUCE'] = a.allreduce
     else: env.pop('GGML_CUDA_ALLREDUCE',None)
-    env.pop('LEGACY_AI_PROFILE', None)
+    env.pop('ABRA_PROFILE', None)
     env.update(CUDA_VISIBLE_DEVICES=','.join(DEVICES[r][0] for r in selected),
-               LEGACY_AI_REUSE_Q8='1' if a.reuse_q8 else '0',
-               LEGACY_AI_TENSOR_MMVQ='1' if a.tensor_kernels else '0',
-               LEGACY_AI_SPLIT_TIED_OUTPUT='1' if a.split_tied_output else '0',
-               LEGACY_AI_PASCAL_GRAPHS='1' if a.graphs else '0',
-               LEGACY_AI_ATTENTION_V='1' if a.attention_v else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if a.attention else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_PREPACK='1' if a.prepack else '0', LEGACY_AI_Q4K='1' if a.q4k else '0', LEGACY_AI_Q4K_WPR=str(a.q4k_wpr),
-               LEGACY_AI_Q4K_WPB=str(a.q4k_wpb), LEGACY_AI_Q4K_SUMS='1' if a.q4k_sums else '0', LEGACY_AI_Q6K='1' if a.q6k else '0',
-               LEGACY_AI_Q6K_WPR=str(a.q6k_wpr), LEGACY_AI_Q6K_WPB=str(a.q6k_wpb))
+               ABRA_REUSE_Q8='1' if a.reuse_q8 else '0',
+               ABRA_TENSOR_MMVQ='1' if a.tensor_kernels else '0',
+               ABRA_SPLIT_TIED_OUTPUT='1' if a.split_tied_output else '0',
+               ABRA_PASCAL_GRAPHS='1' if a.graphs else '0',
+               ABRA_ATTENTION_V='1' if a.attention_v else '0', ABRA_ATTENTION_V_ROWS=str(a.attention_v_rows), ABRA_ATTENTION='1' if a.attention else '0', ABRA_ATTENTION_ROWS=str(a.attention_rows), ABRA_PREPACK='1' if a.prepack else '0', ABRA_Q4K='1' if a.q4k else '0', ABRA_Q4K_WPR=str(a.q4k_wpr),
+               ABRA_Q4K_WPB=str(a.q4k_wpb), ABRA_Q4K_SUMS='1' if a.q4k_sums else '0', ABRA_Q6K='1' if a.q6k else '0',
+               ABRA_Q6K_WPR=str(a.q6k_wpr), ABRA_Q6K_WPB=str(a.q6k_wpb))
     if a.graphs:
         env.pop('GGML_CUDA_DISABLE_GRAPHS', None)
     else:
         env['GGML_CUDA_DISABLE_GRAPHS'] = '1'
-    # Copied control executables retain their original absolute build RUNPATH.
-    # Select the requested runtime before every inherited/build search path.
+
     env['LD_LIBRARY_PATH'] = str(a.binary.resolve().parent) + ':/usr/local/cuda-12.9/lib64'
     command = ['numactl', '--cpunodebind=0', '--membind=0'] if a.gpu == 'both' else ['numactl', f'--cpunodebind={DEVICES[a.gpu][2]}', f'--membind={DEVICES[a.gpu][2]}']
     if a.cpu_nodes:
@@ -145,7 +141,7 @@ def main():
     manifest = {
         'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(),
         'host': socket.gethostname(), 'argv': command,
-        'environment': {k: v for k, v in env.items() if k.startswith(('LEGACY_AI_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS', 'LD_LIBRARY_PATH']},
+        'environment': {k: v for k, v in env.items() if k.startswith(('ABRA_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS', 'LD_LIBRARY_PATH']},
         'model_sha256': digest(a.model), 'binary_sha256': digest(a.binary),
         'source_commit': output(['git', '-C', str(a.source), 'rev-parse', 'HEAD']).strip(),
         'source_diff_sha256': hashlib.sha256(source_diff.encode()).hexdigest(),
@@ -155,19 +151,19 @@ def main():
         'allreduce':a.allreduce or 'platform default',
         'toolchain': output(['/usr/local/cuda-12.9/bin/nvcc', '--version']),
     }
-    runtime_kernel = a.source / 'ggml/src/ggml-cuda/legacy-ai-mmvq.cuh'
+    runtime_kernel = a.source / 'ggml/src/ggml-cuda/abra-mmvq.cuh'
     if runtime_kernel.exists():
         manifest['runtime_kernel_sha256'] = digest(runtime_kernel)
         (a.out / 'runtime-kernel.txt').write_text(runtime_kernel.read_text())
-    reuse_header = a.source / 'ggml/src/ggml-cuda/legacy-ai-q8-reuse.cuh'
+    reuse_header = a.source / 'ggml/src/ggml-cuda/abra-q8-reuse.cuh'
     if reuse_header.exists():
         manifest['reuse_header_sha256'] = digest(reuse_header)
         (a.out / 'reuse-implementation.txt').write_text(reuse_header.read_text())
-    packed_header = a.source / 'ggml/src/ggml-cuda/legacy-ai-packed-q4.cuh'
+    packed_header = a.source / 'ggml/src/ggml-cuda/abra-packed-q4.cuh'
     if packed_header.exists():
         manifest['packed_header_sha256'] = digest(packed_header)
         (a.out / 'packed-format.txt').write_text(packed_header.read_text())
-    attention_header = a.source / 'ggml/src/ggml-cuda/legacy-ai-attention.cuh'
+    attention_header = a.source / 'ggml/src/ggml-cuda/abra-attention.cuh'
     if attention_header.exists():
         manifest['attention_header_sha256'] = digest(attention_header)
         (a.out / 'attention-kernel.txt').write_text(attention_header.read_text())
@@ -262,7 +258,6 @@ def main():
         summary.append({'n_prompt': row['n_prompt'], 'n_gen': row['n_gen'], 'n_depth': row['n_depth'], 'samples': len(ns), 'median_tps': statistics.median(rates), 'min_tps': min(rates), 'max_tps': max(rates), 'spread_tps': max(rates) - min(rates), 'median_ns': statistics.median(ns), 'stddev_tps': statistics.pstdev(rates)})
     (a.out / 'summary.json').write_text(json.dumps(summary, indent=2) + '\n')
     print(json.dumps({'out': str(a.out), 'summary': summary}), flush=True)
-
 
 if __name__ == '__main__':
     main()

@@ -19,22 +19,18 @@ if [[ ! -f "${PATCH_FILE}" ]]; then
     exit 1
 fi
 
-# Cleanly recreate compatibility directory
 rm -rf "${COMPAT_DIR}"
 mkdir -p "${OVERLAY_INC}/crt"
 
-# Copy pristine target header files from CUDA toolkit into overlay
 cp "${CUDA_TARGET_INC}/crt/math_functions.h" "${OVERLAY_INC}/crt/math_functions.h"
 cp "${CUDA_TARGET_INC}/crt/math_functions.hpp" "${OVERLAY_INC}/crt/math_functions.hpp"
 
-# Apply canonical committed patch file
 echo "Applying canonical patch: ${PATCH_FILE}"
 if ! patch -p1 -d "${OVERLAY_INC}" < "${PATCH_FILE}"; then
     echo "ERROR: Failed to cleanly apply ${PATCH_FILE}" >&2
     exit 1
 fi
 
-# Symlink remainder of crt directory
 for item in "${CUDA_TARGET_INC}/crt/"*; do
     fname="$(basename "${item}")"
     if [[ ! -f "${OVERLAY_INC}/crt/${fname}" ]]; then
@@ -42,7 +38,6 @@ for item in "${CUDA_TARGET_INC}/crt/"*; do
     fi
 done
 
-# Symlink top-level include items
 for item in "${CUDA_TARGET_INC}/"*; do
     fname="$(basename "${item}")"
     if [[ "${fname}" != "crt" && ! -e "${OVERLAY_INC}/${fname}" ]]; then

@@ -276,7 +276,7 @@ PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=9
 PASS: Shape=ffn_down       | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=5.24e-05 | AbsVsU=1.53e-05
 PASS: Shape=ffn_down       | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=1.12e-04 | AbsVsU=1.53e-05
 
-=== Phase 5: Real Model-Byte Sanity Suite (from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf) ===
+=== Phase 5: Real Model-Byte Sanity Suite (from /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf) ===
 PASS: RealTensor=blk.0.attn_q.weight        | Candidate=VARIANT_UPSTREAM_MMVQ        | RelVsF64=1.43e-06 | AbsVsU=0.00e+00
 PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB1         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
 PASS: RealTensor=blk.0.attn_q.weight        | Candidate=Q4K_PASCAL_WPR1_WPB2         | RelVsF64=1.43e-06 | AbsVsU=7.45e-08
@@ -349,7 +349,7 @@ PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB4_U2 
 PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR1_WPB8_U2      | RelVsF64=6.66e-06 | AbsVsU=4.77e-07
 PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_PASCAL_WPR2_WPB8_U2      | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
 PASS: RealTensor=blk.0.ffn_up.weight        | Candidate=Q4K_AUTOTUNED_DISPATCH       | RelVsF64=9.00e-06 | AbsVsU=4.77e-07
-Wrote frozen numerical envelope to: /home/taly/legacy-ai-1080ti-port/bench/results/1080ti-port/secondary-envelope.json
+Wrote frozen numerical envelope to: /home/taly/abra-1080ti-port/bench/results/1080ti-port/secondary-envelope.json
 
 ============================================================
 Q4_K x Q8_1 Test Summary: 756 / 756 Tests PASSED

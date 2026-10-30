@@ -8,10 +8,10 @@ Date: 2026-08-18 12:56:26 UTC
 Saved raw hardware inventory to: docs/evidence/hardware-inventory-raw.txt
 
 --- Step 2: Applying Canonical CUDA Compatibility Patch ---
-Applying canonical patch: /home/taly/legacy-ai/patches/cuda-12.9-glibc-2.41-math-functions.patch
+Applying canonical patch: /home/taly/abra/patches/cuda-12.9-glibc-2.41-math-functions.patch
 patching file crt/math_functions.h
 patching file crt/math_functions.hpp
-CUDA compatibility overlay successfully established at: /home/taly/legacy-ai/.cuda_compat/include
+CUDA compatibility overlay successfully established at: /home/taly/abra/.cuda_compat/include
 
 --- Step 3: Clean Configure and Build (sm_61 + sm_75) ---
 -- The CXX compiler identification is GNU 14.2.0
@@ -27,10 +27,10 @@ CUDA compatibility overlay successfully established at: /home/taly/legacy-ai/.cu
 -- Detecting CUDA compile features
 -- Detecting CUDA compile features - done
 -- Legacy GPU Target Architectures: 61;75
--- Using CUDA compatibility overlay from: /home/taly/legacy-ai/.cuda_compat/include
+-- Using CUDA compatibility overlay from: /home/taly/abra/.cuda_compat/include
 -- Configuring done (3.1s)
 -- Generating done (0.0s)
--- Build files have been written to: /home/taly/legacy-ai/build
+-- Build files have been written to: /home/taly/abra/build
 [ 12%] Building CUDA object CMakeFiles/legacy_smoke.dir/kernels/smoke/smoke.cu.o
 [ 25%] Linking CUDA static library liblegacy_smoke.a
 [ 25%] Built target legacy_smoke

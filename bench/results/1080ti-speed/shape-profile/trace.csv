@@ -1,5 +1,5 @@
-==3241137== NVPROF is profiling process 3241137, command: /home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits /home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-speed/shape-profile/logits.tmp bench/results/1080ti-speed/shape-profile/tokens.json 8 2048
-==3241137== Profiling application: /home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits /home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-speed/shape-profile/logits.tmp bench/results/1080ti-speed/shape-profile/tokens.json 8 2048
+==3241137== NVPROF is profiling process 3241137, command: /home/taly/abra-1080ti-port/build-sm61/runtime_logits /home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-speed/shape-profile/logits.tmp bench/results/1080ti-speed/shape-profile/tokens.json 8 2048
+==3241137== Profiling application: /home/taly/abra-1080ti-port/build-sm61/runtime_logits /home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-speed/shape-profile/logits.tmp bench/results/1080ti-speed/shape-profile/tokens.json 8 2048
 ==3241137== Profiling result:
 "Start","Duration","Grid X","Grid Y","Grid Z","Block X","Block Y","Block Z","Registers Per Thread","Static SMem","Dynamic SMem","Size","Throughput","SrcMemType","DstMemType","Device","Context","Stream","Name","Correlation_ID"
 s,ms,,,,,,,,KB,B,KB,GB/s,,,,,,,

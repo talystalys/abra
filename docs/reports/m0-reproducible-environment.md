@@ -106,13 +106,13 @@ Unmodified CUDA 12.9.2 headers in `/usr/local/cuda-12.9/targets/x86_64-linux/inc
 ### 6.1 Configuration & Build Commands
 ```bash
 # Configure
-CUDAFLAGS="-I/home/taly/legacy-ai/.cuda_compat/include -Wno-deprecated-gpu-targets" \
-cmake -S /home/taly/legacy-ai -B /home/taly/legacy-ai/build \
+CUDAFLAGS="-I/home/taly/abra/.cuda_compat/include -Wno-deprecated-gpu-targets" \
+cmake -S /home/taly/abra -B /home/taly/abra/build \
     -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc \
     -DCMAKE_BUILD_TYPE=Release
 
 # Build
-cmake --build /home/taly/legacy-ai/build --parallel
+cmake --build /home/taly/abra/build --parallel
 ```
 
 ### 6.2 Binary Inspection Evidence (`cuobjdump`)

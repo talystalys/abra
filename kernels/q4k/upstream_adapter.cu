@@ -5,7 +5,6 @@
 
 #include "ggml.h"
 
-// C++ mangled signatures exported by libggml-cuda.so
 void quantize_row_q8_1_cuda(
     const float * x, const int * imatrix, void * vy, enum ggml_type type, int64_t ne00,
     int64_t s01, int64_t s02, int64_t s03, int64_t ne00_padded,
@@ -120,4 +119,4 @@ void dequantize_row_q4_K_upstream_cpu(
     dequantize_row_q4_K((const void *)x, y, k);
 }
 
-} // extern "C"
+}

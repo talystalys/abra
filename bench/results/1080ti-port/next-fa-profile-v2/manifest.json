@@ -17,8 +17,8 @@
     "numactl",
     "--cpunodebind=0",
     "--membind=0",
-    "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_logits",
-    "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+    "/home/taly/abra-1080ti-port/build-sm61/runtime_logits",
+    "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
     "bench/results/1080ti-port/next-fa-profile-v2/logits.tmp",
     "bench/results/1080ti-port/next-fa-profile-v2/tokens.json",
     "8",
@@ -26,12 +26,12 @@
   ],
   "environment": {
     "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
-    "LEGACY_AI_PROFILE": "1",
-    "LEGACY_AI_VALIDATE_FLASH_ATTN": "1",
-    "LEGACY_AI_VALIDATE_SPLIT": "none",
+    "ABRA_PROFILE": "1",
+    "ABRA_VALIDATE_FLASH_ATTN": "1",
+    "ABRA_VALIDATE_SPLIT": "none",
     "GGML_CUDA_DISABLE_GRAPHS": "1",
     "GGML_CUDA_ALLREDUCE": "none",
-    "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
+    "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
   },
   "note": "Synchronizes every profiled operation; diagnostic timing only, never a throughput benchmark."
 }

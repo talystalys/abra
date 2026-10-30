@@ -24,7 +24,7 @@ their memory is separate. [Full hardware inventory](2026-10-12-bigboy-refresh.md
 
 Runtime source: pinned llama.cpp `169e4a7ff201e666c2325bcd35afb64573e39d09`.
 The original checkout is the independent control. The modified checkout is
-isolated at `/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port` and built
+isolated at `/home/taly/abra-1080ti-port/.deps/llama.cpp-port` and built
 for SM 6.1. The control's existing CUDA build includes SM 6.1 and SM 7.5.
 The respective CMake caches, patches, custom headers and library hashes are
 saved alongside measurements.
@@ -204,7 +204,7 @@ The existing clean control checkout, canonical model and CUDA/glibc include
 overlay are prerequisites. Setup does not delete or rebuild that checkout.
 
 ```bash
-cd /home/taly/legacy-ai-1080ti-port
+cd /home/taly/abra-1080ti-port
 python3 tools/build-port.py --profile
 python3 tools/run-port-correctness.py --out bench/results/new-oracles
 python3 tools/validate-port-runtime.py \
@@ -220,7 +220,7 @@ python3 tools/qwen3-4b.py --gpu primary
 python3 tools/qwen3-4b.py --gpu secondary --runtime exact
 ```
 
-All inference tools disable diagnostic `LEGACY_AI_PROFILE`; the measured build
+All inference tools disable diagnostic `ABRA_PROFILE`; the measured build
 includes the diagnostic hook with `--profile` but the hook remains inactive.
 `--completion` selects the noninteractive completion tool. The interactive
 `llama-cli` is a chat program in this pinned revision; `--single-turn` exits
@@ -250,8 +250,8 @@ building (the commands intentionally fail if those paths already exist):
 
 ```bash
 mkdir -p .deps
-ln -s /home/taly/legacy-ai/.deps/llama.cpp .deps/llama.cpp
-ln -s /home/taly/legacy-ai/.cuda_compat .cuda_compat
-ln -s /home/taly/legacy-ai/models models
+ln -s /home/taly/abra/.deps/llama.cpp .deps/llama.cpp
+ln -s /home/taly/abra/.cuda_compat .cuda_compat
+ln -s /home/taly/abra/models models
 python3 tools/build-port.py --profile
 ```

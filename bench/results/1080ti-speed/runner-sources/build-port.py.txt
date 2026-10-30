@@ -57,7 +57,7 @@ run(['cmake', '-S', source, '-B', source / 'build-port', '-DGGML_CUDA=ON',
      '-DLLAMA_BUILD_TESTS=OFF', '-DLLAMA_CURL=OFF', *nccl_flags, *common])
 run(['cmake', '--build', source / 'build-port', '--target', 'llama-bench', 'llama-cli', 'llama-completion', 'llama-perplexity', '--parallel', a.jobs])
 run(['cmake', '-S', ROOT, '-B', ROOT / 'build-sm61',
-     '-DLEGACY_AI_BUILD_Q8_REUSE_TEST=' + ('ON' if a.reuse_q8 else 'OFF'),
+     '-DABRA_BUILD_Q8_REUSE_TEST=' + ('ON' if a.reuse_q8 else 'OFF'),
      f'-DLLAMA_SOURCE_DIR={a.upstream.resolve()}',
      f'-DLLAMA_LIB_DIR={a.upstream.resolve()}/build-default/bin', *common])
 run(['cmake', '--build', ROOT / 'build-sm61', '--target', 'list_cuda_devices',

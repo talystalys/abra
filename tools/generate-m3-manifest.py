@@ -98,7 +98,7 @@ def get_live_gpus():
                 pci_id = pci_id[4:]
             elif not pci_id.startswith("0000:"):
                 pci_id = "0000:" + pci_id
-                
+
             gpus.append({
                 "index": int(parts[0]),
                 "name": parts[1],
@@ -119,10 +119,10 @@ def main():
     pascal_bench_file = os.path.join(results_dir, "pascal-q4k-bench.json")
     turing_bench_file = os.path.join(results_dir, "turing-q4k-bench.json")
     manifest_file = os.path.join(results_dir, "manifest.json")
-    
+
     pascal_bench = json.load(open(pascal_bench_file)) if os.path.isfile(pascal_bench_file) else {}
     turing_bench = json.load(open(turing_bench_file)) if os.path.isfile(turing_bench_file) else {}
-    
+
     live_gpus = get_live_gpus()
     driver_version = run_cmd("nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1")
     nvcc_raw = run_cmd("/usr/local/cuda-12.9/bin/nvcc --version 2>/dev/null || nvcc --version 2>/dev/null")
@@ -139,7 +139,7 @@ def main():
         "milestone": "M3",
         "title": "Pascal Q4_K x Q8_1 Decode Microkernel Characterization",
         "generated_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        
+
         "mathematical_contract": {
             "operation": "y[n] = sum(k=0..K-1) dequantize(W[n,k]) * dequantize(x[k])",
             "operands": {
@@ -228,7 +228,7 @@ def main():
             "turing": turing_bench
         }
     }
-    
+
     with open(manifest_file, "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"Generated M3 live manifest: {manifest_file}")

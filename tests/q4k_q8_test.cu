@@ -51,7 +51,6 @@ static inline void get_scale_min_k4(int j, const uint8_t * q, uint8_t * d, uint8
     }
 }
 
-// Independent Reference: High-precision double oracle directly from quantized blocks
 void independent_q4k_q8_oracle_f64(
     const block_q4_K * w_q4,
     const block_q8_1 * x_q8,
@@ -66,7 +65,7 @@ void independent_q4k_q8_oracle_f64(
 
         for (int b = 0; b < blocks_per_row; ++b) {
             const block_q4_K * bq4 = row_w + b;
-            const block_q8_1 * bq8_base = x_q8 + b * 8; // 8 Q8_1 blocks per Q4_K block
+            const block_q8_1 * bq8_base = x_q8 + b * 8;
 
             float d4 = __half2float(bq4->d);
             float dmin4 = __half2float(bq4->dmin);
@@ -107,7 +106,6 @@ void independent_q4k_q8_oracle_f64(
     }
 }
 
-// Generate deterministic source float data according to distribution
 void generate_test_data(std::vector<float> & data, InputDistribution dist, uint32_t seed) {
     std::mt19937 gen(seed);
     switch (dist) {
@@ -213,7 +211,7 @@ int main(int argc, char ** argv) {
     std::string assert_uuid = "";
     std::string envelope_output = "bench/results/m4/numerical-envelope.json";
     std::string model_path = "models/Qwen3-4B-Q4_K_M.gguf";
-    std::string test_mode = "m4"; // "m3", "m4", or "all"
+    std::string test_mode = "m4";
 
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
@@ -255,9 +253,9 @@ int main(int argc, char ** argv) {
 
     int dev_id = 0;
     cudaGetDevice(&dev_id);
-    legacy_ai::GpuDevice dev = legacy_ai::get_device_info(dev_id);
+    abra::GpuDevice dev = abra::get_device_info(dev_id);
     std::string err_msg;
-    if (!legacy_ai::verify_device_identity(dev, assert_name, cc_major, cc_minor, assert_pci, assert_uuid, err_msg)) {
+    if (!abra::verify_device_identity(dev, assert_name, cc_major, cc_minor, assert_pci, assert_uuid, err_msg)) {
         std::cerr << "CRITICAL ERROR: In-binary GPU physical identity assertion FAILED:\n  "
                   << err_msg << "\nAborting execution." << std::endl;
         return 2;
@@ -288,7 +286,6 @@ int main(int argc, char ** argv) {
         test_candidates.push_back(CANDIDATE_AUTOTUNED_DISPATCH);
     }
 
-    // Print candidate occupancy summary
     std::cout << "=== Theoretical Occupancy Analysis for Tested Candidates ===\n";
     std::cout << std::left << std::setw(30) << "Candidate Name"
               << std::setw(12) << "Block Dim"
@@ -316,8 +313,7 @@ int main(int argc, char ** argv) {
 
     int total_tests = 0;
     int passed_tests = 0;
-    
-    // Overall error tracking
+
     double upstream_max_abs_vs_f64 = 0.0;
     double upstream_max_rel_vs_f64 = 0.0;
     double upstream_max_rms_vs_f64 = 0.0;
@@ -327,11 +323,9 @@ int main(int argc, char ** argv) {
     double custom_max_abs_vs_upstream = 0.0;
     double custom_max_rel_vs_upstream = 0.0;
 
-    // Tolerance thresholds (frozen envelope: FP16/FP32 rounding bounds)
     const double TOL_MAX_REL_ERR = 5e-3;
     const double TOL_MAX_ABS_ERR = 0.05;
 
-    // 1. Input Distribution Tests
     std::cout << "=== Phase 1: Input Families x Candidate Smoke Tests (N=128, K=256) ===\n";
     int N_test = 128;
     int K_test = 256;
@@ -359,7 +353,6 @@ int main(int argc, char ** argv) {
         generate_test_data(h_w_f32, dist, 100 + dist_i);
         generate_test_data(h_x_f32, dist, 200 + dist_i);
 
-        // Exact pinned CPU Q4_K quantizer
         for (int n = 0; n < N_test; ++n) {
             quantize_row_q4_K_upstream_cpu(&h_w_f32[n * K_test], &h_w_q4[n * (K_test / QK_K)], K_test);
         }
@@ -367,14 +360,11 @@ int main(int argc, char ** argv) {
         cudaMemcpy(d_w_q4, h_w_q4.data(), h_w_q4.size() * sizeof(block_q4_K), cudaMemcpyHostToDevice);
         cudaMemcpy(d_x_f32, h_x_f32.data(), K_test * sizeof(float), cudaMemcpyHostToDevice);
 
-        // Exact pinned CUDA Q8_1 quantizer
         launch_quantize_f32_to_q8_1(d_x_f32, d_x_q8, K_test, 0);
         cudaMemcpy(h_x_q8.data(), d_x_q8, h_x_q8.size() * sizeof(block_q8_1), cudaMemcpyDeviceToHost);
 
-        // Compute independent F64 oracle
         independent_q4k_q8_oracle_f64(h_w_q4.data(), h_x_q8.data(), h_y_oracle.data(), N_test, K_test);
 
-        // First run Variant U (Exact Upstream)
         cudaMemset(d_y_f32, 0, N_test * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w_q4, d_x_q8, d_y_f32, N_test, K_test, 0);
         cudaMemcpy(h_y_upstream.data(), d_y_f32, N_test * sizeof(float), cudaMemcpyDeviceToHost);
@@ -420,7 +410,6 @@ int main(int argc, char ** argv) {
     cudaFree(d_x_q8);
     cudaFree(d_y_f32);
 
-    // 2. K-Edge Coverage Suite
     std::cout << "\n=== Phase 2: K-Edge Coverage Suite (N=64, various K) ===\n";
     std::vector<int> k_values = {256, 512, 768, 1024, 2048, 2304, 2560, 4096, 8192, 9728};
     for (int K_val : k_values) {
@@ -458,7 +447,6 @@ int main(int argc, char ** argv) {
 
         independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
 
-        // Run Upstream
         cudaMemset(d_y, 0, N_val * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w, d_x, d_y, N_val, K_val, 0);
         cudaMemcpy(y_upstream.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
@@ -498,7 +486,6 @@ int main(int argc, char ** argv) {
     }
     std::cout << "K-edge coverage tests passed: " << k_values.size() << " K values across " << test_candidates.size() << " candidates.\n";
 
-    // 3. N-Boundary Coverage Suite
     std::cout << "\n=== Phase 3: N-Boundary Coverage Suite (K=256, various N) ===\n";
     std::vector<int> n_values = {1, 2, 3, 4, 5, 31, 32, 33, 127, 128, 129, 1024, 2560, 4096, 9728};
     for (int N_val : n_values) {
@@ -536,7 +523,6 @@ int main(int argc, char ** argv) {
 
         independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), N_val, K_val);
 
-        // Run Upstream
         cudaMemset(d_y, 0, N_val * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w, d_x, d_y, N_val, K_val, 0);
         cudaMemcpy(y_upstream.data(), d_y, N_val * sizeof(float), cudaMemcpyDeviceToHost);
@@ -576,7 +562,6 @@ int main(int argc, char ** argv) {
     }
     std::cout << "N-boundary tests passed: " << n_values.size() << " N values across " << test_candidates.size() << " candidates.\n";
 
-    // 4. Qwen3-Derived Synthetic Shape Suite
     std::cout << "\n=== Phase 4: Qwen3-Derived Canonical & Synthetic Shapes ===\n";
     struct ShapeDef { std::string name; int N; int K; };
     std::vector<ShapeDef> qwen_shapes = {
@@ -621,7 +606,6 @@ int main(int argc, char ** argv) {
 
         independent_q4k_q8_oracle_f64(w_q.data(), x_q.data(), y_oracle.data(), s.N, s.K);
 
-        // Run Upstream
         cudaMemset(d_y, 0, s.N * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w, d_x, d_y, s.N, s.K, 0);
         cudaMemcpy(y_upstream.data(), d_y, s.N * sizeof(float), cudaMemcpyDeviceToHost);
@@ -664,7 +648,6 @@ int main(int argc, char ** argv) {
         cudaFree(d_y);
     }
 
-    // 5. Real Model-Byte Sanity Suite
     std::cout << "\n=== Phase 5: Real Model-Byte Sanity Suite (from " << model_path << ") ===\n";
     struct gguf_init_params gparams = { false, nullptr };
     struct gguf_context * gctx = gguf_init_from_file(model_path.c_str(), gparams);
@@ -707,7 +690,7 @@ int main(int argc, char ** argv) {
 
         const int64_t * ne = gguf_get_tensor_ne(gctx, tid);
         int64_t K_real = ne[0];
-        int64_t N_real = std::min((int64_t)16, ne[1]); // Test 16 actual model rows
+        int64_t N_real = std::min((int64_t)16, ne[1]);
         int64_t K_padded_real = ((K_real + 511) / 512) * 512;
         size_t tensor_offset = gguf_get_tensor_offset(gctx, tid);
 
@@ -753,7 +736,6 @@ int main(int argc, char ** argv) {
 
         independent_q4k_q8_oracle_f64(w_real.data(), x_real_q8.data(), y_real_oracle.data(), N_real, K_real);
 
-        // Run Upstream
         cudaMemset(d_y_r, 0, N_real * sizeof(float));
         launch_q4k_candidate(CANDIDATE_UPSTREAM_MMVQ, d_w_r, d_x_r_q, d_y_r, N_real, K_real, 0);
         cudaMemcpy(y_real_u.data(), d_y_r, N_real * sizeof(float), cudaMemcpyDeviceToHost);
@@ -786,7 +768,6 @@ int main(int argc, char ** argv) {
     fclose(gf);
     gguf_free(gctx);
 
-    // Step B: Write frozen numerical envelope JSON
     std::ofstream env_f(envelope_output);
     if (env_f.is_open()) {
         env_f << "{\n";

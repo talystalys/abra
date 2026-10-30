@@ -11,7 +11,7 @@
 -- Detecting CUDA compile features
 -- Detecting CUDA compile features - done
 -- Legacy GPU Target Architectures: 61
--- Using CUDA compatibility overlay from: /home/taly/legacy-ai-1080ti-port/.cuda_compat/include
+-- Using CUDA compatibility overlay from: /home/taly/abra-1080ti-port/.cuda_compat/include
 -- Configuring done (3.8s)
 -- Generating done (0.1s)
--- Build files have been written to: /home/taly/legacy-ai-1080ti-port/build-sm61
+-- Build files have been written to: /home/taly/abra-1080ti-port/build-sm61

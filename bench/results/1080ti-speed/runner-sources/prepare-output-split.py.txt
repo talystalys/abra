@@ -10,11 +10,11 @@ OLD = '''        // output
             return get_tensor_config_impl(GGML_BACKEND_SPLIT_AXIS_1);
         }'''
 NEW = '''        // output
-        // Legacy AI: a duplicated tied output keeps the token_embd.weight name,
+        // Abra: a duplicated tied output keeps the token_embd.weight name,
         // so the upstream name-only classifier mirrors it. Identify the output
         // by its original tensor identity; leave token lookup embeddings mirrored.
         static const bool split_tied_output = [] {
-            const char * value = std::getenv("LEGACY_AI_SPLIT_TIED_OUTPUT");
+            const char * value = std::getenv("ABRA_SPLIT_TIED_OUTPUT");
             return value && std::strcmp(value, "1") == 0;
         }();
         const bool canonical_tied_output = split_tied_output && ud->n_devices == 2 &&
@@ -25,7 +25,7 @@ NEW = '''        // output
             if (canonical_tied_output) {
                 static std::atomic_flag reported = ATOMIC_FLAG_INIT;
                 if (!reported.test_and_set()) {
-                    LLAMA_LOG_INFO("legacy_ai: tied Qwen output row splitting active\\n");
+                    LLAMA_LOG_INFO("abra: tied Qwen output row splitting active\\n");
                 }
             }
             return get_tensor_config_impl(GGML_BACKEND_SPLIT_AXIS_1);

@@ -15,7 +15,7 @@ index f2e381ee0..b61781ea0 100644
          if (graph->instance == nullptr) { // Create executable graph from captured graph.
              CUDA_CHECK(cudaGraphInstantiate(&graph->instance, graph->graph, NULL, NULL, 0));
 +            if (ggml_cuda_info().devices[cuda_ctx->device].cc == 610) {
-+                GGML_LOG_INFO("legacy_ai: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
++                GGML_LOG_INFO("abra: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
 +            }
          }
          if (cuda_graph_update_required) { // Update graph executable
@@ -25,11 +25,11 @@ index f2e381ee0..b61781ea0 100644
  
      if (graph->graph == nullptr) {
 -        if (ggml_cuda_info().devices[cuda_ctx->device].cc < GGML_CUDA_CC_VOLTA) {
-+        // Legacy AI: explicitly opt in only the qualified Pascal SM 6.1 path.
++        // Abra: explicitly opt in only the qualified Pascal SM 6.1 path.
 +        // Preserve the architecture guard and all upstream graph compatibility,
 +        // warmup, recapture, update and explicit-disable checks by default.
 +        const int cc = ggml_cuda_info().devices[cuda_ctx->device].cc;
-+        const char * opt_in = std::getenv("LEGACY_AI_PASCAL_GRAPHS");
++        const char * opt_in = std::getenv("ABRA_PASCAL_GRAPHS");
 +        const bool pascal_graphs = cc == 610 && opt_in && std::strcmp(opt_in, "1") == 0;
 +        if (cc < GGML_CUDA_CC_VOLTA && !pascal_graphs) {
              if (!graph->disable_due_to_gpu_arch) {
@@ -43,13 +43,13 @@ index c99923804..3e62dffff 100644
  #include "quantize.cuh"
  #include "unary.cuh"
  #include "vecdotq.cuh"
-+#include "legacy-ai-mmvq.cuh"
++#include "abra-mmvq.cuh"
 +#include <cstring>
 +#include <atomic>
-+#include "legacy-ai-mmvq.cuh"
++#include "abra-mmvq.cuh"
 +#include <cstring>
 +#include <atomic>
-+#include "legacy-ai-mmvq.cuh"
++#include "abra-mmvq.cuh"
 +#include <cstring>
 +#include <atomic>
  
@@ -62,13 +62,13 @@ index c99923804..3e62dffff 100644
 +
 +
 +
-+    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.
++    // Abra: preserve upstream for all unqualified shapes/layouts/fusions.
 +    static const bool legacy_q4k = [] {
-+        const char * value = std::getenv("LEGACY_AI_Q4K");
++        const char * value = std::getenv("ABRA_Q4K");
 +        return value && std::strcmp(value, "1") == 0;
 +    }();
 +    static const bool legacy_q6k = [] {
-+        const char * value = std::getenv("LEGACY_AI_Q6K");
++        const char * value = std::getenv("ABRA_Q6K");
 +        return value && std::strcmp(value, "1") == 0;
 +    }();
 +    const bool canonical_q4 =
@@ -87,21 +87,21 @@ index c99923804..3e62dffff 100644
 +        !fusion.x_bias && !fusion.gate_bias && !fusion.x_scale && !fusion.gate_scale &&
 +        ggml_cuda_info().devices[ggml_cuda_get_device()].cc == 610) {
 +        const bool q6 = type_x == GGML_TYPE_Q6_K;
-+        const char * env_wpr = std::getenv(q6 ? "LEGACY_AI_Q6K_WPR" : "LEGACY_AI_Q4K_WPR");
-+        const char * env_wpb = std::getenv(q6 ? "LEGACY_AI_Q6K_WPB" : "LEGACY_AI_Q4K_WPB");
++        const char * env_wpr = std::getenv(q6 ? "ABRA_Q6K_WPR" : "ABRA_Q4K_WPR");
++        const char * env_wpb = std::getenv(q6 ? "ABRA_Q6K_WPB" : "ABRA_Q4K_WPB");
 +        const int wpr = env_wpr ? std::atoi(env_wpr) : 2;
 +        const int wpb = env_wpb ? std::atoi(env_wpb) : 8;
-+        const char * sums_env = std::getenv("LEGACY_AI_Q4K_SUMS");
++        const char * sums_env = std::getenv("ABRA_Q4K_SUMS");
 +        const bool precompute = !q6 && sums_env && std::strcmp(sums_env, "1") == 0;
 +        const auto * x = static_cast<const block_q8_1 *>(vy);
 +        const bool dispatched = q6 ?
-+            legacy_ai_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream) :
-+            legacy_ai_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream, precompute);
++            abra_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream) :
++            abra_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream, precompute);
 +        if (dispatched) {
 +            static std::atomic_flag reported_q4 = ATOMIC_FLAG_INIT;
 +            static std::atomic_flag reported_q6 = ATOMIC_FLAG_INIT;
 +            if (!(q6 ? reported_q6 : reported_q4).test_and_set()) {
-+                GGML_LOG_INFO("legacy_ai: Q%d_K runtime dispatch active, WPR=%d WPB=%d\n", q6 ? 6 : 4, wpr, wpb);
++                GGML_LOG_INFO("abra: Q%d_K runtime dispatch active, WPR=%d WPB=%d\n", q6 ? 6 : 4, wpr, wpb);
 +            }
 +            return;
 +        }

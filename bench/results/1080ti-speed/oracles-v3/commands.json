@@ -6,9 +6,9 @@
       "numactl",
       "--cpunodebind=0",
       "--membind=0",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/q4k_q8_test",
+      "/home/taly/abra-1080ti-port/build-sm61/q4k_q8_test",
       "--model",
-      "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+      "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
       "--assert-name",
       "NVIDIA GeForce GTX 1080 Ti",
       "--assert-cc",
@@ -24,7 +24,7 @@
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -34,13 +34,13 @@
       "numactl",
       "--cpunodebind=0",
       "--membind=0",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/runtime_kernel_test"
     ],
     "binary_sha256": "f40ddd45df5a56b3c97e8fbd4db7d5c4c94053b4c4942ba6a22383da2f3f6c3b",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -50,13 +50,13 @@
       "numactl",
       "--cpunodebind=0",
       "--membind=0",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/attention_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/attention_kernel_test"
     ],
     "binary_sha256": "1c9038d83b795323576c9e4ba70ad84954332b50e4fc75dcfc3e567064f0f3d7",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -66,13 +66,13 @@
       "numactl",
       "--cpunodebind=0",
       "--membind=0",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/value_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/value_kernel_test"
     ],
     "binary_sha256": "b3e0edc62a26866664df18562133467e39204d5b29d9c2abe2751855c34c4eb0",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -82,15 +82,15 @@
       "numactl",
       "--cpunodebind=0",
       "--membind=0",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/q8_reuse_test"
+      "/home/taly/abra-1080ti-port/build-sm61/q8_reuse_test"
     ],
     "binary_sha256": "017f31b31b47e22ae8ab69939d796dbac4ada6a950d066697481912442766b65",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
-      "LEGACY_AI_REUSE_Q8": "1",
-      "LEGACY_AI_REUSE_Q8_STATS": "1"
+      "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ABRA_REUSE_Q8": "1",
+      "ABRA_REUSE_Q8_STATS": "1"
     }
   },
   {
@@ -100,9 +100,9 @@
       "numactl",
       "--cpunodebind=1",
       "--membind=1",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/q4k_q8_test",
+      "/home/taly/abra-1080ti-port/build-sm61/q4k_q8_test",
       "--model",
-      "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+      "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
       "--assert-name",
       "NVIDIA GeForce GTX 1080 Ti",
       "--assert-cc",
@@ -118,7 +118,7 @@
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -128,13 +128,13 @@
       "numactl",
       "--cpunodebind=1",
       "--membind=1",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/runtime_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/runtime_kernel_test"
     ],
     "binary_sha256": "f40ddd45df5a56b3c97e8fbd4db7d5c4c94053b4c4942ba6a22383da2f3f6c3b",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -144,13 +144,13 @@
       "numactl",
       "--cpunodebind=1",
       "--membind=1",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/attention_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/attention_kernel_test"
     ],
     "binary_sha256": "1c9038d83b795323576c9e4ba70ad84954332b50e4fc75dcfc3e567064f0f3d7",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -160,13 +160,13 @@
       "numactl",
       "--cpunodebind=1",
       "--membind=1",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/value_kernel_test"
+      "/home/taly/abra-1080ti-port/build-sm61/value_kernel_test"
     ],
     "binary_sha256": "b3e0edc62a26866664df18562133467e39204d5b29d9c2abe2751855c34c4eb0",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
+      "LD_LIBRARY_PATH": "/home/taly/abra/.deps/llama.cpp/build-default/bin:/usr/local/cuda-12.9/lib64"
     }
   },
   {
@@ -176,15 +176,15 @@
       "numactl",
       "--cpunodebind=1",
       "--membind=1",
-      "/home/taly/legacy-ai-1080ti-port/build-sm61/q8_reuse_test"
+      "/home/taly/abra-1080ti-port/build-sm61/q8_reuse_test"
     ],
     "binary_sha256": "017f31b31b47e22ae8ab69939d796dbac4ada6a950d066697481912442766b65",
     "environment": {
       "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "GGML_CUDA_DISABLE_GRAPHS": "1",
-      "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
-      "LEGACY_AI_REUSE_Q8": "1",
-      "LEGACY_AI_REUSE_Q8_STATS": "1"
+      "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ABRA_REUSE_Q8": "1",
+      "ABRA_REUSE_Q8_STATS": "1"
     }
   }
 ]

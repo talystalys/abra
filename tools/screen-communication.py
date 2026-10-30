@@ -24,7 +24,6 @@ CASES = [
                      '--nccl-option', 'NCCL_SHM_USE_CUDA_MEMCPY=1', '--nccl-option', 'NCCL_SHM_MEMCPY_MODE=3']),
 ]
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -70,7 +69,6 @@ def main():
                          'spread_tps': max(rates) - min(rates) if rates else None})
     (a.out / 'report.json').write_text(json.dumps({'scope': 'exploratory only; requires final measurement and correctness', 'results': combined}, indent=2) + '\n')
     print(json.dumps(combined, indent=2), flush=True)
-
 
 if __name__ == '__main__':
     main()

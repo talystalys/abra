@@ -29,7 +29,6 @@ echo "Host: $(hostname)"
 echo "Date: $(date -u '+%Y-%m-%d %H:%M:%S UTC')"
 echo "============================================================"
 
-# Verify pinned llama.cpp commit and clean source
 if [[ ! -d "${LLAMA_DIR}/.git" ]]; then
     echo "llama.cpp repository missing at ${LLAMA_DIR}" >&2
     echo "Running setup script..."
@@ -53,7 +52,6 @@ fi
 echo "Verified clean llama.cpp source at pinned commit: ${ACTUAL_LLAMA_COMMIT}"
 cd "${REPO_ROOT}"
 
-# Verify model hash
 if [[ ! -f "${MODEL_FILE}" ]]; then
     echo "Model file missing: ${MODEL_FILE}" >&2
     echo "Running model download script..."
@@ -76,45 +74,36 @@ run_with_telemetry() {
     local output_telemetry="$2"
     local cmd_log="$3"
     shift 3
-    
-    # Start telemetry background sampler
+
     local sampler_pid
     "${REPO_ROOT}/tools/sample-gpu-telemetry.sh" "${gpu_uuid}" "${output_telemetry}" 0.25 &
     sampler_pid=$!
-    
-    # Let sampler start
+
     sleep 1
-    
-    # Run command and capture output
+
     echo "Executing: $*"
     if ! "$@" > "${cmd_log}"; then
         echo "Command failed: $*" >&2
         kill -9 "${sampler_pid}" 2>/dev/null || true
         return 1
     fi
-    
-    # Stop sampler
+
     sleep 1
     kill "${sampler_pid}" 2>/dev/null || true
     wait "${sampler_pid}" 2>/dev/null || true
     echo "Completed. Log saved to: ${cmd_log}"
 }
 
-# Idle status inspection
 echo
 echo "--- GPU Pre-Benchmark State ---"
 nvidia-smi --query-gpu=index,name,uuid,pci.bus_id,temperature.gpu,power.limit,clocks.sm,clocks.mem --format=csv
 echo
 
-# -----------------------------------------------------------------------------
-# 1. Pascal Default Baseline (GTX 1060 6GB)
-# -----------------------------------------------------------------------------
 echo "============================================================"
 echo "1. Pascal Default Baseline (GTX 1060 6GB, CC 6.1)"
 echo "   Isolation: ${PASCAL_UUID} | NUMA: ${PASCAL_NUMA}"
 echo "============================================================"
 
-# Pascal depth 0
 echo "--> Running Pascal Default @ depth 0 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 run_with_telemetry "${PASCAL_UUID}" \
@@ -130,7 +119,6 @@ run_with_telemetry "${PASCAL_UUID}" \
     -r 10 \
     -o json
 
-# Pascal depth 2048
 echo "--> Running Pascal Default @ depth 2048 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 run_with_telemetry "${PASCAL_UUID}" \
@@ -146,7 +134,6 @@ run_with_telemetry "${PASCAL_UUID}" \
     -r 10 \
     -o json
 
-# Pascal Forced-cuBLAS Diagnostic
 echo "--> Running Pascal Forced-cuBLAS Diagnostic @ depth 0 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 run_with_telemetry "${PASCAL_UUID}" \
@@ -162,7 +149,6 @@ run_with_telemetry "${PASCAL_UUID}" \
     -r 10 \
     -o json
 
-# Pascal llama-cli End-to-End Sanity Check
 echo "--> Running Pascal llama-cli End-to-End Sanity Check..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
@@ -174,7 +160,6 @@ numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
     -st --simple-io > "${RESULTS_DIR}/pascal-cli-sanity.txt" 2>&1
 echo "Pascal CLI Sanity output written to: ${RESULTS_DIR}/pascal-cli-sanity.txt"
 
-# Pascal Offload Proof Diagnostics
 echo "--> Generating Pascal Offload Proof Diagnostics..."
 CUDA_VISIBLE_DEVICES="${PASCAL_UUID}" \
 numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
@@ -183,15 +168,11 @@ numactl --cpunodebind="${PASCAL_NUMA}" --membind="${PASCAL_NUMA}" \
     -p 512 -n 128 -ngl 99 -r 1 -v > "${RESULTS_DIR}/pascal-offload-proof.txt" 2>&1
 echo "Pascal Offload Proof written to: ${RESULTS_DIR}/pascal-offload-proof.txt"
 
-# -----------------------------------------------------------------------------
-# 2. Turing Control Baseline (GTX 1660 SUPER)
-# -----------------------------------------------------------------------------
 echo "============================================================"
 echo "2. Turing Control Baseline (GTX 1660 SUPER, CC 7.5)"
 echo "   Isolation: ${TURING_UUID} | NUMA: ${TURING_NUMA}"
 echo "============================================================"
 
-# Turing depth 0
 echo "--> Running Turing Default @ depth 0 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" \
 run_with_telemetry "${TURING_UUID}" \
@@ -207,7 +188,6 @@ run_with_telemetry "${TURING_UUID}" \
     -r 10 \
     -o json
 
-# Turing depth 2048
 echo "--> Running Turing Default @ depth 2048 (pp512, tg128, 10 reps)..."
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" \
 run_with_telemetry "${TURING_UUID}" \
@@ -223,7 +203,6 @@ run_with_telemetry "${TURING_UUID}" \
     -r 10 \
     -o json
 
-# Turing CLI Sanity Check
 echo "--> Running Turing llama-cli End-to-End Sanity Check..."
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" \
 numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
@@ -235,7 +214,6 @@ numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
     -st --simple-io > "${RESULTS_DIR}/turing-cli-sanity.txt" 2>&1
 echo "Turing CLI Sanity output written to: ${RESULTS_DIR}/turing-cli-sanity.txt"
 
-# Turing Offload Proof Diagnostics
 echo "--> Generating Turing Offload Proof Diagnostics..."
 CUDA_VISIBLE_DEVICES="${TURING_UUID}" \
 numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
@@ -244,9 +222,6 @@ numactl --cpunodebind="${TURING_NUMA}" --membind="${TURING_NUMA}" \
     -p 512 -n 128 -ngl 99 -r 1 -v > "${RESULTS_DIR}/turing-offload-proof.txt" 2>&1
 echo "Turing Offload Proof written to: ${RESULTS_DIR}/turing-offload-proof.txt"
 
-# -----------------------------------------------------------------------------
-# 3. CPU Context Baseline (Context Only)
-# -----------------------------------------------------------------------------
 echo "============================================================"
 echo "3. CPU Context Baseline (CONTEXT ONLY — NOT PRIMARY COMPETITOR)"
 echo "============================================================"
@@ -263,9 +238,6 @@ numactl --cpunodebind=0 --membind=0 \
     -o json > "${RESULTS_DIR}/cpu-context-depth0.json"
 echo "CPU Context output written to: ${RESULTS_DIR}/cpu-context-depth0.json"
 
-# -----------------------------------------------------------------------------
-# 4. Processing Statistics and Manifest
-# -----------------------------------------------------------------------------
 echo
 echo "============================================================"
 echo "4. Processing Benchmark Statistics and Manifest"

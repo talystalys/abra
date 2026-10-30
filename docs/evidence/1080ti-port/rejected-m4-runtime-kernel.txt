@@ -3,7 +3,7 @@
 // Included after vecdotq.cuh. The caller checks batch, shape, strides, fusion
 // and architecture before dispatch; every other case remains upstream.
 template <int WARPS_PER_ROW, int WARPS_PER_BLOCK, int UNROLL = 1>
-__global__ void legacy_ai_q4k_kernel(
+__global__ void abra_q4k_kernel(
     const block_q4_K * __restrict__ d_w,
     const block_q8_1 * __restrict__ d_x,
     float * __restrict__ d_y,

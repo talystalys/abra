@@ -51,7 +51,6 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
     device_info = data.get("device", {})
     results = data.get("results", [])
 
-    # Group by shape and candidate_id
     by_shape = {}
     for r in results:
         s = r["shape_name"]
@@ -60,19 +59,16 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
         by_shape[s][r["candidate_id"]] = r
 
     shape_analysis = {}
-    
-    # Model-weighted accumulator
+
     weighted_upstream_us = 0.0
     weighted_best_m3_us = 0.0
     weighted_autotuned_us = 0.0
     total_weights = 0
 
-    # For Mode 2 combined
     weighted_comb_upstream_us = 0.0
     weighted_comb_best_m3_us = 0.0
     weighted_comb_autotuned_us = 0.0
 
-    # Build map of canonical occurrences from workload manifest
     workload_map = {}
     for w in workload_manifest.get("canonical_workloads", []):
         workload_map[w["shape_name"]] = w
@@ -86,12 +82,10 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
         weight = w_info.get("occurrence_count", 0)
         classification = w_info.get("classification", "unknown")
 
-        # Upstream baseline (candidate 0)
         u_run = c_map.get(0)
         u_stats = compute_stats(u_run["latencies_us"]) if u_run else {}
         u_comb_stats = compute_stats(u_run.get("combined_latencies_us", [])) if u_run and u_run.get("combined_latencies_us") else {}
 
-        # M3 candidates: 404 (Variant A), 204 (Variant B), 104 (Variant C)
         m3_candidates = [204, 104, 404]
         best_m3_id = None
         best_m3_stats = None
@@ -107,7 +101,6 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
                     best_m3_stats = c_st
                     best_m3_comb_stats = compute_stats(c_map[cid].get("combined_latencies_us", []))
 
-        # Best M4 candidate (excluding selector 999 and upstream 0)
         best_m4_id = None
         best_m4_stats = None
         best_m4_comb_stats = None
@@ -122,19 +115,16 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
                     best_m4_stats = c_st
                     best_m4_comb_stats = compute_stats(r.get("combined_latencies_us", []))
 
-        # Autotuned dispatch selector (candidate 999)
         auto_run = c_map.get(999)
         auto_stats = compute_stats(auto_run["latencies_us"]) if auto_run else (best_m4_stats or best_m3_stats)
         auto_comb_stats = compute_stats(auto_run.get("combined_latencies_us", [])) if auto_run and auto_run.get("combined_latencies_us") else (best_m4_comb_stats or best_m3_comb_stats)
 
-        # Speedups
         sp_auto_vs_upstream = u_stats["median_us"] / auto_stats["median_us"] if u_stats and auto_stats else 1.0
         sp_auto_vs_best_m3 = best_m3_stats["median_us"] / auto_stats["median_us"] if best_m3_stats and auto_stats else 1.0
 
         sp_comb_auto_vs_upstream = u_comb_stats["median_us"] / auto_comb_stats["median_us"] if u_comb_stats and auto_comb_stats else 1.0
         sp_comb_auto_vs_best_m3 = best_m3_comb_stats["median_us"] / auto_comb_stats["median_us"] if best_m3_comb_stats and auto_comb_stats else 1.0
 
-        # Throughput for autotuned winner
         total_macs = float(n) * float(k)
         gmac_s = (total_macs / (auto_stats["median_us"] * 1e-6)) / 1e9
         q4_bytes = float(n) * (float(k) / 256.0) * 144.0
@@ -194,7 +184,6 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
             }
         }
 
-        # Add to model-weighted aggregate ONLY if canonical workload
         if classification == "canonical_q4k_workload" and weight > 0:
             weighted_upstream_us += u_stats["median_us"] * weight
             weighted_best_m3_us += best_m3_stats["median_us"] * weight
@@ -205,7 +194,6 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
             weighted_comb_best_m3_us += best_m3_comb_stats["median_us"] * weight
             weighted_comb_autotuned_us += auto_comb_stats["median_us"] * weight
 
-    # Aggregate summaries
     agg_speedup_vs_upstream = weighted_upstream_us / weighted_autotuned_us if weighted_autotuned_us > 0 else 1.0
     agg_speedup_vs_best_m3 = weighted_best_m3_us / weighted_autotuned_us if weighted_autotuned_us > 0 else 1.0
 
@@ -241,7 +229,7 @@ def analyze_dataset(bench_json_path, workload_manifest, candidate_manifest):
 def main():
     repo_root = sys.argv[1] if len(sys.argv) > 1 else os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     results_dir = os.path.join(repo_root, "bench/results/m4")
-    
+
     pascal_path = os.path.join(results_dir, "pascal-final-bench.json")
     turing_path = os.path.join(results_dir, "turing-control-bench.json")
     workload_path = os.path.join(results_dir, "workload-manifest.json")
@@ -272,7 +260,6 @@ def main():
 
     print(f"\nWrote comprehensive statistical summary to: {summary_path}")
 
-    # Print summary table to console
     print("\n" + "=" * 110)
     print("PASCAL SM 6.1 (GTX 1060 6GB) SHAPE-LEVEL RESULTS & SPEEDUP SUMMARY")
     print("=" * 110)

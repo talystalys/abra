@@ -9,7 +9,6 @@ import sys
 
 ROOT = Path(__file__).resolve().parent.parent
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -22,7 +21,6 @@ def main():
             '--depths', '2048', '--warmups', '1', '--reps', '3', '--blocks', '1']
     subprocess.run(argv, check=True)
     (a.out / 'invocation.json').write_text(json.dumps({'argv': argv}, indent=2) + '\n')
-
 
 if __name__ == '__main__':
     main()

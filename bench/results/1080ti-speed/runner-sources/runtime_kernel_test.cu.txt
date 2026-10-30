@@ -4,7 +4,7 @@
 #include "unary.cuh"
 #include "mmvq.cuh"
 #include "quantize.cuh"
-#include "kernels/q4k/legacy-ai-mmvq.cuh"
+#include "kernels/q4k/abra-mmvq.cuh"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -128,7 +128,7 @@ int main() {
             if (type == GGML_TYPE_Q4_K) quantize_row_q4_K_ref(weights.data(), reinterpret_cast<block_q4_K *>(packed.data()), N * K);
             else quantize_row_q6_K_ref(weights.data(), reinterpret_cast<block_q6_K *>(packed.data()), N * K);
             void *dw;
-            legacy_ai_packed_q4 *dpacked = nullptr;
+            abra_packed_q4 *dpacked = nullptr;
             float *dx, *dy;
             block_q8_1 *qx;
             int padded = (K + 511) / 512 * 512;
@@ -139,11 +139,11 @@ int main() {
             CUDA_CHECK(cudaMemcpy(dw, packed.data(), bytes, cudaMemcpyHostToDevice));
             if (type == GGML_TYPE_Q4_K) {
                 const int blocks = N * K / 256;
-                CUDA_CHECK(cudaMalloc(&dpacked, blocks * sizeof(legacy_ai_packed_q4)));
-                legacy_ai_pack_q4_kernel<<<(blocks + 255) / 256, 256>>>(static_cast<const block_q4_K *>(dw), dpacked, blocks);
+                CUDA_CHECK(cudaMalloc(&dpacked, blocks * sizeof(abra_packed_q4)));
+                abra_pack_q4_kernel<<<(blocks + 255) / 256, 256>>>(static_cast<const block_q4_K *>(dw), dpacked, blocks);
                 CUDA_CHECK(cudaGetLastError());
-                std::vector<legacy_ai_packed_q4> actual_pack(blocks);
-                CUDA_CHECK(cudaMemcpy(actual_pack.data(), dpacked, blocks * sizeof(legacy_ai_packed_q4), cudaMemcpyDeviceToHost));
+                std::vector<abra_packed_q4> actual_pack(blocks);
+                CUDA_CHECK(cudaMemcpy(actual_pack.data(), dpacked, blocks * sizeof(abra_packed_q4), cudaMemcpyDeviceToHost));
                 for (int b = 0; b < blocks; ++b) {
                     const auto &original = reinterpret_cast<const block_q4_K *>(packed.data())[b];
                     const auto &expanded = actual_pack[b];
@@ -176,8 +176,8 @@ int main() {
                 if (expanded && (type != GGML_TYPE_Q4_K || sums)) continue;
                 ggml_cuda_mm_fusion_args_device fusion{};
                 bool dispatched = type == GGML_TYPE_Q4_K ?
-                    legacy_ai_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, expanded ? static_cast<const void *>(dpacked) : dw, qx, dy, N, K, fusion, 0, sums, expanded) :
-                    legacy_ai_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, dw, qx, dy, N, K, fusion, 0);
+                    abra_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, expanded ? static_cast<const void *>(dpacked) : dw, qx, dy, N, K, fusion, 0, sums, expanded) :
+                    abra_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, dw, qx, dy, N, K, fusion, 0);
                 if (!dispatched) return 3;
                 CUDA_CHECK(cudaGetLastError());
                 CUDA_CHECK(cudaMemcpy(actual.data(), dy, N * sizeof(float), cudaMemcpyDeviceToHost));

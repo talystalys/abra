@@ -1,11 +1,11 @@
 {
-  "cwd": "/home/taly/legacy-ai-1080ti-port",
+  "cwd": "/home/taly/abra-1080ti-port",
   "commands": [
     {
       "file": "launcher-default-smoke.txt",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--",
         "--reasoning",
         "off",
@@ -20,7 +20,7 @@
       "file": "launcher-greedy-smoke.txt",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--",
         "--reasoning",
         "off",
@@ -39,7 +39,7 @@
       "file": "launcher-baseline-greedy-smoke.txt",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--runtime",
         "baseline",
         "--",
@@ -60,7 +60,7 @@
       "file": "launcher-template-smoke.txt",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--",
         "--reasoning",
         "off",
@@ -81,7 +81,7 @@
       "file": "launcher-exact-greedy-smoke.txt",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--gpu",
         "primary",
         "--runtime",

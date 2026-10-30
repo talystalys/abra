@@ -12,7 +12,7 @@
       "label": "default-chat",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--",
         "--reasoning",
         "off",
@@ -34,7 +34,7 @@
       "label": "default-completion",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--completion",
         "--",
         "-f",
@@ -57,7 +57,7 @@
       "label": "unoptimized-completion",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--unoptimized",
         "--completion",
         "--",
@@ -81,7 +81,7 @@
       "label": "flash-completion",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--runtime",
         "flash",
         "--gpu",
@@ -108,7 +108,7 @@
       "label": "lookup-both",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b-lookup.py",
         "--gpu",
         "both",
         "--allreduce",
@@ -126,7 +126,7 @@
       "label": "lookup-no-draft",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b-lookup.py",
         "--draft",
         "0",
         "--prompt",
@@ -142,7 +142,7 @@
       "label": "invalid-gpu",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b.py",
         "--runtime",
         "tensor",
         "--gpu",
@@ -156,7 +156,7 @@
       "label": "existing-output",
       "argv": [
         "python3",
-        "/home/taly/legacy-ai-1080ti-port/tools/qwen3-4b-lookup.py",
+        "/home/taly/abra-1080ti-port/tools/qwen3-4b-lookup.py",
         "--prompt",
         "Paris",
         "--output",

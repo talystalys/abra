@@ -1,14 +1,13 @@
 #pragma once
-// Lossless metadata expansion: 144 -> 148 bytes per 256-weight block.
-// Original GGUF/VRAM weights remain intact for upstream prompt/fallback paths.
-struct alignas(4) legacy_ai_packed_q4 {
+
+struct alignas(4) abra_packed_q4 {
     half2 dm;
-    uint32_t scale_min_pairs[4]; // sc0, sc1, min0, min1 as four bytes
+    uint32_t scale_min_pairs[4];
     uint8_t qs[128];
 };
-static_assert(sizeof(legacy_ai_packed_q4) == 148);
+static_assert(sizeof(abra_packed_q4) == 148);
 
-static __host__ __device__ void legacy_ai_pack_q4_one(const block_q4_K &input, legacy_ai_packed_q4 &out) {
+static __host__ __device__ void abra_pack_q4_one(const block_q4_K &input, abra_packed_q4 &out) {
     out.dm = input.dm;
     const uint16_t *scales = reinterpret_cast<const uint16_t *>(input.scales);
     for (int j = 0; j < 4; ++j) {
@@ -26,7 +25,7 @@ static __host__ __device__ void legacy_ai_pack_q4_one(const block_q4_K &input, l
         reinterpret_cast<uint32_t *>(out.qs)[i] = reinterpret_cast<const uint32_t *>(input.qs)[i];
 }
 
-static __global__ void legacy_ai_pack_q4_kernel(const block_q4_K *input, legacy_ai_packed_q4 *output, int64_t blocks) {
+static __global__ void abra_pack_q4_kernel(const block_q4_K *input, abra_packed_q4 *output, int64_t blocks) {
     int64_t index = int64_t(blockIdx.x) * blockDim.x + threadIdx.x;
-    if (index < blocks) legacy_ai_pack_q4_one(input[index], output[index]);
+    if (index < blocks) abra_pack_q4_one(input[index], output[index]);
 }

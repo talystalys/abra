@@ -4,7 +4,7 @@
 #include <vector>
 #include <string>
 
-using namespace legacy_ai;
+using namespace abra;
 
 void print_usage(const char *prog) {
     std::cout << "Usage: " << prog << " [options]\n"
@@ -94,7 +94,6 @@ int main(int argc, char **argv) {
         target_devices.push_back(0);
     }
 
-    // Required test dimensions from specification
     const std::vector<size_t> test_dimensions = {
         1,
         31,
@@ -112,7 +111,6 @@ int main(int argc, char **argv) {
     for (int dev_idx : target_devices) {
         GpuDevice dev = get_device_info(dev_idx);
 
-        // Verify assertions if specified
         std::string identity_err;
         if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
             std::cerr << "BLOCKER: Physical GPU assertion failure on device " << dev.index << ":\n" << identity_err;

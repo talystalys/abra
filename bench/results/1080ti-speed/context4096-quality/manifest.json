@@ -15,7 +15,7 @@
   "candidate_split": "tensor",
   "runtime_bin": ".deps/llama.cpp-port/build-port/bin",
   "allreduce": "nccl",
-  "baseline_runtime_bin": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin",
+  "baseline_runtime_bin": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin",
   "baseline_split": "tensor",
   "reuse_q8": true,
   "split_tied_output": true,
@@ -52,7 +52,7 @@
     "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
     "GGML_CUDA_DISABLE_GRAPHS": "1",
     "GGML_CUDA_ALLREDUCE": "nccl",
-    "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
+    "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
   },
   "commands": [
     {
@@ -61,9 +61,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -100,7 +100,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -109,9 +109,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -148,7 +148,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -157,9 +157,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -196,7 +196,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -205,9 +205,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -244,7 +244,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -253,9 +253,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -292,7 +292,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -301,9 +301,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -340,7 +340,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -349,9 +349,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -388,7 +388,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -397,9 +397,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -436,7 +436,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -445,9 +445,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -484,7 +484,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -493,9 +493,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -532,7 +532,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -541,9 +541,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -580,7 +580,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -589,9 +589,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -628,7 +628,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -637,9 +637,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -676,7 +676,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -685,9 +685,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -724,7 +724,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -733,9 +733,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -772,7 +772,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -781,9 +781,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -820,7 +820,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -829,9 +829,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -868,7 +868,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -877,9 +877,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -916,7 +916,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     },
     {
@@ -925,9 +925,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -964,7 +964,7 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "0",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-speed-control/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "0"
     },
     {
@@ -973,9 +973,9 @@
         "numactl",
         "--cpunodebind=0",
         "--membind=0",
-        "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
+        "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-completion",
         "-m",
-        "/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf",
         "-ngl",
         "99",
         "-sm",
@@ -1012,12 +1012,12 @@
       ],
       "cuda_visible_devices": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
       "reuse_q8": "1",
-      "ld_library_path": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
+      "ld_library_path": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64",
       "split_tied_output": "1"
     }
   ],
   "nccl": {
-    "path": "/home/taly/legacy-ai-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so.2",
+    "path": "/home/taly/abra-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so.2",
     "sha256": "d52aa1198186191cbe13c59c66d328f1cdd92dbf291052b466a416e6b26d23a4"
   }
 }

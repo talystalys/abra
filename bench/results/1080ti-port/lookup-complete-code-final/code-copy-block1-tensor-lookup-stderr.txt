@@ -1,7 +1,7 @@
 ggml_cuda_init: found 2 CUDA devices (Total VRAM: 22330 MiB):
   Device 0: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
   Device 1: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
-llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
+llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
 llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
 llama_model_loader: - kv   0:                       general.architecture str              = qwen3
 llama_model_loader: - kv   1:                               general.type str              = model
@@ -1612,7 +1612,7 @@ llama_perf_context_print:       total time =   33188.39 ms / 21945 tokens
 llama_perf_context_print:    graphs reused =        765
 ~llama_context:     Meta() compute buffer size is 301.7500 MiB, matches expectation of 301.7500 MiB
 ~llama_context:  CUDA_Host compute buffer size is  13.0137 MiB, matches expectation of  13.0137 MiB
-	Command being timed: "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode /home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-port/lookup-complete-code-final/code-copy-prompt.txt bench/results/1080ti-port/lookup-complete-code-final/code-copy-block1-tensor-lookup 2048 16 4 15"
+	Command being timed: "/home/taly/abra-1080ti-port/build-sm61/lookup_decode /home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf bench/results/1080ti-port/lookup-complete-code-final/code-copy-prompt.txt bench/results/1080ti-port/lookup-complete-code-final/code-copy-block1-tensor-lookup 2048 16 4 15"
 	User time (seconds): 33.08
 	System time (seconds): 1.21
 	Percent of CPU this job got: 99%

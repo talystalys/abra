@@ -15,7 +15,7 @@ index f2e381ee0..b61781ea0 100644
          if (graph->instance == nullptr) { // Create executable graph from captured graph.
              CUDA_CHECK(cudaGraphInstantiate(&graph->instance, graph->graph, NULL, NULL, 0));
 +            if (ggml_cuda_info().devices[cuda_ctx->device].cc == 610) {
-+                GGML_LOG_INFO("legacy_ai: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
++                GGML_LOG_INFO("abra: Pascal CUDA graph instantiated on device %d\n", cuda_ctx->device);
 +            }
          }
          if (cuda_graph_update_required) { // Update graph executable
@@ -25,11 +25,11 @@ index f2e381ee0..b61781ea0 100644
  
      if (graph->graph == nullptr) {
 -        if (ggml_cuda_info().devices[cuda_ctx->device].cc < GGML_CUDA_CC_VOLTA) {
-+        // Legacy AI: explicitly opt in only the qualified Pascal SM 6.1 path.
++        // Abra: explicitly opt in only the qualified Pascal SM 6.1 path.
 +        // Preserve the architecture guard and all upstream graph compatibility,
 +        // warmup, recapture, update and explicit-disable checks by default.
 +        const int cc = ggml_cuda_info().devices[cuda_ctx->device].cc;
-+        const char * opt_in = std::getenv("LEGACY_AI_PASCAL_GRAPHS");
++        const char * opt_in = std::getenv("ABRA_PASCAL_GRAPHS");
 +        const bool pascal_graphs = cc == 610 && opt_in && std::strcmp(opt_in, "1") == 0;
 +        if (cc < GGML_CUDA_CC_VOLTA && !pascal_graphs) {
              if (!graph->disable_due_to_gpu_arch) {
@@ -43,7 +43,7 @@ index c99923804..68e8b9ae6 100644
  #include "quantize.cuh"
  #include "unary.cuh"
  #include "vecdotq.cuh"
-+#include "legacy-ai-q4k.cuh"
++#include "abra-q4k.cuh"
 +#include <cstring>
 +#include <atomic>
  
@@ -54,9 +54,9 @@ index c99923804..68e8b9ae6 100644
          const int nsamples_x, const int nsamples_dst, const int stride_sample_x, const int stride_sample_y, const int stride_sample_dst,
          const int ids_stride, cudaStream_t stream) {
 +
-+    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.
++    // Abra: preserve upstream for all unqualified shapes/layouts/fusions.
 +    static const bool legacy_q4k = [] {
-+        const char * value = std::getenv("LEGACY_AI_Q4K");
++        const char * value = std::getenv("ABRA_Q4K");
 +        return value && std::strcmp(value, "1") == 0;
 +    }();
 +    const bool canonical_shape =
@@ -71,7 +71,7 @@ index c99923804..68e8b9ae6 100644
 +        !fusion.x_bias && !fusion.gate && !fusion.gate_bias && !fusion.x_scale && !fusion.gate_scale &&
 +        ggml_cuda_info().devices[ggml_cuda_get_device()].cc == 610) {
 +        static const int wpr = [] {
-+            const char * value = std::getenv("LEGACY_AI_Q4K_WPR");
++            const char * value = std::getenv("ABRA_Q4K_WPR");
 +            return value ? std::atoi(value) : 2;
 +        }();
 +        const auto * w = static_cast<const block_q4_K *>(vx);
@@ -80,18 +80,18 @@ index c99923804..68e8b9ae6 100644
 +        if (wpr == 1 || wpr == 2 || wpr == 4) {
 +            static std::atomic_flag reported = ATOMIC_FLAG_INIT;
 +            if (!reported.test_and_set()) {
-+                GGML_LOG_INFO("legacy_ai: Q4_K runtime dispatch active, WPR=%d\n", wpr);
++                GGML_LOG_INFO("abra: Q4_K runtime dispatch active, WPR=%d\n", wpr);
 +            }
 +        }
 +        switch (wpr) {
 +            case 1:
-+                legacy_ai_q4k_kernel<1, 4><<<dim3((nrows_x + 3) / 4), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                abra_q4k_kernel<1, 4><<<dim3((nrows_x + 3) / 4), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
 +                return;
 +            case 2:
-+                legacy_ai_q4k_kernel<2, 4><<<dim3((nrows_x + 1) / 2), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                abra_q4k_kernel<2, 4><<<dim3((nrows_x + 1) / 2), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
 +                return;
 +            case 4:
-+                legacy_ai_q4k_kernel<4, 4><<<dim3(nrows_x), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
++                abra_q4k_kernel<4, 4><<<dim3(nrows_x), block, 0, stream>>>(w, x, dst, nrows_x, ncols_x);
 +                return;
 +            default:
 +                break; // Unsupported experimental configuration uses upstream.

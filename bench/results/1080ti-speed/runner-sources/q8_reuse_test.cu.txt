@@ -26,7 +26,7 @@ static ggml_tensor tensor(ggml_type type, int columns, int rows, void * data) {
 }
 
 int main() {
-    if (!std::getenv("LEGACY_AI_REUSE_Q8") || std::strcmp(std::getenv("LEGACY_AI_REUSE_Q8"), "1")) return 2;
+    if (!std::getenv("ABRA_REUSE_Q8") || std::strcmp(std::getenv("ABRA_REUSE_Q8"), "1")) return 2;
     cudaDeviceProp prop;
     CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
     std::printf("Device: %s, CC %d.%d, PCI %04x:%02x:%02x.0\n", prop.name,
@@ -87,7 +87,7 @@ int main() {
         }
         CUDA_CHECK(cudaMemcpy(dx, first.data(), K * sizeof(float), cudaMemcpyHostToDevice));
         {
-            legacy_ai_q8_reuse_scope scope(ctx, true);
+            abra_q8_reuse_scope scope(ctx, true);
             check(w4, x, expected[0]); check(w6, x, expected[1]); // shared Q4/Q6 bytes
             scope.invalidate_write(&y); // independent destination leaves the cache valid
             check(w4, x, expected[0]);
@@ -108,11 +108,11 @@ int main() {
         }
         CUDA_CHECK(cudaMemcpy(dx, first.data(), K * sizeof(float), cudaMemcpyHostToDevice));
         {
-            legacy_ai_q8_reuse_scope next_graph(ctx, true);
+            abra_q8_reuse_scope next_graph(ctx, true);
             check(w4, x, expected[0]); check(w6, x, expected[1]); // no cross-graph reuse
         }
         {
-            legacy_ai_q8_reuse_scope disabled(ctx, false);
+            abra_q8_reuse_scope disabled(ctx, false);
             check(w4, x, expected[0]); check(w6, x, expected[1]); // capture/concurrency fallback
         }
     }

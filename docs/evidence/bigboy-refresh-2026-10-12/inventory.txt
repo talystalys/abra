@@ -1,5 +1,5 @@
 Local capture UTC: 2026-10-11T16:02:06.696300+00:00
-Command: ssh -o BatchMode=yes -o ConnectTimeout=12 taly@BigBoy 'date -u -Is; hostname; whoami; fastfetch --logo none --pipe true; uname -r; lscpu; free -h; lsblk -d -o NAME,SIZE,TYPE,MODEL; df -h /; nvidia-smi --query-gpu=name,uuid,pci.bus_id,compute_cap,memory.total,driver_version,power.limit,pcie.link.gen.max,pcie.link.gen.current,pcie.link.width.max,pcie.link.width.current --format=csv; nvidia-smi topo -m; /usr/local/cuda-12.9/bin/nvcc --version; gcc --version | head -1; ldd --version | head -1; cmake --version | head -1; ninja --version; git -C /home/taly/legacy-ai status --short; git -C /home/taly/legacy-ai branch -vv; git -C /home/taly/legacy-ai rev-parse HEAD; git -C /home/taly/legacy-ai remote -v; ls -la /home/taly/legacy-ai/.deps; ls -l /home/taly/legacy-ai/models; find /home/taly/legacy-ai/.deps -maxdepth 6 -type f -name llama-bench -print; git -C /home/taly/legacy-ai/.deps/llama.cpp rev-parse HEAD'
+Command: ssh -o BatchMode=yes -o ConnectTimeout=12 taly@BigBoy 'date -u -Is; hostname; whoami; fastfetch --logo none --pipe true; uname -r; lscpu; free -h; lsblk -d -o NAME,SIZE,TYPE,MODEL; df -h /; nvidia-smi --query-gpu=name,uuid,pci.bus_id,compute_cap,memory.total,driver_version,power.limit,pcie.link.gen.max,pcie.link.gen.current,pcie.link.width.max,pcie.link.width.current --format=csv; nvidia-smi topo -m; /usr/local/cuda-12.9/bin/nvcc --version; gcc --version | head -1; ldd --version | head -1; cmake --version | head -1; ninja --version; git -C /home/taly/abra status --short; git -C /home/taly/abra branch -vv; git -C /home/taly/abra rev-parse HEAD; git -C /home/taly/abra remote -v; ls -la /home/taly/abra/.deps; ls -l /home/taly/abra/models; find /home/taly/abra/.deps -maxdepth 6 -type f -name llama-bench -print; git -C /home/taly/abra/.deps/llama.cpp rev-parse HEAD'
 
 2026-10-11T16:02:06+00:00
 BigBoy
@@ -109,8 +109,8 @@ cmake version 3.31.6
   m3/q4k-q8-microkernel      fb1d5f2 m3r2: eliminate upstream ABI shim and finalize qualification
   m4/autotuned-kernel-family 815e3ff m4: update Gate 21 deadlock-free verification in verify-m4.sh
 fb1d5f26162cf659ddc47b5752c257dff0bfa43a
-origin	git@github.com:talystalys/legacy-ai.git (fetch)
-origin	git@github.com:talystalys/legacy-ai.git (push)
+origin	git@github.com:talystalys/abra.git (fetch)
+origin	git@github.com:talystalys/abra.git (push)
 total 32
 drwxrwxr-x+  4 taly taly 4096 Sep 18 19:53 .
 drwxrwxr-x+ 15 taly taly 4096 Sep 18 19:57 ..
@@ -119,9 +119,9 @@ drwxrwxr-x+ 31 taly taly 4096 Sep 18 19:54 llama.cpp-qwen38
 total 18517316
 -rw-rw-r--+ 1 taly taly  2497280256 Aug 18 16:06 Qwen3-4B-Q4_K_M.gguf
 -rw-rw-r--+ 1 taly taly 16464440224 Sep 18 20:00 Qwen3.8-27B-UD-Q4_K_M.gguf
-/home/taly/legacy-ai/.deps/llama.cpp-qwen38/build/bin/llama-bench
-/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin/llama-bench
-/home/taly/legacy-ai/.deps/llama.cpp/build-cublas/bin/llama-bench
+/home/taly/abra/.deps/llama.cpp-qwen38/build/bin/llama-bench
+/home/taly/abra/.deps/llama.cpp/build-default/bin/llama-bench
+/home/taly/abra/.deps/llama.cpp/build-cublas/bin/llama-bench
 169e4a7ff201e666c2325bcd35afb64573e39d09
 
 Exit code: 0

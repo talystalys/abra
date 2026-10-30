@@ -40,12 +40,11 @@ def get_canonical_m3_metrics(bench_json_path):
         metrics[s] = {}
         n = vars_map[0]["N"]
         k = vars_map[0]["K"]
-        
-        # Raw upstream latencies for speedup base
+
         u_lats = sorted(vars_map[0]["latencies_us"])
         u_count = len(u_lats)
         upstream_med = u_lats[u_count // 2] if u_count % 2 == 1 else (u_lats[u_count // 2 - 1] + u_lats[u_count // 2]) / 2.0
-        
+
         u_comb_lats = sorted(vars_map[0].get("combined_latencies_us", []))
         u_comb_count = len(u_comb_lats)
         upstream_comb_med = u_comb_lats[u_comb_count // 2] if u_comb_count % 2 == 1 else (u_comb_lats[u_comb_count // 2 - 1] + u_comb_lats[u_comb_count // 2]) / 2.0 if u_comb_count > 0 else 0.0
@@ -73,8 +72,7 @@ def get_canonical_m3_metrics(bench_json_path):
             med_sec = med * 1e-6
             total_macs = float(n) * float(k)
             gmac_s = (total_macs / med_sec) / 1e9
-            
-            # Logical tensor bytes: Q4 weights (144 B per 256) + Q8 activations (36 B per 32) + F32 output (4 B per element)
+
             q4_bytes = float(n) * (float(k) / 256.0) * 144.0
             q8_bytes = (float(k) / 32.0) * 36.0
             out_bytes = float(n) * 4.0
@@ -185,7 +183,6 @@ def validate_m3_documentation(repo_root):
 
     errors = []
 
-    # 1. Manifest Validation
     print("[Check 1/6] Validating Manifest against canonical hardware assertions...")
     pascal_dev = pascal_canonical["device"]
     if pascal_dev["uuid"] != "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd":
@@ -203,28 +200,24 @@ def validate_m3_documentation(repo_root):
     if turing_dev["compute_capability"] != "7.5":
         errors.append(f"Turing CC mismatch: expected 7.5, got {turing_dev['compute_capability']}")
 
-    # Check manifest model info
     model_spec = manifest["expected_pinned_specifications"]["canonical_model"]
     if model_spec["sha256"] != "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5":
         errors.append(f"Canonical model SHA256 mismatch in manifest: {model_spec['sha256']}")
     if model_spec["total_tensors"] != 398 or model_spec["q4_k_tensors"] != 216:
         errors.append(f"Canonical model tensor count mismatch in manifest: {model_spec}")
 
-    # 2. Check Host Provenance in Manifest vs Documentation
     print("[Check 2/6] Validating Host Provenance synchronization...")
     observed_host = manifest.get("observed_execution_environment", {}).get("host", {})
     observed_toolchain = manifest.get("observed_execution_environment", {}).get("toolchain", {})
-    
+
     with open(status_path, "r", encoding="utf-8") as f:
         status_text = f.read()
     with open(report_path, "r", encoding="utf-8") as f:
         report_text = f.read()
 
-    # Check driver in status
     if observed_toolchain.get("nvidia_driver") and observed_toolchain["nvidia_driver"] not in status_text:
         errors.append(f"NVIDIA driver {observed_toolchain['nvidia_driver']} not in CURRENT_STATUS.md")
 
-    # 3. Check CURRENT_STATUS.md & MILESTONES.md
     print("[Check 3/6] Validating CURRENT_STATUS.md and MILESTONES.md...")
     if "M3: Pascal Q4_K x Q8_1 Decode Microkernel Characterization" not in status_text and "M3" not in status_text:
         errors.append("CURRENT_STATUS.md does not reference Milestone M3 properly")
@@ -233,7 +226,6 @@ def validate_m3_documentation(repo_root):
     if "Milestone M3" not in milestones_text:
         errors.append("MILESTONES.md does not reference Milestone M3")
 
-    # 4. Check Report existence and required sections
     print("[Check 4/6] Validating report structure...")
     if not os.path.isfile(report_path):
         errors.append(f"Missing M3 report at: {report_path}")
@@ -253,7 +245,6 @@ def validate_m3_documentation(repo_root):
         if req.lower() not in report_text.lower():
             errors.append(f"Report missing required section: '{req}'")
 
-    # 5. Deep Numerical Table Validation in Report
     print("[Check 5/6] Validating Report Markdown Tables against recomputed canonical metrics...")
     report_tables = extract_markdown_tables(report_text)
     print(f"  Found {len(report_tables)} markdown tables in report.")
@@ -273,10 +264,9 @@ def validate_m3_documentation(repo_root):
         if not rows:
             continue
         first_row = rows[0]
-        
-        # Check if Mode 1 table
+
         if any("Throughput (GMAC/s)" in k for k in first_row.keys()) and any("Speedup vs Upstream" in k for k in first_row.keys()):
-            is_pascal = (table_idx <= 3) # Table 2 is Pascal Mode 1, Table 4 is Turing Mode 1
+            is_pascal = (table_idx <= 3)
             arch_canonical = pascal_canonical if is_pascal else turing_canonical
             arch_name = "Pascal" if is_pascal else "Turing"
 
@@ -294,50 +284,41 @@ def validate_m3_documentation(repo_root):
                     continue
 
                 exp = arch_canonical["metrics"][s_name][v_id]
-                
-                # Check Median
+
                 act_med = float(find_cell(r, "Median"))
                 ok, err = check_close(exp["median_us"], act_med, tol=0.15, label=f"{arch_name} Mode1 {s_name} v{v_id} Median")
                 if not ok: errors.append(err)
 
-                # Check Mean
                 act_mean = float(find_cell(r, "Mean"))
                 ok, err = check_close(exp["mean_us"], act_mean, tol=0.15, label=f"{arch_name} Mode1 {s_name} v{v_id} Mean")
                 if not ok: errors.append(err)
 
-                # Check Min
                 act_min = float(find_cell(r, "Min"))
                 ok, err = check_close(exp["min_us"], act_min, tol=0.15, label=f"{arch_name} Mode1 {s_name} v{v_id} Min")
                 if not ok: errors.append(err)
 
-                # Check Max
                 act_max = float(find_cell(r, "Max"))
                 ok, err = check_close(exp["max_us"], act_max, tol=0.15, label=f"{arch_name} Mode1 {s_name} v{v_id} Max")
                 if not ok: errors.append(err)
 
-                # Check Spread
                 act_spread = float(find_cell(r, "Spread"))
                 ok, err = check_close(exp["spread_us"], act_spread, tol=0.15, label=f"{arch_name} Mode1 {s_name} v{v_id} Spread")
                 if not ok: errors.append(err)
 
-                # Check GMAC/s
                 act_gmac = float(find_cell(r, "Throughput (GMAC/s)"))
                 ok, err = check_close(exp["gmac_per_sec"], act_gmac, tol=1.5, label=f"{arch_name} Mode1 {s_name} v{v_id} GMAC/s")
                 if not ok: errors.append(err)
 
-                # Check Eff Throughput
                 act_eff = float(find_cell(r, "Eff. Throughput"))
                 ok, err = check_close(exp["effective_throughput_gbps"], act_eff, tol=1.5, label=f"{arch_name} Mode1 {s_name} v{v_id} Eff GiB/s")
                 if not ok: errors.append(err)
 
-                # Check Speedup
                 act_sp = float(find_cell(r, "Speedup vs Upstream"))
                 ok, err = check_close(exp["speedup_vs_upstream"], act_sp, tol=0.03, label=f"{arch_name} Mode1 {s_name} v{v_id} Speedup")
                 if not ok: errors.append(err)
 
-        # Check if Mode 2 table
         elif any("Quantize-Only" in k for k in first_row.keys()) and any("Combined Median" in k for k in first_row.keys()):
-            is_pascal = (table_idx <= 3) # Table 3 is Pascal Mode 2, Table 5 is Turing Mode 2
+            is_pascal = (table_idx <= 3)
             arch_canonical = pascal_canonical if is_pascal else turing_canonical
             arch_name = "Pascal" if is_pascal else "Turing"
 
@@ -356,27 +337,22 @@ def validate_m3_documentation(repo_root):
 
                 exp = arch_canonical["metrics"][s_name][v_id]
 
-                # Check Quantize-Only Median
                 act_q = float(find_cell(r, "Quantize-Only"))
                 ok, err = check_close(exp["quantize_only_median_us"], act_q, tol=0.15, label=f"{arch_name} Mode2 {s_name} v{v_id} Quant-only")
                 if not ok: errors.append(err)
 
-                # Check Combined Median
                 act_c_med = float(find_cell(r, "Combined Median"))
                 ok, err = check_close(exp["combined_median_us"], act_c_med, tol=0.15, label=f"{arch_name} Mode2 {s_name} v{v_id} Comb Median")
                 if not ok: errors.append(err)
 
-                # Check Combined Mean
                 act_c_mean = float(find_cell(r, "Combined Mean"))
                 ok, err = check_close(exp["combined_mean_us"], act_c_mean, tol=0.15, label=f"{arch_name} Mode2 {s_name} v{v_id} Comb Mean")
                 if not ok: errors.append(err)
 
-                # Check Combined Spread
                 act_c_spread = float(find_cell(r, "Combined Spread"))
                 ok, err = check_close(exp["combined_spread_us"], act_c_spread, tol=0.15, label=f"{arch_name} Mode2 {s_name} v{v_id} Comb Spread")
                 if not ok: errors.append(err)
 
-                # Check Combined Speedup
                 act_c_sp = float(find_cell(r, "Combined Speedup"))
                 ok, err = check_close(exp["speedup_mode2_vs_upstream"], act_c_sp, tol=0.03, label=f"{arch_name} Mode2 {s_name} v{v_id} Comb Speedup")
                 if not ok: errors.append(err)

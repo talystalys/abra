@@ -2,13 +2,13 @@
 [ 25%] Building CUDA object CMakeFiles/legacy_q4k.dir/kernels/q4k/q4k_family.cu.o
 [ 37%] Building CUDA object CMakeFiles/legacy_q4k.dir/kernels/q4k/upstream_adapter.cu.o
 [ 50%] Building CUDA object CMakeFiles/legacy_smoke.dir/kernels/smoke/smoke.cu.o
-In file included from /home/taly/legacy-ai-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
-/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+In file included from /home/taly/abra-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
+/home/taly/abra-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
  1228 | #define USE_CUDA_GRAPH
       |         ^~~~~~~~~~~~~~
 <command-line>: note: this is the location of the previous definition
-In file included from /home/taly/legacy-ai-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
-/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
+In file included from /home/taly/abra-1080ti-port/kernels/q4k/upstream_adapter.cu:1:
+/home/taly/abra-1080ti-port/.deps/llama.cpp/ggml/src/ggml-cuda/common.cuh:1228:9: warning: "USE_CUDA_GRAPH" redefined
  1228 | #define USE_CUDA_GRAPH
       |         ^~~~~~~~~~~~~~
 <command-line>: note: this is the location of the previous definition

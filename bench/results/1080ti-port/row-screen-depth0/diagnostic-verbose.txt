@@ -1,7 +1,7 @@
 ggml_cuda_init: found 2 CUDA devices (Total VRAM: 22330 MiB):
   Device 0: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
   Device 1: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
-llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
+llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
 llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
 llama_model_loader: - kv   0:                       general.architecture str              = qwen3
 llama_model_loader: - kv   1:                               general.type str              = model
@@ -133,5 +133,5 @@ print_info: max token length      = 256
 load_tensors: loading model tensors, this can take a while... (load_mode = mmap)
 llama_model_load: error loading model: device CUDA0 does not support split buffers
 llama_model_load_from_file_impl: failed to load model
-llama_bench: error: failed to load model '/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf'
+llama_bench: error: failed to load model '/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf'
 [

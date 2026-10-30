@@ -14,7 +14,6 @@ import subprocess
 ROOT = Path(__file__).resolve().parent.parent
 helpers = runpy.run_path(str(ROOT / 'tools/compare-runtimes.py'))
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', required=True, type=Path)
@@ -42,12 +41,12 @@ def main():
             directory.mkdir()
             bins = ROOT / '.deps' / source / build / 'bin'
             binary = bins / 'llama-perplexity'
-            env = {k: v for k, v in os.environ.items() if not k.startswith(('LEGACY_AI_', 'GGML_', 'NCCL_'))}
+            env = {k: v for k, v in os.environ.items() if not k.startswith(('ABRA_', 'GGML_', 'NCCL_'))}
             both = c['gpu'] == 'both'
             env.update(CUDA_VISIBLE_DEVICES=','.join(x[0] for x in helpers['DEVICES']) if both else helpers['DEVICES'][1][0], LD_LIBRARY_PATH=str(bins) + ':/usr/local/cuda-12.9/lib64')
             if c['family'] in ['legacy', 'port-control']:
                 flag = '1' if c['family'] == 'legacy' else '0'
-                env.update(LEGACY_AI_REUSE_Q8=flag, LEGACY_AI_SPLIT_TIED_OUTPUT=flag, GGML_CUDA_DISABLE_GRAPHS='1')
+                env.update(ABRA_REUSE_Q8=flag, ABRA_SPLIT_TIED_OUTPUT=flag, GGML_CUDA_DISABLE_GRAPHS='1')
             if both and (c['family'] in ['legacy', 'port-control'] or c.get('nccl')):
                 env['GGML_CUDA_ALLREDUCE'] = 'nccl'
             node = '0' if both else '1'
@@ -57,7 +56,7 @@ def main():
             if both:
                 argv += ['-ts', '1,1']
             manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'argv': argv,
-                        'environment': {k: v for k, v in env.items() if k.startswith(('CUDA_VISIBLE', 'LD_LIBRARY', 'LEGACY_AI_', 'GGML_'))},
+                        'environment': {k: v for k, v in env.items() if k.startswith(('CUDA_VISIBLE', 'LD_LIBRARY', 'ABRA_', 'GGML_'))},
                         'binary_sha256': helpers['digest'](binary), 'model_sha256': helpers['MODEL_SHA'],
                         'corpus_sha256': helpers['digest'](corpus), 'inventory': helpers['inventory']()}
             helpers['save'](directory / 'manifest.json', manifest)
@@ -71,7 +70,6 @@ def main():
                                        'ppl': float(matches[-1][0]) if matches else None,
                                        'reported_uncertainty': float(matches[-1][1]) if matches else None}
             helpers['save'](a.out / 'report.json', result)
-
 
 if __name__ == '__main__':
     main()

@@ -15,7 +15,7 @@
     } \
 } while (0)
 
-namespace legacy_ai {
+namespace abra {
 
 struct GpuDevice {
     int index;
@@ -34,7 +34,6 @@ struct GpuDevice {
     }
 };
 
-// Device querying and management
 std::vector<GpuDevice> query_all_devices();
 void print_device_table(const std::vector<GpuDevice> &devices);
 GpuDevice get_device_info(int device_index);
@@ -49,12 +48,10 @@ bool verify_device_identity(const GpuDevice &dev,
                             const std::string &expected_uuid,
                             std::string &error_msg);
 
-// CPU Oracle and Deterministic Input Generation
 void generate_deterministic_inputs(int32_t *a, int32_t *b, size_t n);
 int32_t cpu_oracle_eval(int32_t a, int32_t b);
 void compute_cpu_oracle(const int32_t *a, const int32_t *b, int32_t *c, size_t n);
 
-// GPU Smoke Kernel Launch and Validation
 struct SmokeTestResult {
     bool success;
     int device_index;
@@ -67,7 +64,6 @@ struct SmokeTestResult {
 
 SmokeTestResult execute_smoke_test(int device_index, size_t n, int block_size = 256);
 
-// Raw Kernel invocation for timing harness
 void launch_smoke_kernel(const int32_t *d_a, const int32_t *d_b, int32_t *d_c, size_t n, int block_size = 256, cudaStream_t stream = 0);
 
-} // namespace legacy_ai
+}

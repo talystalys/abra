@@ -1,7 +1,7 @@
 ggml_cuda_init: found 2 CUDA devices (Total VRAM: 22330 MiB):
   Device 0: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
   Device 1: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
-llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
+llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
 llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
 llama_model_loader: - kv   0:                       general.architecture str              = qwen3
 llama_model_loader: - kv   1:                               general.type str              = model
@@ -1314,293 +1314,293 @@ sched_reserve: graph nodes  = 1266
 sched_reserve: graph splits = 2
 sched_reserve: reserve took 37.18 ms, sched copies = 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 ggml_backend_cuda_graph_compute: CUDA graph warmup reset
 ggml_backend_cuda_graph_compute: CUDA graph warmup reset
 ggml_backend_cuda_graph_compute: CUDA graph warmup reset
@@ -1675,370 +1675,370 @@ ggml_backend_cuda_graph_compute: CUDA graph warmup reset
 ggml_backend_cuda_graph_compute: CUDA graph warmup reset
 CUDA Graph id 2391 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2464 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2392 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2465 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2393 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2466 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2394 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2467 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2395 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2468 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2396 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2469 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2397 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2470 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2398 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2471 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2399 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2472 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2400 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2473 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2401 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2474 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2402 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2475 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2403 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2476 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2404 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2477 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2405 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2478 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2406 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2479 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2407 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2480 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2408 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2481 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2409 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2482 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2410 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2483 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2411 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2484 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2412 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2485 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2413 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2486 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2414 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2487 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2415 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2488 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2416 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2489 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2417 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2490 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2418 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2491 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2419 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2492 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2420 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2493 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2421 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2494 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2422 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2495 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2423 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2496 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2424 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2497 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2425 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2498 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2426 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2499 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2427 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2500 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2428 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2501 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2429 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2502 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2430 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2503 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2431 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2504 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2432 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2505 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2433 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2506 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2434 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2507 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2435 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2508 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2436 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2509 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2437 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2510 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2438 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2511 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2439 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2512 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2440 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2513 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2441 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2514 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2442 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2515 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2443 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2516 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2444 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2517 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2445 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2518 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2446 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2519 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2447 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2520 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2448 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2521 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2449 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2522 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2450 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2523 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2451 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2524 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2452 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2525 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2453 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2526 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2454 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2527 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2455 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2528 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2456 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2529 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2457 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2530 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2458 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2531 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2459 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2532 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2460 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2533 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2461 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2534 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2462 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2535 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
 CUDA Graph id 2463 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 0
+abra: Pascal CUDA graph instantiated on device 0
 CUDA Graph id 2536 reused
 ggml_backend_cuda_graph_compute: CUDA graph warmup complete
-legacy_ai: Pascal CUDA graph instantiated on device 1
+abra: Pascal CUDA graph instantiated on device 1
 CUDA Graph id 2391 reused
 CUDA Graph id 2464 reused
 CUDA Graph id 2392 reused

@@ -14,10 +14,9 @@
 #include "kernels/dp4a/dp4a_gemv.cuh"
 #include "smoke/smoke.h"
 
-using namespace legacy_ai;
-using namespace legacy_ai::dp4a;
+using namespace abra;
+using namespace abra::dp4a;
 
-// CPU Oracle Reference for validation
 void cpu_gemv(
     const int8_t* W,
     const int8_t* x,
@@ -53,7 +52,7 @@ struct BenchmarkResult {
     int variant_id;
     int warmup_iterations;
     int measured_iterations;
-    std::vector<double> latencies_us; // microseconds
+    std::vector<double> latencies_us;
     double median_us;
     double mean_us;
     double min_us;
@@ -72,7 +71,7 @@ void fill_random_data(std::vector<int8_t>& W, std::vector<int8_t>& x, int N, int
     uint32_t state = seed;
     auto lcg = [&state]() -> int8_t {
         state = state * 1664525u + 1013904223u;
-        int val = (int)(state >> 26) - 32; // [-32, 31]
+        int val = (int)(state >> 26) - 32;
         return static_cast<int8_t>(val);
     };
     for (size_t i = 0; i < W.size(); ++i) W[i] = lcg();
@@ -111,14 +110,12 @@ BenchmarkResult run_microbenchmark(
     CUDA_CHECK(cudaMemcpy(d_x, h_x.data(), x_bytes, cudaMemcpyHostToDevice));
     CUDA_CHECK(cudaMemset(d_y, 0, y_bytes));
 
-    // Warmup
     for (int i = 0; i < warmup_reps; ++i) {
         launch_gemv(variant, d_W, d_x, d_y, N, K, 0);
     }
     CUDA_CHECK(cudaGetLastError());
     CUDA_CHECK(cudaDeviceSynchronize());
 
-    // Measured repetitions with CUDA events
     cudaEvent_t start, stop;
     CUDA_CHECK(cudaEventCreate(&start));
     CUDA_CHECK(cudaEventCreate(&stop));
@@ -133,13 +130,12 @@ BenchmarkResult run_microbenchmark(
 
         float ms = 0.0f;
         CUDA_CHECK(cudaEventElapsedTime(&ms, start, stop));
-        latencies_us[r] = static_cast<double>(ms) * 1000.0; // convert ms to us
+        latencies_us[r] = static_cast<double>(ms) * 1000.0;
     }
 
     CUDA_CHECK(cudaEventDestroy(start));
     CUDA_CHECK(cudaEventDestroy(stop));
 
-    // Verify bit-for-bit correctness after timing
     std::vector<int32_t> h_y_gpu(N, 0);
     CUDA_CHECK(cudaMemcpy(h_y_gpu.data(), d_y, y_bytes, cudaMemcpyDeviceToHost));
 
@@ -157,7 +153,6 @@ BenchmarkResult run_microbenchmark(
     CUDA_CHECK(cudaFree(d_x));
     CUDA_CHECK(cudaFree(d_y));
 
-    // Compute stats
     std::vector<double> sorted_lat = latencies_us;
     std::sort(sorted_lat.begin(), sorted_lat.end());
 
@@ -174,17 +169,15 @@ BenchmarkResult run_microbenchmark(
     double var = 0.0;
     if (measured_reps > 1) {
         for (double v : sorted_lat) var += (v - mean_val) * (v - mean_val);
-        var /= (measured_reps - 1); // Sample SD (N-1)
+        var /= (measured_reps - 1);
     }
     double stddev_val = std::sqrt(var);
 
-    // Metrics (based on median latency)
     double median_sec = median_val * 1e-6;
     double total_macs = static_cast<double>(N) * static_cast<double>(K);
     double gmac_per_sec = (total_macs / median_sec) / 1e9;
-    double effective_gops = (2.0 * total_macs / median_sec) / 1e9; // 1 MAC = 2 ops (1 mul + 1 add)
+    double effective_gops = (2.0 * total_macs / median_sec) / 1e9;
 
-    // Effective bytes: W (N*K int8) + x (K int8) + y (N int32)
     double effective_bytes = static_cast<double>(N * K) + static_cast<double>(K) + static_cast<double>(N * 4);
     double effective_throughput_gbps = (effective_bytes / median_sec) / (1024.0 * 1024.0 * 1024.0);
 
@@ -369,7 +362,6 @@ int main(int argc, char** argv) {
     std::cout << "Warmup Reps: " << warmup_reps << " | Measured Reps: " << measured_reps << "\n";
     std::cout << "============================================================\n\n";
 
-    // Strict Device Identity Assertion
     std::string identity_err;
     if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
         std::cerr << "BLOCKER: Physical GPU assertion failure on active device " << dev.index << ":\n" << identity_err;
@@ -381,13 +373,13 @@ int main(int argc, char** argv) {
     }
 
     const std::vector<ShapeSpec> shapes = {
-        // Required Real Qwen3-4B Shapes
+
         { "attn_q",      4096, 2560, true },
         { "attn_kv",     1024, 2560, true },
         { "attn_out",    2560, 4096, true },
         { "ffn_gate_up", 9728, 2560, true },
         { "ffn_down",    2560, 9728, true },
-        // Secondary Synthetic Scaling Shapes
+
         { "synth_256",    256,  256, false },
         { "synth_1024",  1024, 1024, false },
         { "synth_4096",  4096, 4096, false }

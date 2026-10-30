@@ -82,7 +82,7 @@ Secondary Control Device (Turing):
 
 The canonical GGUF model `Qwen3-4B-Q4_K_M.gguf` was parsed via `tools/extract-qwen3-tensor-map.py` to establish the exact tensor structure in `bench/results/m3/qwen3-q4k-tensor-map.json`.
 
-- **Model File**: `/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf`
+- **Model File**: `/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf`
 - **SHA256**: `7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5`
 - **Total Tensors**: 398
 - **Tensor Breakdown by Type**:

@@ -23,7 +23,6 @@ echo "======================================================================"
 echo "Milestone M3R2: Pascal Q4_K x Q8_1 Automated 25-Gate Qualification Suite"
 echo "======================================================================"
 
-# Gate 1: Lineage and Branch
 echo "[Gate 1/25] Verifying Git branch and lineage from accepted M2 base..."
 CURRENT_BRANCH=$(git -C "${REPO_DIR}" rev-parse --abbrev-ref HEAD)
 if [[ "${CURRENT_BRANCH}" != "m3/q4k-q8-microkernel" ]]; then
@@ -38,7 +37,6 @@ if ! git -C "${REPO_DIR}" merge-base --is-ancestor "${ACCEPTED_M2_HEAD}" HEAD; t
 fi
 echo "  Lineage verified: Direct descendant of accepted M2 commit ${ACCEPTED_M2_HEAD}."
 
-# Gate 2: Toolchain Checks
 echo "[Gate 2/25] Verifying CUDA toolchain and compiler environment..."
 NVCC_BIN="$(which nvcc 2>/dev/null || echo /usr/local/cuda-12.9/bin/nvcc)"
 if [[ ! -x "${NVCC_BIN}" ]]; then
@@ -49,7 +47,6 @@ echo "  NVCC: $("${NVCC_BIN}" --version | grep "release" | head -n 1)"
 echo "  GCC:  $(gcc --version | head -n 1)"
 echo "  Glibc: $(ldd --version | head -n 1)"
 
-# Gate 3: Mandatory Pinned llama.cpp Worktree & Clean State (Strict)
 echo "[Gate 3/25] Verifying mandatory pinned llama.cpp worktree and clean state..."
 if [[ ! -d "${LLAMA_DIR}" ]] || [[ ! -d "${LLAMA_DIR}/.git" ]]; then
     echo "FATAL: Mandatory pinned llama.cpp directory missing at ${LLAMA_DIR}!" >&2
@@ -69,7 +66,6 @@ if ! git -C "${LLAMA_DIR}" diff-index --quiet HEAD --; then
 fi
 echo "  llama.cpp pinned commit verified: ${LLAMA_COMMIT} (clean worktree)."
 
-# Gate 4: Build & Device Architecture Image Verification
 echo "[Gate 4/25] Checking build and dual-arch device images (sm_61 and sm_75)..."
 cd "${BUILD_DIR}"
 make -j$(nproc) q4k_q8_test q4k_q8_bench dump_m3_occupancy legacy_q4k
@@ -88,7 +84,6 @@ if ! echo "${ARCH_DUMP}" | grep -q "sm_75"; then
 fi
 echo "  Dual-architecture target images verified in ${OBJ_FILE}."
 
-# Gate 5: Canonical Model Checksum & Tensor Map
 echo "[Gate 5/25] Verifying Canonical GGUF model and tensor map..."
 if [[ -f "${MODEL_PATH}" ]]; then
     OBS_SHA=$(sha256sum "${MODEL_PATH}" | awk '{print $1}')
@@ -106,7 +101,6 @@ if [[ ! -f "${TENSOR_MAP_JSON}" ]]; then
 fi
 echo "  Tensor map file verified: ${TENSOR_MAP_JSON}"
 
-# Gate 6: Upstream Library Provenance Evidence
 echo "[Gate 6/25] Verifying upstream library provenance evidence..."
 PROV_FILE="${EVIDENCE_DIR}/m3r2-upstream-library-provenance.txt"
 if [[ ! -f "${PROV_FILE}" ]] || ! grep -q "libggml-cuda.so" "${PROV_FILE}" || ! grep -q "${PINNED_LLAMA_COMMIT}" "${PROV_FILE}"; then
@@ -115,7 +109,6 @@ if [[ ! -f "${PROV_FILE}" ]] || ! grep -q "libggml-cuda.so" "${PROV_FILE}" || ! 
 fi
 echo "  Verified library provenance: ${PROV_FILE}."
 
-# Gate 7: Link Proof Evidence
 echo "[Gate 7/25] Verifying upstream dynamic library link proof evidence..."
 LINK_PROOF="${EVIDENCE_DIR}/m3r1-upstream-link-proof.txt"
 if [[ ! -f "${LINK_PROOF}" ]] || ! grep -q "libggml-cuda.so" "${LINK_PROOF}" || ! grep -q "ggml_cuda_op_mul_mat_vec_q" "${LINK_PROOF}"; then
@@ -124,7 +117,6 @@ if [[ ! -f "${LINK_PROOF}" ]] || ! grep -q "libggml-cuda.so" "${LINK_PROOF}" || 
 fi
 echo "  Verified dynamic link proof in ${LINK_PROOF}."
 
-# Gate 8: Upstream SASS Evidence
 echo "[Gate 8/25] Verifying upstream SASS disassembly evidence..."
 UPSTREAM_SASS="${EVIDENCE_DIR}/m3r1-upstream-sass.txt"
 if [[ ! -f "${UPSTREAM_SASS}" ]]; then
@@ -133,7 +125,6 @@ if [[ ! -f "${UPSTREAM_SASS}" ]]; then
 fi
 echo "  Verified upstream SASS evidence (${UPSTREAM_SASS})."
 
-# Gate 9: Custom Kernel SASS Evidence
 echo "[Gate 9/25] Verifying native IDP.4A.S8.S8 in custom Pascal SASS disassembly..."
 CUSTOM_SASS="${EVIDENCE_DIR}/m3-pascal-q4k-sass.txt"
 if [[ ! -f "${CUSTOM_SASS}" ]] || ! grep -q "IDP.4A.S8.S8" "${CUSTOM_SASS}"; then
@@ -142,7 +133,6 @@ if [[ ! -f "${CUSTOM_SASS}" ]] || ! grep -q "IDP.4A.S8.S8" "${CUSTOM_SASS}"; the
 fi
 echo "  Verified native IDP.4A.S8.S8 instructions in ${CUSTOM_SASS}."
 
-# Gate 10: Theoretical Occupancy & Resource Usage Evidence
 echo "[Gate 10/25] Verifying theoretical occupancy and resource usage evidence..."
 OCC_FILE="${EVIDENCE_DIR}/m3-resource-usage.txt"
 if [[ ! -f "${OCC_FILE}" ]] || ! grep -q "GTX 1060" "${OCC_FILE}"; then
@@ -151,7 +141,6 @@ if [[ ! -f "${OCC_FILE}" ]] || ! grep -q "GTX 1060" "${OCC_FILE}"; then
 fi
 echo "  Verified theoretical occupancy metrics in ${OCC_FILE}."
 
-# Gate 11: Upstream MMVQ Dispatch Proof
 echo "[Gate 11/25] Verifying upstream MMVQ dispatch proof..."
 DISPATCH_FILE="${EVIDENCE_DIR}/m3-upstream-mmvq-dispatch.txt"
 if [[ ! -f "${DISPATCH_FILE}" ]] || ! grep -q "MMVQ_PARAMETERS_GENERIC" "${DISPATCH_FILE}"; then
@@ -160,7 +149,6 @@ if [[ ! -f "${DISPATCH_FILE}" ]] || ! grep -q "MMVQ_PARAMETERS_GENERIC" "${DISPA
 fi
 echo "  Verified MMVQ dispatch proof in ${DISPATCH_FILE}."
 
-# Gate 12: Frozen Numerical Envelope
 echo "[Gate 12/25] Verifying frozen numerical envelope..."
 ENVELOPE_JSON="${RESULTS_DIR}/numerical-envelope.json"
 if [[ ! -f "${ENVELOPE_JSON}" ]]; then
@@ -176,7 +164,6 @@ assert env['upstream_vs_f64_oracle']['max_rel_error'] < 0.005
 print('  Verified numerical envelope: max rel error =', env['upstream_vs_f64_oracle']['max_rel_error'])
 "
 
-# Gate 13: Pre-m3r2 Evidence Preserved
 echo "[Gate 13/25] Verifying pre-m3r2 2e28b42 evidence preservation..."
 if [[ ! -f "${PRE_M3R2_DIR}/pascal-q4k-bench.json" ]]; then
     echo "FATAL: Pre-m3r2 benchmark evidence missing in ${PRE_M3R2_DIR}!" >&2
@@ -184,7 +171,6 @@ if [[ ! -f "${PRE_M3R2_DIR}/pascal-q4k-bench.json" ]]; then
 fi
 echo "  Pre-m3r2 evidence preserved in ${PRE_M3R2_DIR}."
 
-# Gate 14: Upstream Adapter ABI Verification (No Fake Context)
 echo "[Gate 14/25] Verifying upstream_adapter.cu uses real common.cuh context..."
 ADAPTER_CU="${REPO_DIR}/kernels/q4k/upstream_adapter.cu"
 if grep -q "char padding\[1024\]" "${ADAPTER_CU}" || grep -q "struct ggml_backend_cuda_context {" "${ADAPTER_CU}"; then
@@ -197,7 +183,6 @@ if ! grep -q "common.cuh" "${ADAPTER_CU}" || ! grep -q "ggml_backend_cuda_contex
 fi
 echo "  Verified real ggml_backend_cuda_context ABI usage in upstream_adapter.cu."
 
-# Gate 15: Distinct Kernel Verification
 echo "[Gate 15/25] Verifying Variant U != Variant A != Variant B != Variant C..."
 python3 -c "
 import subprocess
@@ -209,7 +194,6 @@ assert 'q4k_q8_mmvq_1warp_kernel' in nm_out, 'Variant C symbol missing'
 print('  All 4 distinct kernel symbols verified in binary.')
 "
 
-# Gate 16: Physical GPU Assertions & Correctness Tests (Pascal)
 echo "[Gate 16/25] Executing in-binary identity and correctness suite on Pascal GP106..."
 export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
 "${BUILD_DIR}/q4k_q8_test" --arch pascal \
@@ -220,7 +204,6 @@ export CUDA_VISIBLE_DEVICES="${PASCAL_UUID}"
     --model "${MODEL_PATH}"
 echo "  Pascal correctness suite: 168/168 PASSED."
 
-# Gate 17: Physical GPU Assertions & Correctness Tests (Turing)
 echo "[Gate 17/25] Executing in-binary identity and correctness suite on Turing TU116..."
 export CUDA_VISIBLE_DEVICES="${TURING_UUID}"
 "${BUILD_DIR}/q4k_q8_test" --arch turing \
@@ -231,7 +214,6 @@ export CUDA_VISIBLE_DEVICES="${TURING_UUID}"
     --model "${MODEL_PATH}"
 echo "  Turing correctness suite: 168/168 PASSED."
 
-# Gate 18: Pascal Benchmark JSON Validation
 echo "[Gate 18/25] Validating Pascal benchmark JSON..."
 python3 -c "
 import json
@@ -245,7 +227,6 @@ for r in d['results']:
 print('  Pascal benchmark JSON verified: 32 results, 100% verified_correct.')
 "
 
-# Gate 19: Turing Benchmark JSON Validation
 echo "[Gate 19/25] Validating Turing benchmark JSON..."
 python3 -c "
 import json
@@ -259,7 +240,6 @@ for r in d['results']:
 print('  Turing benchmark JSON verified: 32 results, 100% verified_correct.')
 "
 
-# Gate 20: Telemetry CSVs
 echo "[Gate 20/25] Validating continuous GPU telemetry CSVs..."
 if [[ ! -f "${RESULTS_DIR}/pascal-telemetry.csv" ]] || [[ ! -f "${RESULTS_DIR}/turing-telemetry.csv" ]]; then
     echo "FATAL: Telemetry CSV files missing!" >&2
@@ -267,7 +247,6 @@ if [[ ! -f "${RESULTS_DIR}/pascal-telemetry.csv" ]] || [[ ! -f "${RESULTS_DIR}/t
 fi
 echo "  Continuous GPU telemetry CSVs verified."
 
-# Gate 21: Statistical Summary JSON
 echo "[Gate 21/25] Validating statistical summary JSON..."
 if [[ ! -f "${RESULTS_DIR}/analysis-m3-summary.json" ]]; then
     echo "FATAL: Summary JSON missing at ${RESULTS_DIR}/analysis-m3-summary.json" >&2
@@ -275,7 +254,6 @@ if [[ ! -f "${RESULTS_DIR}/analysis-m3-summary.json" ]]; then
 fi
 echo "  Statistical summary JSON verified."
 
-# Gate 22: Provenance Manifest Validation
 echo "[Gate 22/25] Validating canonical live manifest.json..."
 MANIFEST_FILE="${RESULTS_DIR}/manifest.json"
 if [[ ! -f "${MANIFEST_FILE}" ]]; then
@@ -292,24 +270,20 @@ assert 'GTX 1660' in m['observed_execution_environment']['secondary_control_turi
 print('  Manifest structure and provenance assertions verified.')
 "
 
-# Gate 23: Strict Documentation Consistency Check
 echo "[Gate 23/25] Executing strict structured documentation consistency checker..."
 python3 "${SCRIPT_DIR}/check_m3_documentation_consistency.py" "${REPO_DIR}"
 
-# Gate 24: AGENTS.md Demarcation Check
 echo "[Gate 24/25] Validating AGENTS.md device demarcation in all documentation..."
 python3 -c "
 for fname in ['${REPO_DIR}/docs/reports/m3-q4k-q8-microkernel.md', '${REPO_DIR}/CURRENT_STATUS.md']:
     text = open(fname).read()
     assert 'GTX 1660 SUPER' in text
     assert 'GTX 1060' in text
-    # Ensure 1660 SUPER is not claimed as Pascal
     assert 'GTX 1660 SUPER (Pascal' not in text
     assert 'GTX 1660 SUPER — Pascal' not in text
 print('  AGENTS.md device demarcation assertions verified.')
 "
 
-# Gate 25: Git Workspace Hygiene
 echo "[Gate 25/25] Verifying Git workspace hygiene (no forbidden binaries or weights committed)..."
 python3 -c "
 import subprocess

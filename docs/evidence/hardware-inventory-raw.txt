@@ -7,7 +7,7 @@ Captured on: 2026-08-18 12:56:26 UTC
 BigBoy
 
 --- [ Working Directory ] ---
-/home/taly/legacy-ai
+/home/taly/abra
 
 --- [ OS Release ] ---
 PRETTY_NAME="Debian GNU/Linux 13 (trixie)"

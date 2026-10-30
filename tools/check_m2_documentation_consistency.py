@@ -28,7 +28,6 @@ def get_canonical_benchmark_metrics(bench_json_path):
     data = load_json(bench_json_path)
     metrics = {}
 
-    # Group results by shape
     by_shape = {}
     for r in data.get("results", []):
         s = r["shape_name"]
@@ -155,7 +154,7 @@ def validate_structured_table(section_name, table_lines, expected_metrics, is_qw
         return
 
     for row in rows:
-        # Identify shape
+
         shape_cell = None
         for k, v in row.items():
             if "Shape" in k:
@@ -167,7 +166,6 @@ def validate_structured_table(section_name, table_lines, expected_metrics, is_qw
 
         m = expected_metrics[shape_cell]
 
-        # Check N, K
         for k, v in row.items():
             ck = clean_cell(k)
             cv = clean_cell(v)
@@ -215,7 +213,7 @@ def validate_structured_table(section_name, table_lines, expected_metrics, is_qw
                 if abs(val - exp) > 0.01:
                     errors.append(f"Section '{section_name}', shape '{shape_cell}': Effective throughput mismatch: reported {val:.2f}, expected {exp:.2f}")
             elif not is_qwen_table and "Speedup vs Scalar (Best)" in k:
-                # best variant
+
                 best_vid = min(range(4), key=lambda i: m[i]["median_us"])
                 exp_sp = round(m[0]["median_us"] / m[best_vid]["median_us"], 2)
                 num_match = re.search(r"(\d+\.\d+)", cv)
@@ -235,7 +233,6 @@ def validate_manifest_provenance(report_text, status_text, manifest, errors):
     pascal = env.get("primary_qualification_pascal_observed", {})
     turing = env.get("secondary_control_turing_observed", {})
 
-    # 1. Host assertions
     hostname = host.get("hostname", "")
     if hostname not in report_text:
         errors.append(f"Host provenance: hostname '{hostname}' not found in report")
@@ -267,7 +264,6 @@ def validate_manifest_provenance(report_text, status_text, manifest, errors):
     if cuda_path not in report_text or cuda_path not in status_text:
         errors.append(f"Toolchain provenance: CUDA path '{cuda_path}' missing from report or status")
 
-    # 2. GPU assertions
     if pascal.get("name") not in report_text or pascal.get("uuid") not in report_text or pascal.get("pci_bus_id") not in report_text:
         errors.append(f"Pascal GPU identity ({pascal.get('name')}, {pascal.get('uuid')}, {pascal.get('pci_bus_id')}) missing from report")
     if pascal.get("name") not in status_text or pascal.get("uuid") not in status_text or pascal.get("pci_bus_id") not in status_text:
@@ -328,44 +324,36 @@ def verify_all_documentation(repo_dir):
 
     errors = []
 
-    # 1. Parse tables by section in report
     sections = extract_markdown_tables_by_heading(report_text)
 
-    # Find Section 6.1 (Pascal Qwen)
     sec_6_1 = next((k for k in sections if "6.1" in k and "Qwen" in k), None)
     if sec_6_1:
         validate_structured_table(sec_6_1, sections[sec_6_1], pascal_data["metrics"], is_qwen_table=True, errors=errors)
     else:
         errors.append("Report missing Section 6.1 table (Pascal Qwen shapes).")
 
-    # Find Section 6.2 (Pascal Synthetic)
     sec_6_2 = next((k for k in sections if "6.2" in k and "Synthetic" in k), None)
     if sec_6_2:
         validate_structured_table(sec_6_2, sections[sec_6_2], pascal_data["metrics"], is_qwen_table=False, errors=errors)
     else:
         errors.append("Report missing Section 6.2 table (Pascal Synthetic shapes).")
 
-    # Find Section 7.1 (Turing Qwen)
     sec_7_1 = next((k for k in sections if "7.1" in k and "Qwen" in k), None)
     if sec_7_1:
         validate_structured_table(sec_7_1, sections[sec_7_1], turing_data["metrics"], is_qwen_table=True, errors=errors)
     else:
         errors.append("Report missing Section 7.1 table (Turing Qwen shapes).")
 
-    # Find Section 7.2 (Turing Synthetic)
     sec_7_2 = next((k for k in sections if "7.2" in k and "Synthetic" in k), None)
     if sec_7_2:
         validate_structured_table(sec_7_2, sections[sec_7_2], turing_data["metrics"], is_qwen_table=False, errors=errors)
     else:
         errors.append("Report missing Section 7.2 table (Turing Synthetic shapes).")
 
-    # 2. Validate Provenance against manifest.json
     validate_manifest_provenance(report_text, status_text, manifest_data, errors)
 
-    # 3. Dynamically validate MILESTONES.md
     validate_milestones_dynamically(milestones_text, pascal_data["metrics"], errors)
 
-    # 4. Check causal bottleneck wording
     validate_causal_bottleneck_language(report_text, errors)
 
     if errors:

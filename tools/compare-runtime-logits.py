@@ -12,7 +12,6 @@ import math
 from pathlib import Path
 import struct
 
-
 def read(path):
     data = path.read_bytes()
     magic, vocab, steps = struct.unpack('<III', data[:12])
@@ -21,7 +20,6 @@ def read(path):
     values = array('f')
     values.frombytes(data[12:])
     return (vocab, steps), values, hashlib.sha256(data).hexdigest()
-
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('reference', type=Path)

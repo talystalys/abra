@@ -69,7 +69,7 @@ CMake Error at /usr/share/cmake-3.31/Modules/CMakeDetermineCompilerId.cmake:865 
 
   #$ cudafe++ --c++17 --gnu_version=140200 --display_error_number
   --orig_src_file_name "CMakeCUDACompilerId.cu" --orig_src_path_name
-  "/home/taly/legacy-ai-1080ti-port/build/CMakeFiles/3.31.6/CompilerIdCUDA/CMakeCUDACompilerId.cu"
+  "/home/taly/abra-1080ti-port/build/CMakeFiles/3.31.6/CompilerIdCUDA/CMakeCUDACompilerId.cu"
   --allow_managed --m64 --parse_templates --gen_c_file_name
   "tmp/CMakeCUDACompilerId.cudafe1.cpp" --stub_file_name
   "CMakeCUDACompilerId.cudafe1.stub.c" --gen_module_id_file

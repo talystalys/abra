@@ -44,8 +44,8 @@ if not binary.exists() or not a.model.exists():
     raise SystemExit('Build the runtime and provide the canonical model first')
 optimized = a.runtime == 'tensor' and not a.unoptimized
 if optimized:
-    required = {'libllama.so': b'legacy_ai: tied Qwen output row splitting active',
-                'libggml-cuda.so': b'legacy_ai: graph-local Q8 activation reuse active'}
+    required = {'libllama.so': b'abra: tied Qwen output row splitting active',
+                'libggml-cuda.so': b'abra: graph-local Q8 activation reuse active'}
     if any(marker not in (binary.parent / name).read_bytes() for name, marker in required.items()):
         raise SystemExit('Rebuild with tools/build-port.py --reuse-q8 --split-tied-output before using optimized tensor mode; --unoptimized keeps the previous mode')
 if a.runtime == 'tensor' and a.allreduce == 'nccl':
@@ -54,17 +54,17 @@ if a.runtime == 'tensor' and a.allreduce == 'nccl':
         raise SystemExit('Build with --nccl-prefix first, or select --runtime flash for one GPU')
 env = os.environ.copy()
 for key in list(env):
-    if key.startswith('LEGACY_AI_'):
+    if key.startswith('ABRA_'):
         del env[key]
-env.update(GGML_CUDA_ALLREDUCE=a.allreduce if a.runtime=='tensor' else 'none', CUDA_VISIBLE_DEVICES=uuid, LEGACY_AI_PASCAL_GRAPHS='1' if a.runtime == 'graphs' else '0',
-           LEGACY_AI_SPLIT_TIED_OUTPUT='1' if optimized else '0', LEGACY_AI_REUSE_Q8='1' if optimized else '0',
-           LEGACY_AI_ATTENTION='1' if a.runtime == 'exact' else '0', LEGACY_AI_ATTENTION_ROWS='4',
-           LEGACY_AI_ATTENTION_V='1' if a.runtime == 'exact' else '0', LEGACY_AI_ATTENTION_V_ROWS='2',
-           LEGACY_AI_Q4K='1' if a.runtime == 'packed' else '0', LEGACY_AI_Q6K='0',
-           LEGACY_AI_Q4K_WPR='2', LEGACY_AI_Q4K_WPB='8', LEGACY_AI_Q4K_SUMS='0',
-           LEGACY_AI_PREPACK='1' if a.runtime == 'packed' else '0',
+env.update(GGML_CUDA_ALLREDUCE=a.allreduce if a.runtime=='tensor' else 'none', CUDA_VISIBLE_DEVICES=uuid, ABRA_PASCAL_GRAPHS='1' if a.runtime == 'graphs' else '0',
+           ABRA_SPLIT_TIED_OUTPUT='1' if optimized else '0', ABRA_REUSE_Q8='1' if optimized else '0',
+           ABRA_ATTENTION='1' if a.runtime == 'exact' else '0', ABRA_ATTENTION_ROWS='4',
+           ABRA_ATTENTION_V='1' if a.runtime == 'exact' else '0', ABRA_ATTENTION_V_ROWS='2',
+           ABRA_Q4K='1' if a.runtime == 'packed' else '0', ABRA_Q6K='0',
+           ABRA_Q4K_WPR='2', ABRA_Q4K_WPB='8', ABRA_Q4K_SUMS='0',
+           ABRA_PREPACK='1' if a.runtime == 'packed' else '0',
            LD_LIBRARY_PATH=str(binary.parent.resolve()) + ':/usr/local/cuda-12.9/lib64')
-env.pop('LEGACY_AI_PROFILE', None)
+env.pop('ABRA_PROFILE', None)
 if a.runtime == 'graphs':
     env.pop('GGML_CUDA_DISABLE_GRAPHS', None)
 else:

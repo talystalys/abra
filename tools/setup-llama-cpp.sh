@@ -19,7 +19,6 @@ echo "Repository: ${PINNED_REPO}"
 echo "Commit:     ${PINNED_COMMIT}"
 echo "============================================================"
 
-# Ensure compatibility overlay is present
 "${REPO_ROOT}/tools/setup-cuda-compat.sh"
 COMPAT_INC="${REPO_ROOT}/.cuda_compat/include"
 
@@ -41,7 +40,6 @@ if [[ "${ACTUAL_COMMIT}" != "${PINNED_COMMIT}" ]]; then
     exit 1
 fi
 
-# Verify no tracked modifications exist
 if ! git diff-index --quiet HEAD --; then
     echo "ERROR: Tracked source files in ${LLAMA_DIR} are modified!" >&2
     git status --short
@@ -50,7 +48,6 @@ fi
 
 echo "Verified clean llama.cpp at pinned commit: ${ACTUAL_COMMIT}"
 
-# 1. Build Default Upstream CUDA Configuration
 echo
 echo "--- Building Default llama.cpp (MMQ / Default Dispatch) ---"
 mkdir -p "${BUILD_DEFAULT}"
@@ -66,7 +63,6 @@ cmake -S "${LLAMA_DIR}" -B "${BUILD_DEFAULT}" \
 cmake --build "${BUILD_DEFAULT}" --config Release --target llama-bench llama-cli --parallel "$(nproc)"
 echo "Default build complete: ${BUILD_DEFAULT}/bin/llama-bench"
 
-# 2. Build Forced-cuBLAS Configuration (Baseline B Diagnostic)
 echo
 echo "--- Building Forced-cuBLAS Diagnostic Build ---"
 mkdir -p "${BUILD_CUBLAS}"

@@ -15,7 +15,6 @@ CASES = [
     {'id': 'prose', 'prompt': 'Explain CPU cache lines, locality and memory bandwidth in three short paragraphs.'},
 ]
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -73,7 +72,6 @@ def main():
                 aggregate[name + '-' + case['id']] = {**H['summarise'](rows),
                     'output_budget_hits': sum(r['output_tokens'] >= 1024 for r in rows)}
         H['save'](a.out / 'aggregate.json', aggregate)
-
 
 if __name__ == '__main__':
     main()

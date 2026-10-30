@@ -2,5 +2,5 @@
   "utc": "2026-10-12T09:51:14.970194+00:00",
   "pid": 3215934,
   "reason": "Repeated initialization stall; abort only this owned proof process",
-  "argv": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-bench -m /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf -p 32 -n 0 -d 0 -b 2048 -ub 512 -ctk f16 -ctv f16 -ngl 99 -nkvo 0 -r 1 -t 4 -fa on -sm tensor -o json -ts 1/1 -v "
+  "argv": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin/llama-bench -m /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf -p 32 -n 0 -d 0 -b 2048 -ub 512 -ctk f16 -ctv f16 -ngl 99 -nkvo 0 -r 1 -t 4 -fa on -sm tensor -o json -ts 1/1 -v "
 }

@@ -1,19 +1,19 @@
-Executing: git -C /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp diff --exit-code HEAD
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-port-runtime.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port --kernels --profile
+Executing: git -C /home/taly/abra-1080ti-port/.deps/llama.cpp diff --exit-code HEAD
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-port-runtime.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port --kernels --profile
 Pascal graph patch already applied
-Integrated opt-in exact-order kernels with upstream fallback: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/mmvq.cu
-Installed opt-in diagnostic event timing: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/ggml-cuda.cu
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-packed-weights.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
+Integrated opt-in exact-order kernels with upstream fallback: /home/taly/abra-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/mmvq.cu
+Installed opt-in diagnostic event timing: /home/taly/abra-1080ti-port/.deps/llama.cpp-port/ggml/src/ggml-cuda/ggml-cuda.cu
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-packed-weights.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port
 Prepared model-owned Q4_K metadata cache
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-attention.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-attention.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port
 Integrated opt-in exact-order attention kernel
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-q8-reuse.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
-Installed opt-in graph-local activation reuse: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-output-split.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
-Installed opt-in tied output row splitting: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/src/llama-model.cpp
-Executing: python3 /home/taly/legacy-ai-1080ti-port/tools/prepare-nccl.py /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-q8-reuse.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port
+Installed opt-in graph-local activation reuse: /home/taly/abra-1080ti-port/.deps/llama.cpp-port
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-output-split.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port
+Installed opt-in tied output row splitting: /home/taly/abra-1080ti-port/.deps/llama.cpp-port/src/llama-model.cpp
+Executing: python3 /home/taly/abra-1080ti-port/tools/prepare-nccl.py /home/taly/abra-1080ti-port/.deps/llama.cpp-port
 Prepared optional NCCL; Pascal uses FP32 for all collective sizes
-Executing: cmake -S /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port -B /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port -DGGML_CUDA=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_CURL=OFF -DNCCL_INCLUDE_DIR=/home/taly/legacy-ai-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/include -DNCCL_LIBRARY=/home/taly/legacy-ai-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so -DGGML_CUDA_NCCL=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc -DCMAKE_CUDA_FLAGS=-I/home/taly/legacy-ai-1080ti-port/.cuda_compat/include -Wno-deprecated-gpu-targets -DCMAKE_CUDA_ARCHITECTURES=61 -DCMAKE_BUILD_TYPE=Release
+Executing: cmake -S /home/taly/abra-1080ti-port/.deps/llama.cpp-port -B /home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port -DGGML_CUDA=ON -DLLAMA_BUILD_TESTS=OFF -DLLAMA_CURL=OFF -DNCCL_INCLUDE_DIR=/home/taly/abra-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/include -DNCCL_LIBRARY=/home/taly/abra-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so -DGGML_CUDA_NCCL=ON -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc -DCMAKE_CUDA_FLAGS=-I/home/taly/abra-1080ti-port/.cuda_compat/include -Wno-deprecated-gpu-targets -DCMAKE_CUDA_ARCHITECTURES=61 -DCMAKE_BUILD_TYPE=Release
 -- llama.cpp version: 0.1.2-dev
 CMAKE_BUILD_TYPE=Release
 -- Warning: ccache not found - consider installing it for faster compilation or disable this warning with GGML_CCACHE=OFF
@@ -32,34 +32,34 @@ CMAKE_BUILD_TYPE=Release
 -- Generating embedded license file for target: llama-app
 -- Configuring done (0.7s)
 -- Generating done (0.3s)
--- Build files have been written to: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port
-Executing: cmake --build /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port --target llama-bench llama-cli llama-completion llama-perplexity --parallel 8
+-- Build files have been written to: /home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port
+Executing: cmake --build /home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port --target llama-bench llama-cli llama-completion llama-perplexity --parallel 8
 [  0%] Built target llama-common-base
 [  0%] Built target cpp-httplib
 [  2%] Built target ggml-base
 [  7%] Built target ggml-cpu
 [  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/ggml-cuda.cu.o
 [  7%] Building CUDA object ggml/src/ggml-cuda/CMakeFiles/ggml-cuda.dir/mmvq.cu.o
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   106 | __nv_cvt_double_to_fp4(const double x,
       |                                       
   107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
       |                                                    
   335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__nv_fp4_storage_t __nv_cvt_double_to_fp4(double, __nv_fp4_interpretation_t, cudaRoundMode)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:107:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   106 | __nv_cvt_double_to_fp4(const double x,
       |                                       
   107 |                        const __nv_fp4_interpretation_t fp4_interpretation,
       | ^                 
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
-/home/taly/legacy-ai-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp: In function ‘__half_raw __nv_cvt_fp4_to_halfraw(__nv_fp4_storage_t, __nv_fp4_interpretation_t)’:
+/home/taly/abra-1080ti-port/.cuda_compat/include/cuda_fp4.hpp:335:1: warning: unused parameter ‘fp4_interpretation’ [-Wunused-parameter]
   334 | __nv_cvt_fp4_to_halfraw(const __nv_fp4_storage_t x,
       |                                                    
   335 |                         const __nv_fp4_interpretation_t fp4_interpretation) {
@@ -89,7 +89,7 @@ Executing: cmake --build /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/b
 [ 37%] Built target ggml
 [ 75%] Built target llama
 [ 82%] Built target llama-common
--- UI: gzip compression applied (/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/tools/ui/dist/_gzip)
+-- UI: gzip compression applied (/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/tools/ui/dist/_gzip)
 [ 82%] Linking CXX shared library ../../bin/libmtmd.so
 [ 82%] Built target llama-ui-assets
 [ 83%] Built target llama-ui
@@ -125,13 +125,13 @@ Executing: cmake --build /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/b
 [100%] Built target llama-perplexity-impl
 [100%] Linking CXX executable ../../bin/llama-perplexity
 [100%] Built target llama-perplexity
-Executing: cmake -S /home/taly/legacy-ai-1080ti-port -B /home/taly/legacy-ai-1080ti-port/build-sm61 -DLEGACY_AI_BUILD_Q8_REUSE_TEST=ON -DLLAMA_SOURCE_DIR=/home/taly/legacy-ai/.deps/llama.cpp -DLLAMA_LIB_DIR=/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc -DCMAKE_CUDA_FLAGS=-I/home/taly/legacy-ai-1080ti-port/.cuda_compat/include -Wno-deprecated-gpu-targets -DCMAKE_CUDA_ARCHITECTURES=61 -DCMAKE_BUILD_TYPE=Release
+Executing: cmake -S /home/taly/abra-1080ti-port -B /home/taly/abra-1080ti-port/build-sm61 -DABRA_BUILD_Q8_REUSE_TEST=ON -DLLAMA_SOURCE_DIR=/home/taly/abra/.deps/llama.cpp -DLLAMA_LIB_DIR=/home/taly/abra/.deps/llama.cpp/build-default/bin -DCMAKE_CUDA_COMPILER=/usr/local/cuda-12.9/bin/nvcc -DCMAKE_CUDA_FLAGS=-I/home/taly/abra-1080ti-port/.cuda_compat/include -Wno-deprecated-gpu-targets -DCMAKE_CUDA_ARCHITECTURES=61 -DCMAKE_BUILD_TYPE=Release
 -- Legacy GPU Target Architectures: 61
--- Using CUDA compatibility overlay from: /home/taly/legacy-ai-1080ti-port/.cuda_compat/include
+-- Using CUDA compatibility overlay from: /home/taly/abra-1080ti-port/.cuda_compat/include
 -- Configuring done (0.0s)
 -- Generating done (0.1s)
--- Build files have been written to: /home/taly/legacy-ai-1080ti-port/build-sm61
-Executing: cmake --build /home/taly/legacy-ai-1080ti-port/build-sm61 --target list_cuda_devices q4k_q8_test runtime_logits lookup_decode runtime_kernel_test attention_kernel_test value_kernel_test q8_reuse_test --parallel 8
+-- Build files have been written to: /home/taly/abra-1080ti-port/build-sm61
+Executing: cmake --build /home/taly/abra-1080ti-port/build-sm61 --target list_cuda_devices q4k_q8_test runtime_logits lookup_decode runtime_kernel_test attention_kernel_test value_kernel_test q8_reuse_test --parallel 8
 [ 50%] Built target legacy_smoke
 [100%] Built target list_cuda_devices
 [ 25%] Built target legacy_smoke

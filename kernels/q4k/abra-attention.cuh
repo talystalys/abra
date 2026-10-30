@@ -1,9 +1,7 @@
 #pragma once
-// Qwen3-4B K^T Q at batch one: preserve the two upstream warp reductions
-// separately, then add warp 0 + warp 1. Keep two physical warps per row;
-// four/eight rows share a block and avoid a second warp shuffle.
+
 template <int ROWS>
-static __global__ void legacy_ai_attention_qk(
+static __global__ void abra_attention_qk(
     const half * __restrict__ weights, const float * __restrict__ input, float * __restrict__ output, int N,
     int row_stride, int weight_head_stride, int input_head_stride,
     int output_head_stride) {
@@ -24,13 +22,13 @@ static __global__ void legacy_ai_attention_qk(
     }
     part = warp_reduce_sum<32>(part);
     if (warp == 1 && lane == 0) other[group] = part;
-    __syncthreads(); // All rows, including boundary padding, participate.
+    __syncthreads();
     if (warp == 0 && lane == 0 && row < N)
         output[head * output_head_stride + row] = part + other[group];
 }
 
 template <int ROWS, int WARPS>
-static __global__ void legacy_ai_attention_value(
+static __global__ void abra_attention_value(
     const half * __restrict__ weights, const float * __restrict__ input,
     float * __restrict__ output, int K, int row_stride, int weight_head_stride,
     int input_head_stride, int output_head_stride) {
@@ -58,11 +56,11 @@ static __global__ void legacy_ai_attention_value(
     }
 }
 
-static bool legacy_ai_attention_value_dispatch(ggml_backend_cuda_context &ctx,
+static bool abra_attention_value_dispatch(ggml_backend_cuda_context &ctx,
     const ggml_tensor *w, const ggml_tensor *x, const ggml_tensor *ids,
     ggml_tensor *y, const ggml_cuda_mm_fusion_args_host *fusion) {
     static const bool enabled = [] {
-        const char *v = std::getenv("LEGACY_AI_ATTENTION_V");
+        const char *v = std::getenv("ABRA_ATTENTION_V");
         return v && std::strcmp(v, "1") == 0;
     }();
     if (!enabled || ids || fusion || w->type != GGML_TYPE_F16 ||
@@ -76,11 +74,11 @@ static bool legacy_ai_attention_value_dispatch(ggml_backend_cuda_context &ctx,
         w->nb[2] > 134217728 || x->nb[2] > 67108864 || y->nb[2] > 67108864 ||
         w->nb[1] > 1048576 || ggml_cuda_info().devices[ctx.device].cc != 610)
         return false;
-    const int rows = std::getenv("LEGACY_AI_ATTENTION_V_ROWS") ? std::atoi(std::getenv("LEGACY_AI_ATTENTION_V_ROWS")) : 2;
+    const int rows = std::getenv("ABRA_ATTENTION_V_ROWS") ? std::atoi(std::getenv("ABRA_ATTENTION_V_ROWS")) : 2;
     if (rows != 2 && rows != 4) return false;
     const int K = w->ne[0], warps = K == 256 ? 4 : 8;
     const dim3 grid(128 / rows, 32), block(32, rows * warps);
-    #define LEGACY_VALUE(R, W) legacy_ai_attention_value<R, W><<<grid, block, 0, ctx.stream()>>>( \
+    #define LEGACY_VALUE(R, W) abra_attention_value<R, W><<<grid, block, 0, ctx.stream()>>>( \
         static_cast<const half *>(w->data), static_cast<const float *>(x->data), static_cast<float *>(y->data), K, \
         w->nb[1] / 2, w->nb[2] / 2, x->nb[2] / 4, y->nb[2] / 4)
     if (rows == 2 && warps == 4) { LEGACY_VALUE(2, 4); }
@@ -89,16 +87,16 @@ static bool legacy_ai_attention_value_dispatch(ggml_backend_cuda_context &ctx,
     else { LEGACY_VALUE(4, 8); }
     #undef LEGACY_VALUE
     static std::atomic_flag reported = ATOMIC_FLAG_INIT;
-    if (!reported.test_and_set()) GGML_LOG_INFO("legacy_ai: exact attention value dispatch active, ROWS=%d\n", rows);
+    if (!reported.test_and_set()) GGML_LOG_INFO("abra: exact attention value dispatch active, ROWS=%d\n", rows);
     return true;
 }
 
-static bool legacy_ai_attention_dispatch(ggml_backend_cuda_context &ctx,
+static bool abra_attention_dispatch(ggml_backend_cuda_context &ctx,
     const ggml_tensor *w, const ggml_tensor *x, const ggml_tensor *ids,
     ggml_tensor *y, const ggml_cuda_mm_fusion_args_host *fusion) {
-    if (legacy_ai_attention_value_dispatch(ctx, w, x, ids, y, fusion)) return true;
+    if (abra_attention_value_dispatch(ctx, w, x, ids, y, fusion)) return true;
     static const bool enabled = [] {
-        const char *v = std::getenv("LEGACY_AI_ATTENTION");
+        const char *v = std::getenv("ABRA_ATTENTION");
         return v && std::strcmp(v, "1") == 0;
     }();
     if (!enabled || ids || fusion || w->type != GGML_TYPE_F16 ||
@@ -112,18 +110,18 @@ static bool legacy_ai_attention_dispatch(ggml_backend_cuda_context &ctx,
         w->nb[1] > 134217728 || w->ne[1] * (w->nb[1] / 2) > 536870912 ||
         y->ne[0] != w->ne[1] || ggml_cuda_info().devices[ctx.device].cc != 610)
         return false;
-    const int rows = std::getenv("LEGACY_AI_ATTENTION_ROWS") ? std::atoi(std::getenv("LEGACY_AI_ATTENTION_ROWS")) : 4;
+    const int rows = std::getenv("ABRA_ATTENTION_ROWS") ? std::atoi(std::getenv("ABRA_ATTENTION_ROWS")) : 4;
     const int N = w->ne[1];
     if (rows != 4 && rows != 8) return false;
     const dim3 grid((N + rows - 1) / rows, 32);
     const dim3 block(32, rows * 2);
-    if (rows == 4) legacy_ai_attention_qk<4><<<grid, block, 0, ctx.stream()>>>(
+    if (rows == 4) abra_attention_qk<4><<<grid, block, 0, ctx.stream()>>>(
         static_cast<const half *>(w->data), static_cast<const float *>(x->data), static_cast<float *>(y->data), N,
         w->nb[1] / 2, w->nb[2] / 2, x->nb[2] / 4, y->nb[2] / 4);
-    else legacy_ai_attention_qk<8><<<grid, block, 0, ctx.stream()>>>(
+    else abra_attention_qk<8><<<grid, block, 0, ctx.stream()>>>(
         static_cast<const half *>(w->data), static_cast<const float *>(x->data), static_cast<float *>(y->data), N,
         w->nb[1] / 2, w->nb[2] / 2, x->nb[2] / 4, y->nb[2] / 4);
     static std::atomic_flag reported = ATOMIC_FLAG_INIT;
-    if (!reported.test_and_set()) GGML_LOG_INFO("legacy_ai: exact attention QK dispatch active, ROWS=%d\n", rows);
+    if (!reported.test_and_set()) GGML_LOG_INFO("abra: exact attention QK dispatch active, ROWS=%d\n", rows);
     return true;
 }

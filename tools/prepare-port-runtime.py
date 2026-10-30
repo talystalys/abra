@@ -11,26 +11,26 @@ import subprocess
 
 PIN = '169e4a7ff201e666c2325bcd35afb64573e39d09'
 OLD = '''        if (ggml_cuda_info().devices[cuda_ctx->device].cc < GGML_CUDA_CC_VOLTA) {'''
-NEW = '''        // Legacy AI: explicitly opt in only the qualified Pascal SM 6.1 path.
+NEW = '''        // Abra: explicitly opt in only the qualified Pascal SM 6.1 path.
         // Preserve the architecture guard and all upstream graph compatibility,
         // warmup, recapture, update and explicit-disable checks by default.
         const int cc = ggml_cuda_info().devices[cuda_ctx->device].cc;
-        const char * opt_in = std::getenv("LEGACY_AI_PASCAL_GRAPHS");
+        const char * opt_in = std::getenv("ABRA_PASCAL_GRAPHS");
         const bool pascal_graphs = cc == 610 && opt_in && std::strcmp(opt_in, "1") == 0;
         if (cc < GGML_CUDA_CC_VOLTA && !pascal_graphs) {'''
 
 KERNEL_GUARD = '''
-    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.
+    // Abra: preserve upstream for all unqualified shapes/layouts/fusions.
     static const bool legacy_q4k = [] {
-        const char * value = std::getenv("LEGACY_AI_Q4K");
+        const char * value = std::getenv("ABRA_Q4K");
         return value && std::strcmp(value, "1") == 0;
     }();
     static const bool legacy_q6k = [] {
-        const char * value = std::getenv("LEGACY_AI_Q6K");
+        const char * value = std::getenv("ABRA_Q6K");
         return value && std::strcmp(value, "1") == 0;
     }();
     static const bool legacy_tensor_mmvq = [] {
-        const char * value = std::getenv("LEGACY_AI_TENSOR_MMVQ");
+        const char * value = std::getenv("ABRA_TENSOR_MMVQ");
         return value && std::strcmp(value, "1") == 0;
     }();
     const bool canonical_q4 =
@@ -53,24 +53,24 @@ KERNEL_GUARD = '''
         !fusion.x_bias && !fusion.gate_bias && !fusion.x_scale && !fusion.gate_scale &&
         ggml_cuda_info().devices[ggml_cuda_get_device()].cc == 610) {
         const bool q6 = type_x == GGML_TYPE_Q6_K;
-        const char * env_wpr = std::getenv(q6 ? "LEGACY_AI_Q6K_WPR" : "LEGACY_AI_Q4K_WPR");
-        const char * env_wpb = std::getenv(q6 ? "LEGACY_AI_Q6K_WPB" : "LEGACY_AI_Q4K_WPB");
+        const char * env_wpr = std::getenv(q6 ? "ABRA_Q6K_WPR" : "ABRA_Q4K_WPR");
+        const char * env_wpb = std::getenv(q6 ? "ABRA_Q6K_WPB" : "ABRA_Q4K_WPB");
         const int wpr = env_wpr ? std::atoi(env_wpr) : 2;
         const int wpb = env_wpb ? std::atoi(env_wpb) : 8;
-        const char * sums_env = std::getenv("LEGACY_AI_Q4K_SUMS");
+        const char * sums_env = std::getenv("ABRA_Q4K_SUMS");
         const bool precompute = !q6 && sums_env && std::strcmp(sums_env, "1") == 0;
         const bool packed = !q6 && packed_weights && (!fusion.gate || packed_gate);
         auto packed_fusion = fusion;
         if (packed) packed_fusion.gate = packed_gate;
         const auto * x = static_cast<const block_q8_1 *>(vy);
         const bool dispatched = q6 ?
-            legacy_ai_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream) :
-            legacy_ai_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, packed ? packed_weights : vx, x, dst, nrows_x, ncols_x, packed ? packed_fusion : fusion, stream, precompute, packed);
+            abra_dispatch_mmvq<GGML_TYPE_Q6_K>(wpr, wpb, vx, x, dst, nrows_x, ncols_x, fusion, stream) :
+            abra_dispatch_mmvq<GGML_TYPE_Q4_K>(wpr, wpb, packed ? packed_weights : vx, x, dst, nrows_x, ncols_x, packed ? packed_fusion : fusion, stream, precompute, packed);
         if (dispatched) {
             static std::atomic_flag reported_q4 = ATOMIC_FLAG_INIT;
             static std::atomic_flag reported_q6 = ATOMIC_FLAG_INIT;
             if (!(q6 ? reported_q6 : reported_q4).test_and_set()) {
-                GGML_LOG_INFO("legacy_ai: Q%d_K runtime dispatch active, WPR=%d WPB=%d packed=%d K=%d N=%d tensor=%d\\n", q6 ? 6 : 4, wpr, wpb, packed, ncols_x, nrows_x, legacy_tensor_mmvq);
+                GGML_LOG_INFO("abra: Q%d_K runtime dispatch active, WPR=%d WPB=%d packed=%d K=%d N=%d tensor=%d\\n", q6 ? 6 : 4, wpr, wpb, packed, ncols_x, nrows_x, legacy_tensor_mmvq);
             }
             return;
         }
@@ -80,14 +80,14 @@ KERNEL_GUARD = '''
 PROFILE_SCOPE = '''
 // Diagnostic only: event intervals include exposed host launch gaps and each
 // operation is synchronized. These samples cannot serve as throughput claims.
-struct legacy_ai_profile_scope {
+struct abra_profile_scope {
     bool enabled;
     ggml_tensor * node;
     cudaStream_t stream;
     cudaEvent_t start, stop;
     int64_t wall_start;
-    legacy_ai_profile_scope(ggml_backend_cuda_context * ctx, ggml_tensor * tensor, bool captured)
-        : enabled(!captured && std::getenv("LEGACY_AI_PROFILE") != nullptr), node(tensor) {
+    abra_profile_scope(ggml_backend_cuda_context * ctx, ggml_tensor * tensor, bool captured)
+        : enabled(!captured && std::getenv("ABRA_PROFILE") != nullptr), node(tensor) {
         if (!enabled) return;
         stream = ctx->stream();
         CUDA_CHECK(cudaEventCreate(&start));
@@ -95,7 +95,7 @@ struct legacy_ai_profile_scope {
         wall_start = ggml_time_us();
         CUDA_CHECK(cudaEventRecord(start, stream));
     }
-    ~legacy_ai_profile_scope() {
+    ~abra_profile_scope() {
         if (!enabled) return;
         CUDA_CHECK(cudaEventRecord(stop, stream));
         CUDA_CHECK(cudaEventSynchronize(stop));
@@ -112,8 +112,6 @@ struct legacy_ai_profile_scope {
 };
 
 '''
-
-
 
 def main():
     p = argparse.ArgumentParser(description=__doc__)
@@ -140,7 +138,7 @@ def main():
             raise SystemExit('Unexpected graph instantiation site; refusing patch')
         report = instantiate + '''
             if (ggml_cuda_info().devices[cuda_ctx->device].cc == 610) {
-                GGML_LOG_INFO("legacy_ai: Pascal CUDA graph instantiated on device %d\\n", cuda_ctx->device);
+                GGML_LOG_INFO("abra: Pascal CUDA graph instantiated on device %d\\n", cuda_ctx->device);
             }'''
         path.write_text(data.replace(OLD, NEW).replace(instantiate, report))
         print('Applied opt-in Pascal CUDA Graph patch:', path)
@@ -148,7 +146,7 @@ def main():
         mmvq = a.source / 'ggml/src/ggml-cuda/mmvq.cu'
         data = mmvq.read_text()
         if KERNEL_GUARD not in data:
-            marker = '    // Legacy AI: preserve upstream for all unqualified shapes/layouts/fusions.'
+            marker = '    // Abra: preserve upstream for all unqualified shapes/layouts/fusions.'
             if marker in data:
                 first = data.index(marker)
                 last = data.index('    switch (type_x) {', first)
@@ -158,11 +156,11 @@ def main():
                 raise SystemExit('Unexpected MMVQ dispatcher; refusing kernel integration')
             switch = data.index('    switch (type_x) {', data.index(anchor))
             data = data[:switch] + KERNEL_GUARD + '\n' + data[switch:]
-            if '#include "legacy-ai-mmvq.cuh"' not in data:
-                data = data.replace('#include "vecdotq.cuh"', '#include "vecdotq.cuh"\n#include "legacy-ai-mmvq.cuh"\n#include <cstring>\n#include <atomic>')
-            data = data.replace('#include "legacy-ai-q4k.cuh"', '#include "legacy-ai-mmvq.cuh"')
+            if '#include "abra-mmvq.cuh"' not in data:
+                data = data.replace('#include "vecdotq.cuh"', '#include "vecdotq.cuh"\n#include "abra-mmvq.cuh"\n#include <cstring>\n#include <atomic>')
+            data = data.replace('#include "abra-q4k.cuh"', '#include "abra-mmvq.cuh"')
             mmvq.write_text(data)
-        # Two optional pointers are passed only by the full-tensor runtime path.
+
         data = mmvq.read_text()
         signature = '        const int ids_stride, cudaStream_t stream) {'
         start = data.index('static void mul_mat_vec_q_switch_type(')
@@ -176,7 +174,7 @@ def main():
             data = before + tail
             mmvq.write_text(data)
         root = Path(__file__).resolve().parent.parent
-        for name in ['legacy-ai-mmvq.cuh', 'legacy-ai-packed-q4.cuh']:
+        for name in ['abra-mmvq.cuh', 'abra-packed-q4.cuh']:
             source_header, destination = root / 'kernels/q4k' / name, mmvq.parent / name
             if not destination.exists() or destination.read_bytes() != source_header.read_bytes():
                 shutil.copyfile(source_header, destination)
@@ -191,10 +189,9 @@ def main():
             site = '                int nodes_to_skip = ggml_cuda_try_fuse(cuda_ctx, cgraph, i);'
             if data.count(site) != 1:
                 raise SystemExit('Unexpected fusion site; refusing profile instrumentation')
-            data = data.replace(site, '                legacy_ai_profile_scope profile(cuda_ctx, node, use_cuda_graph);\n' + site)
+            data = data.replace(site, '                abra_profile_scope profile(cuda_ctx, node, use_cuda_graph);\n' + site)
             path.write_text(data)
         print('Installed opt-in diagnostic event timing:', path)
-
 
 if __name__ == '__main__':
     main()

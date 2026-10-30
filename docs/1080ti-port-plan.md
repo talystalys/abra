@@ -6,8 +6,8 @@ authorizes the sequence below, including runtime integration and testing.
 Historical milestone verdicts and device evidence remain historical.
 
 Working branch: `port/1080ti-runtime`, based on M4 commit `815e3ff`.
-Local: `/home/taly/projects/legacy-ai-1080ti-port`.
-BigBoy: `/home/taly/legacy-ai-1080ti-port`.
+Local: `/home/taly/projects/abra-1080ti-port`.
+BigBoy: `/home/taly/abra-1080ti-port`.
 The earlier local research and BigBoy's 27B experimental checkout are retained.
 
 ## Milestones and acceptance criteria

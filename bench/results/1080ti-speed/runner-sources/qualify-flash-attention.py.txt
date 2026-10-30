@@ -55,7 +55,7 @@ if a.candidate_split == 'tensor':
             raise SystemExit('Tensor split physical identity mismatch')
 env = os.environ.copy()
 for key in list(env):
-    if key.startswith('LEGACY_AI_'):
+    if key.startswith('ABRA_'):
         del env[key]
 bins = a.runtime_bin.resolve() if a.runtime_bin else a.source / 'build-port/bin'
 env.update(CUDA_VISIBLE_DEVICES=uuid, GGML_CUDA_DISABLE_GRAPHS='1',GGML_CUDA_ALLREDUCE=a.allreduce,
@@ -96,8 +96,8 @@ def run(label, binary, args):
     split = a.candidate_split if candidate else a.baseline_split
     run_node = 0 if split == 'tensor' else node
     run_env = dict(env)
-    run_env['LEGACY_AI_REUSE_Q8'] = '1' if candidate and a.reuse_q8 else '0'
-    run_env['LEGACY_AI_SPLIT_TIED_OUTPUT'] = '1' if candidate and a.split_tied_output else '0'
+    run_env['ABRA_REUSE_Q8'] = '1' if candidate and a.reuse_q8 else '0'
+    run_env['ABRA_SPLIT_TIED_OUTPUT'] = '1' if candidate and a.split_tied_output else '0'
     run_bins = a.baseline_runtime_bin.resolve() if not candidate and a.baseline_runtime_bin else bins.resolve()
     run_env['LD_LIBRARY_PATH'] = str(run_bins) + ':/usr/local/cuda-12.9/lib64'
     if split == 'tensor': run_env['CUDA_VISIBLE_DEVICES'] = ','.join(x[0] for x in DEVICES.values())
@@ -108,8 +108,8 @@ def run(label, binary, args):
                '-c',str(a.context),'-b','2048','-ub','512',*args]
     if split == 'tensor': command += ['-ts','1,1']
     manifest['commands'].append({'label':label,'argv':command,'cuda_visible_devices':run_env['CUDA_VISIBLE_DEVICES'],
-                                 'reuse_q8':run_env['LEGACY_AI_REUSE_Q8'],'ld_library_path':run_env['LD_LIBRARY_PATH']})
-    manifest['commands'][-1]['split_tied_output'] = run_env['LEGACY_AI_SPLIT_TIED_OUTPUT']
+                                 'reuse_q8':run_env['ABRA_REUSE_Q8'],'ld_library_path':run_env['LD_LIBRARY_PATH']})
+    manifest['commands'][-1]['split_tied_output'] = run_env['ABRA_SPLIT_TIED_OUTPUT']
     (a.out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
     print('Executing',label,flush=True)
     with (a.out/(label+'-stdout.txt')).open('w') as out, (a.out/(label+'-stderr.txt')).open('w') as err:

@@ -1,4 +1,3 @@
-// Regression tests for reuse ownership, alias invalidation and upstream math.
 #include "common.cuh"
 #include "mmvq.cuh"
 #include <algorithm>
@@ -26,7 +25,7 @@ static ggml_tensor tensor(ggml_type type, int columns, int rows, void * data) {
 }
 
 int main() {
-    if (!std::getenv("LEGACY_AI_REUSE_Q8") || std::strcmp(std::getenv("LEGACY_AI_REUSE_Q8"), "1")) return 2;
+    if (!std::getenv("ABRA_REUSE_Q8") || std::strcmp(std::getenv("ABRA_REUSE_Q8"), "1")) return 2;
     cudaDeviceProp prop;
     CUDA_CHECK(cudaGetDeviceProperties(&prop, 0));
     std::printf("Device: %s, CC %d.%d, PCI %04x:%02x:%02x.0\n", prop.name,
@@ -58,8 +57,7 @@ int main() {
     int checks = 0;
     auto compute = [&](const ggml_tensor & w, const ggml_tensor & input) {
         ggml_cuda_mul_mat_vec_q(ctx, &w, &input, nullptr, &y);
-        // The backend uses a nonblocking stream. A default-stream host copy
-        // alone does not wait for that stream's kernels to finish.
+
         CUDA_CHECK(cudaStreamSynchronize(ctx.stream()));
         CUDA_CHECK(cudaMemcpy(actual.data(), dy, N * sizeof(float), cudaMemcpyDeviceToHost));
         for (float value : actual) if (!std::isfinite(value)) std::abort();
@@ -87,33 +85,33 @@ int main() {
         }
         CUDA_CHECK(cudaMemcpy(dx, first.data(), K * sizeof(float), cudaMemcpyHostToDevice));
         {
-            legacy_ai_q8_reuse_scope scope(ctx, true);
-            check(w4, x, expected[0]); check(w6, x, expected[1]); // shared Q4/Q6 bytes
-            scope.invalidate_write(&y); // independent destination leaves the cache valid
+            abra_q8_reuse_scope scope(ctx, true);
+            check(w4, x, expected[0]); check(w6, x, expected[1]);
+            scope.invalidate_write(&y);
             check(w4, x, expected[0]);
             ggml_tensor view = x; view.op = GGML_OP_VIEW;
-            scope.invalidate_write(&view); // a view is not a write
+            scope.invalidate_write(&view);
             check(w6, x, expected[1]);
             CUDA_CHECK(cudaMemcpy(dx + K / 2, second.data() + K / 2, K / 2 * sizeof(float), cudaMemcpyHostToDevice));
             ggml_tensor partial = tensor(GGML_TYPE_F32, K / 2, 1, dx + K / 2); partial.op = GGML_OP_CPY;
-            scope.invalidate_write(&partial); // partial alias must invalidate
+            scope.invalidate_write(&partial);
             check(w4, x, expected[4]); check(w6, x, expected[5]);
             CUDA_CHECK(cudaMemcpy(dx, second.data(), K * sizeof(float), cudaMemcpyHostToDevice));
             ggml_tensor alias = x; alias.op = GGML_OP_CPY;
-            scope.invalidate_write(&alias); // different descriptor, same storage
+            scope.invalidate_write(&alias);
             check(w4, x, expected[2]); check(w6, x, expected[3]);
             ggml_tensor different_descriptor = x;
-            check(w4, different_descriptor, expected[2]); // conservative identity fallback
+            check(w4, different_descriptor, expected[2]);
             check(w6, different_descriptor, expected[3]);
         }
         CUDA_CHECK(cudaMemcpy(dx, first.data(), K * sizeof(float), cudaMemcpyHostToDevice));
         {
-            legacy_ai_q8_reuse_scope next_graph(ctx, true);
-            check(w4, x, expected[0]); check(w6, x, expected[1]); // no cross-graph reuse
+            abra_q8_reuse_scope next_graph(ctx, true);
+            check(w4, x, expected[0]); check(w6, x, expected[1]);
         }
         {
-            legacy_ai_q8_reuse_scope disabled(ctx, false);
-            check(w4, x, expected[0]); check(w6, x, expected[1]); // capture/concurrency fallback
+            abra_q8_reuse_scope disabled(ctx, false);
+            check(w4, x, expected[0]); check(w6, x, expected[1]);
         }
     }
     CUDA_CHECK(cudaFree(dx)); CUDA_CHECK(cudaFree(dy));

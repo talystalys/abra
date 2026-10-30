@@ -1,6 +1,3 @@
-// Full-vocabulary, deterministic end-to-end validation of a runtime build.
-// Run as separate processes for baseline/candidate so graph environment caches
-// cannot leak. Output binary stays in ignored .tmp files; commit JSON analysis.
 #include "llama.h"
 #include "ggml-backend.h"
 #include <algorithm>
@@ -28,7 +25,7 @@ int main(int argc, char **argv) {
         ggml_backend_load_all();
         llama_model_params mp = llama_model_default_params();
         mp.n_gpu_layers = 99;
-        const char *split = std::getenv("LEGACY_AI_VALIDATE_SPLIT");
+        const char *split = std::getenv("ABRA_VALIDATE_SPLIT");
         mp.split_mode = split && std::strcmp(split, "row") == 0 ? LLAMA_SPLIT_MODE_ROW :
                         split && std::strcmp(split, "tensor") == 0 ? LLAMA_SPLIT_MODE_TENSOR :
                         split && std::strcmp(split, "layer") == 0 ? LLAMA_SPLIT_MODE_LAYER : LLAMA_SPLIT_MODE_NONE;
@@ -51,7 +48,7 @@ int main(int argc, char **argv) {
         cp.n_ubatch = 512;
         cp.n_threads = 4;
         cp.n_threads_batch = 4;
-        const char *fa = std::getenv("LEGACY_AI_VALIDATE_FLASH_ATTN");
+        const char *fa = std::getenv("ABRA_VALIDATE_FLASH_ATTN");
         cp.flash_attn_type = fa && std::strcmp(fa, "1") == 0 ? LLAMA_FLASH_ATTN_TYPE_ENABLED : LLAMA_FLASH_ATTN_TYPE_DISABLED;
         cp.no_perf = false;
         llama_context *ctx = llama_init_from_model(model, cp);
@@ -76,9 +73,8 @@ int main(int argc, char **argv) {
         device_query profiler_get_device = nullptr;
         device_setter profiler_set_device = nullptr;
         int profiler_device_count = 0;
-        if (std::getenv("LEGACY_AI_CUDA_PROFILE")) {
-            // Diagnostic only: exclude loading/prefill without synchronizing
-            // individual operations. Normal validation is unchanged.
+        if (std::getenv("ABRA_CUDA_PROFILE")) {
+
             llama_synchronize(ctx);
             profiler_library = dlopen("libcudart.so.12", RTLD_NOW);
             if (!profiler_library) throw std::runtime_error("CUDA profiler library unavailable");
@@ -91,7 +87,7 @@ int main(int argc, char **argv) {
             if (!profiler_start || !profiler_stop || !profiler_get_device || !profiler_set_device || !get_count ||
                 get_count(&profiler_device_count) || profiler_get_device(&saved_device))
                 throw std::runtime_error("CUDA profiler functions unavailable");
-            // CUDA profiler control affects the current context only.
+
             for (int device = 0; device < profiler_device_count; ++device)
                 if (profiler_set_device(device) || profiler_start()) throw std::runtime_error("CUDA profiler start failed");
             if (profiler_set_device(saved_device)) throw std::runtime_error("CUDA device restore failed");

@@ -16,7 +16,7 @@
   "environment": {
     "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315",
     "GGML_CUDA_DISABLE_GRAPHS": "1",
-    "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
+    "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
   },
   "clocks": "dynamic; no power/clock changes",
   "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
@@ -30,8 +30,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-prompt.txt",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-block0-baseline",
         "512",
@@ -49,8 +49,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-prompt.txt",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-block0-backend",
         "512",
@@ -59,7 +59,7 @@
         "4"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_BACKEND_SAMPLING": "1"
+        "ABRA_TEST_BACKEND_SAMPLING": "1"
       }
     },
     {
@@ -70,8 +70,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-prompt.txt",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-block0-lookup",
         "512",
@@ -89,8 +89,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-prompt.txt",
         "bench/results/1080ti-port/lookup-screen-primary/code-copy-block0-lookup-backend",
         "512",
@@ -99,7 +99,7 @@
         "4"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_BACKEND_SAMPLING": "1"
+        "ABRA_TEST_BACKEND_SAMPLING": "1"
       }
     }
   ]

@@ -1,7 +1,7 @@
 ggml_cuda_init: found 2 CUDA devices (Total VRAM: 22330 MiB):
   Device 0: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
   Device 1: NVIDIA GeForce GTX 1080 Ti, compute capability 6.1, VMM: yes, VRAM: 11165 MiB
-llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
+llama_model_loader: loaded meta data with 28 key-value pairs and 398 tensors from /home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf (version GGUF V3 (latest))
 llama_model_loader: Dumping metadata keys/values. Note: KV overrides do not apply in this output.
 llama_model_loader: - kv   0:                       general.architecture str              = qwen3
 llama_model_loader: - kv   1:                               general.type str              = model
@@ -1221,7 +1221,7 @@ create_tensor: loading tensor blk.35.ffn_gate.input_scale
 create_tensor: loading tensor blk.35.ffn_down.input_scale
 create_tensor: loading tensor blk.35.ffn_up.input_scale
 done_getting_tensors: tensor 'token_embd.weight' (q6_K) (and 0 others) cannot be used with preferred buffer type CUDA_Host, using CPU instead
-legacy_ai: tied Qwen output row splitting active
+abra: tied Qwen output row splitting active
 load_tensors: offloading output layer to GPU
 load_tensors: offloading 35 repeating layers to GPU
 load_tensors: offloaded 37/37 layers to GPU
@@ -1459,7 +1459,7 @@ ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
-legacy_ai: Q6_K runtime dispatch active, WPR=1 WPB=8 packed=0 K=4864 N=2560 tensor=1
+abra: Q6_K runtime dispatch active, WPR=1 WPB=8 packed=0 K=4864 N=2560 tensor=1
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
@@ -1560,7 +1560,7 @@ sched_reserve: reserve took 21.81 ms, sched copies = 1
 attach_threadpool: call
 set_n_threads: n_threads = 4, n_threads_batch = 4
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
-legacy_ai: graph-local Q8 activation reuse active
+abra: graph-local Q8 activation reuse active
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture
 ggml_cuda_graph_set_enabled: disabling CUDA graphs due to GPU architecture

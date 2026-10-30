@@ -65,7 +65,7 @@ def get_numa_nodes_count():
         return 1
 
 def get_gpu_numa_node(pci_bus_id):
-    # pci_bus_id format: 0000:03:00.0 or 00000000:03:00.0
+
     clean_pci = pci_bus_id.strip()
     if not clean_pci.startswith("0000:"):
         clean_pci = "0000:" + clean_pci.lstrip("0")
@@ -89,12 +89,12 @@ def get_live_gpus():
         parts = [p.strip() for p in line.split(",")]
         if len(parts) >= 7:
             pci_id = parts[3]
-            # Standardize PCI format to 0000:xx:yy.z
+
             if pci_id.startswith("00000000:"):
                 pci_id = pci_id[4:]
             elif not pci_id.startswith("0000:"):
                 pci_id = "0000:" + pci_id
-                
+
             gpus.append({
                 "index": int(parts[0]),
                 "name": parts[1],
@@ -111,13 +111,13 @@ def main():
     results_dir = sys.argv[1] if len(sys.argv) > 1 else "bench/results/m1"
     analysis_file = os.path.join(results_dir, "analysis-summary.json")
     manifest_file = os.path.join(results_dir, "manifest.json")
-    
+
     if os.path.isfile(analysis_file):
         with open(analysis_file, "r") as f:
             analysis_data = json.load(f)
     else:
         analysis_data = {}
-        
+
     live_gpus = get_live_gpus()
     driver_version = run_cmd("nvidia-smi --query-gpu=driver_version --format=csv,noheader | head -n 1")
     nvcc_raw = run_cmd("/usr/local/cuda-12.9/bin/nvcc --version 2>/dev/null || nvcc --version 2>/dev/null")
@@ -126,7 +126,6 @@ def main():
     kernel_raw = run_cmd("uname -s -r -v -m")
     hostname_raw = run_cmd("hostname")
 
-    # Match specific GPUs
     pascal_gpu = next((g for g in live_gpus if "1060" in g["name"] or g["uuid"] == "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd"), None)
     turing_gpu = next((g for g in live_gpus if "1660" in g["name"] or g["uuid"] == "GPU-8a043791-359d-1df4-9353-38c5bc98e5dd"), None)
 
@@ -135,7 +134,7 @@ def main():
         "milestone": "M1",
         "title": "llama.cpp Existing Inference Baseline on NVIDIA Pascal & Turing",
         "generated_at_utc": datetime.datetime.now(datetime.timezone.utc).isoformat(),
-        
+
         "expected_pinned_specifications": {
             "m0_accepted_base_commit": "a2e207f0b2dfaa8ac40f3a1d638e0aef5524d4f2",
             "llama_cpp_repository": "https://github.com/ggml-org/llama.cpp.git",
@@ -198,7 +197,7 @@ def main():
 
         "benchmarks": analysis_data
     }
-    
+
     with open(manifest_file, "w") as f:
         json.dump(manifest, f, indent=2)
     print(f"Generated live manifest: {manifest_file}")

@@ -28,13 +28,13 @@ for role, (uuid,pci,node) in DEVICES.items():
     name,_,found_pci,cc,_ = map(str.strip,rows[0].split(','))
     if name != 'NVIDIA GeForce GTX 1080 Ti' or cc != '6.1' or found_pci.lower().lstrip('0') != pci.lower().lstrip('0'):
         raise SystemExit('Physical GPU assertion failed')
-    env = {key:value for key,value in os.environ.items() if not key.startswith('LEGACY_AI_')}
+    env = {key:value for key,value in os.environ.items() if not key.startswith('ABRA_')}
     env.update(CUDA_VISIBLE_DEVICES=uuid, GGML_CUDA_DISABLE_GRAPHS='1',
                LD_LIBRARY_PATH=str((ROOT / '.deps/llama.cpp/build-default/bin').resolve())+':/usr/local/cuda-12.9/lib64')
     for target in ['q4k_q8_test','runtime_kernel_test','attention_kernel_test','value_kernel_test', *(['q8_reuse_test'] if a.reuse_q8 else [])]:
         target_env = dict(env)
         if target == 'q8_reuse_test':
-            target_env.update(LEGACY_AI_REUSE_Q8='1', LEGACY_AI_REUSE_Q8_STATS='1',
+            target_env.update(ABRA_REUSE_Q8='1', ABRA_REUSE_Q8_STATS='1',
                               LD_LIBRARY_PATH=str(ROOT / '.deps/llama.cpp-port/build-port/bin') + ':/usr/local/cuda-12.9/lib64')
         binary = ROOT / 'build-sm61' / target
         command = ['numactl',f'--cpunodebind={node}',f'--membind={node}',str(binary)]
@@ -43,7 +43,7 @@ for role, (uuid,pci,node) in DEVICES.items():
                         '--assert-name',name,'--assert-cc','6.1','--assert-pci',pci,'--assert-uuid',uuid,
                         '--envelope-out',str(a.out/(role+'-envelope.json'))]
         commands.append({'role':role,'gpu':rows[0],'argv':command,'binary_sha256':digest(binary),
-                         'environment':{key:value for key,value in target_env.items() if key.startswith('LEGACY_AI_') or key in ['CUDA_VISIBLE_DEVICES','GGML_CUDA_DISABLE_GRAPHS','LD_LIBRARY_PATH']}})
+                         'environment':{key:value for key,value in target_env.items() if key.startswith('ABRA_') or key in ['CUDA_VISIBLE_DEVICES','GGML_CUDA_DISABLE_GRAPHS','LD_LIBRARY_PATH']}})
         (a.out/'commands.json').write_text(json.dumps(commands,indent=2)+'\n')
         print('Executing',role,target,flush=True)
         with (a.out/(role+'-'+target+'.txt')).open('w') as log:

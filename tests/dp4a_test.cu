@@ -12,13 +12,9 @@
 #include "kernels/dp4a/dp4a_gemv.cuh"
 #include "smoke/smoke.h"
 
-using namespace legacy_ai;
-using namespace legacy_ai::dp4a;
+using namespace abra;
+using namespace abra::dp4a;
 
-// -----------------------------------------------------------------------------
-// CPU Reference Oracle
-// Mathematical accumulation using int64_t with explicit int32 range assertion
-// -----------------------------------------------------------------------------
 void cpu_gemv(
     const int8_t* W,
     const int8_t* x,
@@ -39,9 +35,6 @@ void cpu_gemv(
     }
 }
 
-// -----------------------------------------------------------------------------
-// Input Data Generators
-// -----------------------------------------------------------------------------
 enum class InputFamily {
     ALL_ZERO,
     ALL_ONES,
@@ -93,7 +86,7 @@ void generate_test_data(
             uint32_t state = seed;
             auto lcg = [&state]() -> int8_t {
                 state = state * 1664525u + 1013904223u;
-                int val = (int)(state >> 26) - 32; // [-32, 31]
+                int val = (int)(state >> 26) - 32;
                 return static_cast<int8_t>(val);
             };
             for (size_t i = 0; i < W.size(); ++i) W[i] = lcg();
@@ -109,19 +102,16 @@ void generate_test_data(
         case InputFamily::LANE_PATTERNS:
             for (size_t i = 0; i < W.size(); ++i) {
                 int byte_lane = (i % 4);
-                W[i] = static_cast<int8_t>(byte_lane + 1); // 1, 2, 3, 4
+                W[i] = static_cast<int8_t>(byte_lane + 1);
             }
             for (size_t i = 0; i < x.size(); ++i) {
                 int byte_lane = (i % 4);
-                x[i] = static_cast<int8_t>(10 * (byte_lane + 1)); // 10, 20, 30, 40
+                x[i] = static_cast<int8_t>(10 * (byte_lane + 1));
             }
             break;
     }
 }
 
-// -----------------------------------------------------------------------------
-// Test Execution Engine
-// -----------------------------------------------------------------------------
 struct TestResult {
     bool success;
     int N;
@@ -298,7 +288,6 @@ int main(int argc, char** argv) {
               << dev.total_memory_bytes << " bytes)\n";
     std::cout << "============================================================\n";
 
-    // Strict Device Identity Assertion
     std::string identity_err;
     if (!verify_device_identity(dev, assert_name, assert_cc_major, assert_cc_minor, assert_pci, assert_uuid, identity_err)) {
         std::cerr << "BLOCKER: Physical GPU assertion failure on active device " << dev.index << ":\n" << identity_err;
@@ -309,7 +298,6 @@ int main(int argc, char** argv) {
         std::cout << "PASS: Physical GPU identity assertions verified successfully.\n\n";
     }
 
-    // Print Authoritative Occupancy Table for Active Device
     std::cout << "=== Theoretical Occupancy Analysis (via CUDA Occupancy API) ===\n";
     std::cout << std::left
               << std::setw(32) << "Variant"
@@ -359,7 +347,6 @@ int main(int argc, char** argv) {
         }
     };
 
-    // Phase 1: Input Families x Variant Smoke Tests (N=128, K=256)
     std::cout << "=== Phase 1: Input Families x Variant Smoke Tests (N=128, K=256) ===\n";
     const std::vector<InputFamily> all_families = {
         InputFamily::ALL_ZERO,
@@ -382,7 +369,6 @@ int main(int argc, char** argv) {
     }
     std::cout << "\n";
 
-    // Phase 2: K-Edge Coverage Suite (N=64, various K)
     std::cout << "=== Phase 2: K-Edge Coverage Suite (N=64, various K) ===\n";
     const std::vector<int> k_edge_values = {
         1, 3, 4, 5, 31, 32, 33, 255, 256, 257, 1024, 2560, 4096, 9728
@@ -396,7 +382,6 @@ int main(int argc, char** argv) {
     printf("K-edge coverage tests passed: %zu K values across %zu variants.\n\n",
            k_edge_values.size(), all_variants.size());
 
-    // Phase 3: N-Boundary Coverage Suite (K=256, various N)
     std::cout << "=== Phase 3: N-Boundary Coverage Suite (K=256, various N) ===\n";
     const std::vector<int> n_boundary_values = {
         1, 2, 31, 32, 33, 63, 64, 65, 128, 256, 1024, 2560, 4096, 9728
@@ -410,7 +395,6 @@ int main(int argc, char** argv) {
     printf("N-boundary tests passed: %zu N values across %zu variants.\n\n",
            n_boundary_values.size(), all_variants.size());
 
-    // Phase 4: Qwen3-4B Real Model Shapes Coverage Suite
     std::cout << "=== Phase 4: Qwen3-4B Real Model Shapes Coverage Suite ===\n";
     struct ModelShape { const char* name; int N; int K; };
     const std::vector<ModelShape> qwen_shapes = {
@@ -433,7 +417,6 @@ int main(int argc, char** argv) {
     }
     std::cout << "\n";
 
-    // Summary
     std::cout << "============================================================\n";
     std::cout << "DP4A Test Suite Summary: " << passed_tests << " / " << total_tests
               << " Tests PASSED (100% bit-exact)\n";

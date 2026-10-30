@@ -50,7 +50,7 @@ source = ROOT/'.deps/llama.cpp-port'
 libs = a.runtime_bin.resolve() if a.runtime_bin else source/'build-port/bin'
 binary = ROOT/'build-sm61/lookup_decode'
 model = ROOT/'models/Qwen3-4B-Q4_K_M.gguf'
-env = {k:v for k,v in os.environ.items() if not k.startswith('LEGACY_AI_')}
+env = {k:v for k,v in os.environ.items() if not k.startswith('ABRA_')}
 env.update(CUDA_VISIBLE_DEVICES=uuid,GGML_CUDA_DISABLE_GRAPHS='1',GGML_CUDA_ALLREDUCE=a.allreduce,LD_LIBRARY_PATH=str(libs)+':/usr/local/cuda-12.9/lib64')
 fixtures = json.loads((ROOT/'tools/quality-probes.json').read_text())
 code = '\n'.join(f'def transform_{i}(value):\n    adjusted = value + {i}\n    return adjusted * 2\n' for i in range(24))
@@ -96,18 +96,18 @@ for case in workloads:
     notes.insert(43,'The access word is cobalt-orchid-731.'); prompt += '\n'+'\n'.join(notes)
  chat = '<|im_start|>user\n'+prompt+' /no_think<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n'
  prompt_file = a.out/(case['id']+'-prompt.txt'); prompt_file.write_text(chat)
- configs = [('baseline',0,{}),('backend',0,{'LEGACY_AI_TEST_BACKEND_SAMPLING':'1'}),('lookup',a.draft,{}),('lookup-backend',a.draft,{'LEGACY_AI_TEST_BACKEND_SAMPLING':'1'})]
- tensor_env = {'LEGACY_AI_TEST_TENSOR':'1','CUDA_VISIBLE_DEVICES':','.join(x[0] for x in DEVICES.values())}
+ configs = [('baseline',0,{}),('backend',0,{'ABRA_TEST_BACKEND_SAMPLING':'1'}),('lookup',a.draft,{}),('lookup-backend',a.draft,{'ABRA_TEST_BACKEND_SAMPLING':'1'})]
+ tensor_env = {'ABRA_TEST_TENSOR':'1','CUDA_VISIBLE_DEVICES':','.join(x[0] for x in DEVICES.values())}
  configs += [('tensor',0,tensor_env),('tensor-lookup',a.draft,tensor_env)]
  configs += [('tensor-control',0,{**tensor_env, 'LD_LIBRARY_PATH':str(a.baseline_runtime_bin.resolve())+':/usr/local/cuda-12.9/lib64' if a.baseline_runtime_bin else str(libs)+':/usr/local/cuda-12.9/lib64'}),
-             ('tensor-reuse',0,{**tensor_env,'LEGACY_AI_REUSE_Q8':'1'}),
-             ('tensor-output',0,{**tensor_env,'LEGACY_AI_SPLIT_TIED_OUTPUT':'1'}),
-             ('tensor-output-reuse',0,{**tensor_env,'LEGACY_AI_SPLIT_TIED_OUTPUT':'1','LEGACY_AI_REUSE_Q8':'1'})]
+             ('tensor-reuse',0,{**tensor_env,'ABRA_REUSE_Q8':'1'}),
+             ('tensor-output',0,{**tensor_env,'ABRA_SPLIT_TIED_OUTPUT':'1'}),
+             ('tensor-output-reuse',0,{**tensor_env,'ABRA_SPLIT_TIED_OUTPUT':'1','ABRA_REUSE_Q8':'1'})]
  wanted_configs = set(a.configs.split(','))
  if a.stage!='placement':
   if not wanted_configs <= {x[0] for x in configs}: raise SystemExit('Unknown config')
   configs = [x for x in configs if x[0] in wanted_configs]
- if a.stage=='placement': configs = [('baseline',0,{}),('cpu-kv',0,{'LEGACY_AI_TEST_CPU_KV':'1'}),('layers32',0,{'LEGACY_AI_TEST_GPU_LAYERS':'32','LEGACY_AI_TEST_THREADS':'16'}),('layers24',0,{'LEGACY_AI_TEST_GPU_LAYERS':'24','LEGACY_AI_TEST_THREADS':'16'}),('q8',0,{'LEGACY_AI_TEST_CACHE_K':'q8_0','LEGACY_AI_TEST_CACHE_V':'q8_0'})]
+ if a.stage=='placement': configs = [('baseline',0,{}),('cpu-kv',0,{'ABRA_TEST_CPU_KV':'1'}),('layers32',0,{'ABRA_TEST_GPU_LAYERS':'32','ABRA_TEST_THREADS':'16'}),('layers24',0,{'ABRA_TEST_GPU_LAYERS':'24','ABRA_TEST_THREADS':'16'}),('q8',0,{'ABRA_TEST_CACHE_K':'q8_0','ABRA_TEST_CACHE_V':'q8_0'})]
  results[case['id']] = {}
  blocks = [configs,list(reversed(configs))] if a.stage=='final' else [configs]
  for block, order in enumerate(blocks):
@@ -115,7 +115,7 @@ for case in workloads:
    label = f'{case["id"]}-block{block}-{name}'; prefix = a.out/label
    reps = a.reps if a.reps is not None else 15 if a.stage=='final' else 4 if a.stage=='screen' else 1
    if reps <= manifest['excluded_runs_per_block']: raise SystemExit('No measured repetitions remain')
-   run_node = 0 if extra_env.get('LEGACY_AI_TEST_TENSOR')=='1' else node
+   run_node = 0 if extra_env.get('ABRA_TEST_TENSOR')=='1' else node
    command = ['numactl',f'--cpunodebind={run_node}',f'--membind={run_node}','/usr/bin/time','-v',str(binary),str(model),str(prompt_file),str(prefix),str(case['limit']),str(draft_n),str(a.key),str(reps)]
    manifest['commands'].append({'label':label,'argv':command,'extra_environment':extra_env})
    (a.out/'manifest.json').write_text(json.dumps(manifest,indent=2)+'\n')
@@ -130,7 +130,7 @@ for case in workloads:
       while process.poll() is None:
        if time.monotonic()-started>1800:
         os.killpg(process.pid,signal.SIGKILL); process.wait(); raise TimeoutError('Decoding timed out')
-       # numactl execs time; its direct child is the actual decoding process.
+
        children = Path(f'/proc/{process.pid}/task/{process.pid}/children')
        for pid in children.read_text().split() if children.exists() else []:
         try:

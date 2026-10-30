@@ -2,7 +2,7 @@
   "utc": "2026-10-11T21:02:23.428088+00:00",
   "stage": "quality",
   "complete_code": false,
-  "runtime_bin": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin",
+  "runtime_bin": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin",
   "allreduce": "nccl",
   "source_head": "169e4a7ff201e666c2325bcd35afb64573e39d09",
   "model_sha256": "7485fe6f11af29433bc51cab58009521f205840f5b4ae3a32fa7f92e8534fdf5",
@@ -20,7 +20,7 @@
     "CUDA_VISIBLE_DEVICES": "GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c",
     "GGML_CUDA_DISABLE_GRAPHS": "1",
     "GGML_CUDA_ALLREDUCE": "nccl",
-    "LD_LIBRARY_PATH": "/home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
+    "LD_LIBRARY_PATH": "/home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port/bin:/usr/local/cuda-12.9/lib64"
   },
   "clocks": "dynamic; no power/clock changes",
   "latency_definition": "wall time of each verification block, including lookup, synchronized decoding, greedy selection and rollback; multiple tokens in a speculative block arrive together",
@@ -34,8 +34,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-block0-baseline",
         "128",
@@ -53,8 +53,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-block0-lookup",
         "128",
@@ -72,8 +72,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-block0-tensor",
         "128",
@@ -82,7 +82,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -94,8 +94,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/multiply-block0-tensor-lookup",
         "128",
@@ -104,7 +104,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -116,8 +116,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-block0-baseline",
         "128",
@@ -135,8 +135,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-block0-lookup",
         "128",
@@ -154,8 +154,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-block0-tensor",
         "128",
@@ -164,7 +164,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -176,8 +176,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sum-block0-tensor-lookup",
         "128",
@@ -186,7 +186,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -198,8 +198,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-block0-baseline",
         "128",
@@ -217,8 +217,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-block0-lookup",
         "128",
@@ -236,8 +236,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-block0-tensor",
         "128",
@@ -246,7 +246,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -258,8 +258,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/sort-block0-tensor-lookup",
         "128",
@@ -268,7 +268,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -280,8 +280,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/json-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/json-block0-baseline",
         "128",
@@ -299,8 +299,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/json-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/json-block0-lookup",
         "128",
@@ -318,8 +318,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/json-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/json-block0-tensor",
         "128",
@@ -328,7 +328,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -340,8 +340,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/json-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/json-block0-tensor-lookup",
         "128",
@@ -350,7 +350,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -362,8 +362,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-block0-baseline",
         "128",
@@ -381,8 +381,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-block0-lookup",
         "128",
@@ -400,8 +400,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-block0-tensor",
         "128",
@@ -410,7 +410,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -422,8 +422,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/code-trace-block0-tensor-lookup",
         "128",
@@ -432,7 +432,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -444,8 +444,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-block0-baseline",
         "128",
@@ -463,8 +463,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-block0-lookup",
         "128",
@@ -482,8 +482,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-block0-tensor",
         "128",
@@ -492,7 +492,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -504,8 +504,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/fact-block0-tensor-lookup",
         "128",
@@ -514,7 +514,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -526,8 +526,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-block0-baseline",
         "128",
@@ -545,8 +545,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-block0-lookup",
         "128",
@@ -564,8 +564,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-block0-tensor",
         "128",
@@ -574,7 +574,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -586,8 +586,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/translate-block0-tensor-lookup",
         "128",
@@ -596,7 +596,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -608,8 +608,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-block0-baseline",
         "128",
@@ -627,8 +627,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-block0-lookup",
         "128",
@@ -646,8 +646,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-block0-tensor",
         "128",
@@ -656,7 +656,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -668,8 +668,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/logic-block0-tensor-lookup",
         "128",
@@ -678,7 +678,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -690,8 +690,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-block0-baseline",
         "128",
@@ -709,8 +709,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-block0-lookup",
         "128",
@@ -728,8 +728,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-block0-tensor",
         "128",
@@ -738,7 +738,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -750,8 +750,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/extract-block0-tensor-lookup",
         "128",
@@ -760,7 +760,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -772,8 +772,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-block0-baseline",
         "128",
@@ -791,8 +791,8 @@
         "--membind=1",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-block0-lookup",
         "128",
@@ -810,8 +810,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-block0-tensor",
         "128",
@@ -820,7 +820,7 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     },
@@ -832,8 +832,8 @@
         "--membind=0",
         "/usr/bin/time",
         "-v",
-        "/home/taly/legacy-ai-1080ti-port/build-sm61/lookup_decode",
-        "/home/taly/legacy-ai-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
+        "/home/taly/abra-1080ti-port/build-sm61/lookup_decode",
+        "/home/taly/abra-1080ti-port/models/Qwen3-4B-Q4_K_M.gguf",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-prompt.txt",
         "bench/results/1080ti-port/lookup-fixed-probes/long-retrieval-block0-tensor-lookup",
         "128",
@@ -842,13 +842,13 @@
         "1"
       ],
       "extra_environment": {
-        "LEGACY_AI_TEST_TENSOR": "1",
+        "ABRA_TEST_TENSOR": "1",
         "CUDA_VISIBLE_DEVICES": "GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c"
       }
     }
   ],
   "nccl": {
-    "path": "/home/taly/legacy-ai-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so.2",
+    "path": "/home/taly/abra-1080ti-port/.deps/nccl-2.27.7-cuda12/usr/lib/x86_64-linux-gnu/libnccl.so.2",
     "sha256": "d52aa1198186191cbe13c59c66d328f1cdd92dbf291052b466a416e6b26d23a4"
   }
 }

@@ -14,12 +14,11 @@ UUIDS = {'primary': 'GPU-3007f159-e0cf-9303-0a81-41ea8e945315',
          'secondary': 'GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c',
          'both': 'GPU-3007f159-e0cf-9303-0a81-41ea8e945315,GPU-00279cb0-a4dc-86ec-7aa2-223d35376e6c'}
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
     p.add_argument('--runtime-lib', type=Path, required=True)
-    p.add_argument('--baseline-lib', type=Path, default=Path('/home/taly/legacy-ai/.deps/llama.cpp/build-default/bin'))
+    p.add_argument('--baseline-lib', type=Path, default=Path('/home/taly/abra/.deps/llama.cpp/build-default/bin'))
     p.add_argument('--probe', type=Path, default=ROOT / 'build-sm61/runtime_logits')
     p.add_argument('--gpu', choices=list(UUIDS), default='primary')
     p.add_argument('--depths', type=int, nargs='+', default=[0, 2048])
@@ -99,29 +98,29 @@ def main():
     for depth in a.depths:
         for name, (libraries, graphs, kernels) in modes.items():
             prefix = a.out / f'{name}-d{depth}'
-            env = {key: value for key, value in os.environ.items() if not key.startswith('LEGACY_AI_')}
-            env.update(LEGACY_AI_ATTENTION_V='1' if 'value' in name else '0', LEGACY_AI_ATTENTION_V_ROWS=str(a.attention_v_rows), LEGACY_AI_ATTENTION='1' if name.startswith('exact-attention') else '0', LEGACY_AI_ATTENTION_ROWS=str(a.attention_rows), LEGACY_AI_VALIDATE_SPLIT=a.split_mode if name == a.split_mode else a.reference_split_mode, LEGACY_AI_VALIDATE_FLASH_ATTN='1' if name == 'flash-attention' or a.reference_flash_attn else '0', CUDA_VISIBLE_DEVICES=UUIDS[a.gpu],
-                       LEGACY_AI_REUSE_Q8='1' if name in ['reuse-q8', 'kernels-reuse-q8', 'split-output-reuse', 'split-output-kernels-reuse'] else '0',
-                       LEGACY_AI_TENSOR_MMVQ='1' if kernels and a.tensor_kernels else '0',
-                       LEGACY_AI_SPLIT_TIED_OUTPUT='1' if name.startswith('split-output') else '0',
+            env = {key: value for key, value in os.environ.items() if not key.startswith('ABRA_')}
+            env.update(ABRA_ATTENTION_V='1' if 'value' in name else '0', ABRA_ATTENTION_V_ROWS=str(a.attention_v_rows), ABRA_ATTENTION='1' if name.startswith('exact-attention') else '0', ABRA_ATTENTION_ROWS=str(a.attention_rows), ABRA_VALIDATE_SPLIT=a.split_mode if name == a.split_mode else a.reference_split_mode, ABRA_VALIDATE_FLASH_ATTN='1' if name == 'flash-attention' or a.reference_flash_attn else '0', CUDA_VISIBLE_DEVICES=UUIDS[a.gpu],
+                       ABRA_REUSE_Q8='1' if name in ['reuse-q8', 'kernels-reuse-q8', 'split-output-reuse', 'split-output-kernels-reuse'] else '0',
+                       ABRA_TENSOR_MMVQ='1' if kernels and a.tensor_kernels else '0',
+                       ABRA_SPLIT_TIED_OUTPUT='1' if name.startswith('split-output') else '0',
                        LD_LIBRARY_PATH=str(libraries) + ':/usr/local/cuda-12.9/lib64',
-                       LEGACY_AI_PASCAL_GRAPHS='1' if graphs else '0',
-                       LEGACY_AI_PREPACK='1' if kernels and a.prepack else '0', LEGACY_AI_Q4K='1' if kernels else '0', LEGACY_AI_Q4K_WPR=str(a.q4k_wpr),
-                       LEGACY_AI_Q4K_WPB=str(a.q4k_wpb), LEGACY_AI_Q4K_SUMS='1' if kernels and a.q4k_sums else '0', LEGACY_AI_Q6K='1' if kernels and a.q6k else '0',
-                       LEGACY_AI_Q6K_WPR=str(a.q6k_wpr), LEGACY_AI_Q6K_WPB=str(a.q6k_wpb))
+                       ABRA_PASCAL_GRAPHS='1' if graphs else '0',
+                       ABRA_PREPACK='1' if kernels and a.prepack else '0', ABRA_Q4K='1' if kernels else '0', ABRA_Q4K_WPR=str(a.q4k_wpr),
+                       ABRA_Q4K_WPB=str(a.q4k_wpb), ABRA_Q4K_SUMS='1' if kernels and a.q4k_sums else '0', ABRA_Q6K='1' if kernels and a.q6k else '0',
+                       ABRA_Q6K_WPR=str(a.q6k_wpr), ABRA_Q6K_WPB=str(a.q6k_wpb))
             if graphs:
                 env.pop('GGML_CUDA_DISABLE_GRAPHS', None)
             else:
                 env['GGML_CUDA_DISABLE_GRAPHS'] = '1'
             command = ['numactl', f'--cpunodebind={1 if a.gpu == "secondary" else 0}',
                        f'--membind={1 if a.gpu == "secondary" else 0}', str(a.probe),
-                       '/home/taly/legacy-ai/models/Qwen3-4B-Q4_K_M.gguf',
+                       '/home/taly/abra/models/Qwen3-4B-Q4_K_M.gguf',
                        str(prefix) + '.tmp', str(prefix) + '-tokens.json', str(a.steps), str(depth)]
-            commands.append({'mode': name, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith(('LEGACY_AI_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_DISABLE_GRAPHS', 'GGML_CUDA_ALLREDUCE']}})
+            commands.append({'mode': name, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith(('ABRA_', 'NCCL_')) or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_DISABLE_GRAPHS', 'GGML_CUDA_ALLREDUCE']}})
             (a.out / 'commands.json').write_text(json.dumps({'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'commands': commands}, indent=2) + '\n')
             with open(str(prefix) + '.txt', 'w') as f:
                 subprocess.run(command, env=env, stdout=f, stderr=subprocess.STDOUT, check=True, timeout=300)
-            if env['LEGACY_AI_REUSE_Q8'] == '1' and 'graph-local Q8 activation reuse active' not in Path(str(prefix) + '.txt').read_text():
+            if env['ABRA_REUSE_Q8'] == '1' and 'graph-local Q8 activation reuse active' not in Path(str(prefix) + '.txt').read_text():
                 raise SystemExit('Activation reuse candidate did not reuse any activations')
             if name.startswith('split-output') and 'tied Qwen output row splitting active' not in Path(str(prefix) + '.txt').read_text():
                 raise SystemExit('Tied output did not split in the candidate')
@@ -142,7 +141,6 @@ def main():
                     raise SystemExit('Custom kernel mode did not dispatch custom kernels')
         print(f'Validated GPU={a.gpu}, depth={depth}, modes={list(modes)}', flush=True)
     (a.out / 'summary.json').write_text(json.dumps({'gpu': a.gpu, 'reports': reports, 'accepted': all(x['accepted'] for x in reports)}, indent=2) + '\n')
-
 
 if __name__ == '__main__':
     main()

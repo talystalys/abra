@@ -52,7 +52,7 @@ context probes retained 8/10 with no lost successes. [Full evidence and limitati
 ## First port round — Qwen3-4B only
 
 - Branch: `port/1080ti-runtime`, derived from M4 `815e3ff`.
-- BigBoy checkout: `/home/taly/legacy-ai-1080ti-port`; public-key SSH to
+- BigBoy checkout: `/home/taly/abra-1080ti-port`; public-key SSH to
   `taly@BigBoy` resolves to `<experimental-host-ip>` and works.
 - Hardware: two GTX 1080 Ti cards, each SM 6.1 and 11 GiB; identities and
   current host specs are in [the inventory](docs/research/2026-10-12-bigboy-refresh.md).

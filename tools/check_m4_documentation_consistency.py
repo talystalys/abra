@@ -30,7 +30,6 @@ def main():
     print("Milestone M4 Documentation & Data Consistency Checker")
     print("======================================================================")
 
-    # 1. Check summary JSON existence
     if not os.path.isfile(summary_path):
         print(f"FATAL: Missing summary file: {summary_path}")
         return 1
@@ -44,14 +43,12 @@ def main():
     with open(tuning_table_path, "r") as f:
         tuning_table = json.load(f)
 
-    # Check total canonical tensor count
     total_canonical_count = sum(w["occurrence_count"] for w in workload.get("canonical_workloads", []))
     if total_canonical_count != 216:
         print(f"FATAL: Canonical workload count mismatch! Expected 216, got {total_canonical_count}")
         return 1
     print(f"PASS: Canonical model Q4_K tensor count verified: {total_canonical_count}")
 
-    # Check summary device info
     pascal_data = summary.get("primary_qualification_pascal", {})
     p_dev = pascal_data.get("device", {})
     if p_dev.get("uuid") != "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd":
@@ -66,7 +63,6 @@ def main():
         return 1
     print("PASS: Turing physical device UUID verified in summary JSON.")
 
-    # Check shape coverage
     shapes = pascal_data.get("shape_analysis", {})
     expected_shapes = {"attn_q", "attn_kv", "attn_out", "ffn_gate_up", "ffn_down", "ffn_down_synth36", "guardrail_small_tail_k", "guardrail_mid_k_tail", "guardrail_large_n_mid_k", "guardrail_odd_n_boundary"}
     if not expected_shapes.issubset(shapes.keys()):
@@ -75,7 +71,6 @@ def main():
         return 1
     print(f"PASS: All {len(expected_shapes)} canonical and guardrail shapes present in summary.")
 
-    # Check model aggregate
     agg = pascal_data.get("canonical_model_aggregate", {}).get("mode1_multiply_only", {})
     sp_u = agg.get("aggregate_speedup_vs_upstream", 0.0)
     if sp_u < 1.05:
@@ -83,12 +78,10 @@ def main():
         return 1
     print(f"PASS: Pascal aggregate speedup vs upstream verified: {sp_u:.3f}x (+{agg.get('aggregate_latency_reduction_vs_upstream_pct', 0.0):.1f}% reduction)")
 
-    # Check report consistency if report exists
     if os.path.isfile(report_path):
         with open(report_path, "r") as f:
             report_text = f.read()
 
-        # Check for UUID mentions
         if "GPU-5078520c-bf92-4143-0d48-b02fd9d250dd" not in report_text:
             print("FATAL: Pascal GPU UUID missing from report!")
             return 1

@@ -40,7 +40,7 @@ for row in final['results']:
             assert manifest['binary_sha256'] == control['llama-bench']
         else:
             assert manifest['activation_reuse_confirmed']
-            assert manifest['environment']['LEGACY_AI_SPLIT_TIED_OUTPUT'] == '1'
+            assert manifest['environment']['ABRA_SPLIT_TIED_OUTPUT'] == '1'
             if candidate_libraries is None:
                 candidate_libraries = manifest['library_sha256']
             assert candidate_libraries == manifest['library_sha256']

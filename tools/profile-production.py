@@ -11,7 +11,6 @@ import subprocess
 
 ROOT = Path(__file__).resolve().parent.parent
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -37,24 +36,24 @@ def main():
     libs = source / 'build-port/bin'
     probe = ROOT / 'build-sm61/runtime_logits'
     model = ROOT / 'models/Qwen3-4B-Q4_K_M.gguf'
-    env = {key: value for key, value in os.environ.items() if not key.startswith(('LEGACY_AI_', 'NCCL_'))}
+    env = {key: value for key, value in os.environ.items() if not key.startswith(('ABRA_', 'NCCL_'))}
     env.update(CUDA_VISIBLE_DEVICES=','.join(value[0] for value in devices.values()),
                LD_LIBRARY_PATH=str(libs) + ':/usr/local/cuda-12.9/lib64',
-               LEGACY_AI_CUDA_PROFILE='1', LEGACY_AI_VALIDATE_SPLIT='tensor',
-               LEGACY_AI_VALIDATE_FLASH_ATTN='1', GGML_CUDA_ALLREDUCE='nccl',
-               GGML_CUDA_DISABLE_GRAPHS='1', LEGACY_AI_REUSE_Q8='1' if a.reuse_q8 else '0')
-    env['LEGACY_AI_SPLIT_TIED_OUTPUT'] = '1' if a.split_tied_output else '0'
+               ABRA_CUDA_PROFILE='1', ABRA_VALIDATE_SPLIT='tensor',
+               ABRA_VALIDATE_FLASH_ATTN='1', GGML_CUDA_ALLREDUCE='nccl',
+               GGML_CUDA_DISABLE_GRAPHS='1', ABRA_REUSE_Q8='1' if a.reuse_q8 else '0')
+    env['ABRA_SPLIT_TIED_OUTPUT'] = '1' if a.split_tied_output else '0'
     command = ['numactl', '--cpunodebind=0', '--membind=0', '/usr/local/cuda-12.9/bin/nvprof',
                '--profile-from-start', 'off', '--csv', '--print-gpu-trace', '--profile-api-trace', 'none',
                '--log-file', str(a.out / 'trace.csv'), str(probe), str(model),
                str(a.out / 'logits.tmp'), str(a.out / 'tokens.json'), '8', '2048']
     if a.shapes:
-        env.pop('LEGACY_AI_CUDA_PROFILE')
-        env['LEGACY_AI_PROFILE'] = '1'
+        env.pop('ABRA_CUDA_PROFILE')
+        env['ABRA_PROFILE'] = '1'
         command = ['numactl', '--cpunodebind=0', '--membind=0', str(probe), str(model),
                    str(a.out / 'logits.tmp'), str(a.out / 'tokens.json'), '1', '2048']
     manifest = {'utc': datetime.datetime.now(datetime.timezone.utc).isoformat(), 'host': socket.gethostname(),
-                'hardware': inventory, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith('LEGACY_AI_') or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS']},
+                'hardware': inventory, 'argv': command, 'environment': {k: v for k, v in env.items() if k.startswith('ABRA_') or k in ['CUDA_VISIBLE_DEVICES', 'LD_LIBRARY_PATH', 'GGML_CUDA_ALLREDUCE', 'GGML_CUDA_DISABLE_GRAPHS']},
                 'model_sha256': digest(model), 'probe_sha256': digest(probe),
                 'probe_cpp_sha256': digest(ROOT / 'tests/runtime_logits.cpp'),
                 'libraries': {file.name: digest(file) for file in libs.glob('*.so') if not file.is_symlink()},
@@ -69,7 +68,6 @@ def main():
     manifest['exit_code'] = result.returncode
     (a.out / 'manifest.json').write_text(json.dumps(manifest, indent=2) + '\n')
     raise SystemExit(result.returncode)
-
 
 if __name__ == '__main__':
     main()

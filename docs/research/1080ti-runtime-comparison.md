@@ -1,4 +1,4 @@
-# Qwen3-4B: Legacy AI, Ollama and stock llama.cpp
+# Qwen3-4B: Abra, Ollama and stock llama.cpp
 
 Status: measurements in progress. No comparative speed conclusion yet.
 
@@ -40,7 +40,7 @@ A read-only diagnostic during the Legacy primary-card matrix block recorded
 | Older compatible official Ollama | 0.11.10 | CUDA; defaults and tuned settings |
 | Clean stock llama.cpp, current stable release | v0.7.0, `620d2225cc436ab0b001e3200e590e3b286ef9ab` | CUDA, Flash Attention, clean sources; NCCL screened for two GPUs |
 | Clean stock llama.cpp, port revision | `169e4a7ff201e666c2325bcd35afb64573e39d09` | Same build/toolkit controls; NCCL screened for two GPUs |
-| Legacy AI | Same pinned base plus recorded port patches | CUDA, Flash Attention, NCCL FP32, tied-output splitting and Q8 activation reuse |
+| Abra | Same pinned base plus recorded port patches | CUDA, Flash Attention, NCCL FP32, tied-output splitting and Q8 activation reuse |
 | Previous port settings | Same port binary with both new optimizations disabled | Attribution control for the two latest changes |
 
 Current Ollama's CUDA-only attempt allocated no model on a GPU and was rejected
@@ -50,7 +50,7 @@ load all model layers. These results do not establish current Ollama CUDA
 performance on a newer driver. See [Ollama's hardware requirements](https://docs.ollama.com/gpu).
 
 Both stock source trees remain clean. Stock NCCL retains upstream arithmetic;
-Legacy AI's prior Pascal patch uses FP32 collectives. Comparators are not
+Abra's prior Pascal patch uses FP32 collectives. Comparators are not
 assumed to produce bit-identical logits. Fixed-corpus and task checks accompany
 timing results; existing custom-kernel tolerances were not changed.
 
@@ -176,7 +176,7 @@ Pending completion of the campaign and evidence audit.
 
 Requires the previously prepared pinned port checkout, canonical GGUF, CUDA
 12.9 header overlay and locally extracted NCCL 2.27.7 CUDA-12 package. All
-commands run on BigBoy from `/home/taly/legacy-ai-1080ti-port` with no other
+commands run on BigBoy from `/home/taly/abra-1080ti-port` with no other
 benchmark active. Each output directory must be new.
 
 ```bash
@@ -213,9 +213,9 @@ Optional figures use an isolated local plotting environment and the recorded
 aggregate; they never substitute generated values for missing measurements:
 
 ```bash
-python3 -m venv /tmp/legacy-ai-comparison-plots
-/tmp/legacy-ai-comparison-plots/bin/pip install matplotlib==3.10.7
-/tmp/legacy-ai-comparison-plots/bin/python tools/plot-runtime-comparison.py \
+python3 -m venv /tmp/abra-comparison-plots
+/tmp/abra-comparison-plots/bin/pip install matplotlib==3.10.7
+/tmp/abra-comparison-plots/bin/python tools/plot-runtime-comparison.py \
   bench/results/1080ti-comparison-repro/campaign/matrix \
   --out bench/results/1080ti-comparison-repro/campaign/plots
 ```

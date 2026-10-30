@@ -9,21 +9,6 @@
 #include <tuple>
 #include <mutex>
 
-// =============================================================================
-// Milestone M4: Parameterized Q4_K x Q8_1 MMVQ Family Kernel Template
-//
-// Parameters:
-//   WARPS_PER_ROW   : Number of warps cooperating on each output row (1, 2, or 4)
-//   WARPS_PER_BLOCK : Total warps in the thread block (1, 2, 4, 8, 16)
-//   UNROLL          : Unroll factor for K-superblock loop (1 or 2)
-//
-// Invariants:
-//   ROWS_PER_BLOCK = WARPS_PER_BLOCK / WARPS_PER_ROW
-//   THREADS_PER_BLOCK = WARPS_PER_BLOCK * 32
-//   Intra-warp shuffle reduction reduces 32 lanes -> lane 0
-//   Inter-warp smem reduction used only when WARPS_PER_ROW > 1
-//   Deadlock-free execution on arbitrary N through predicated row validation
-// =============================================================================
 template <int WARPS_PER_ROW, int WARPS_PER_BLOCK, int UNROLL = 1>
 __global__ void q4k_q8_mmvq_family_kernel(
     const block_q4_K * __restrict__ d_w,
@@ -55,17 +40,16 @@ __global__ void q4k_q8_mmvq_family_kernel(
         if constexpr (UNROLL == 2) {
             #pragma unroll 2
             for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
-                const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+                const int kby = kbx * (QK_K / QK8_1);
                 sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
             }
         } else {
             for (int kbx = kbx_start; kbx < blocks_per_row; kbx += blocks_per_iter) {
-                const int kby = kbx * (QK_K / QK8_1); // kbx * 8
+                const int kby = kbx * (QK_K / QK8_1);
                 sum += vec_dot_q4_K_q8_1(row_w, &d_x[kby], kbx, kqs);
             }
         }
 
-        // Intra-warp shuffle reduction (32 lanes -> lane 0)
         #pragma unroll
         for (int mask = 16; mask > 0; mask >>= 1) {
             sum += __shfl_xor_sync(0xffffffff, sum, mask, 32);
@@ -73,7 +57,7 @@ __global__ void q4k_q8_mmvq_family_kernel(
     }
 
     if constexpr (WARPS_PER_ROW == 1) {
-        // Zero shared memory, zero syncthreads
+
         if (is_valid_row && lane == 0) {
             d_y[row] = sum;
         }
@@ -105,7 +89,6 @@ __global__ void q4k_q8_mmvq_family_kernel(
     }
 }
 
-// Explicit instantiations of all candidate kernels
 template __global__ void q4k_q8_mmvq_family_kernel<1, 1, 1>(const block_q4_K *, const block_q8_1 *, float *, int, int);
 template __global__ void q4k_q8_mmvq_family_kernel<1, 2, 1>(const block_q4_K *, const block_q8_1 *, float *, int, int);
 template __global__ void q4k_q8_mmvq_family_kernel<1, 4, 1>(const block_q4_K *, const block_q8_1 *, float *, int, int);
@@ -389,30 +372,23 @@ Q4KOccupancyInfo get_q4k_candidate_occupancy_info(Q4KCandidateID candidate, int 
     return info;
 }
 
-// =============================================================================
-// Offline Autotuning Database & Shape-Aware Selector Table
-// =============================================================================
 static std::mutex g_tuning_mutex;
 static std::map<std::tuple<int, int, int>, Q4KTuningEntry> g_tuning_table;
 
-// Built-in verified baseline tuning entries (safe fallback table)
 static void init_default_tuning_table() {
     std::lock_guard<std::mutex> lock(g_tuning_mutex);
     if (!g_tuning_table.empty()) return;
 
-    // Pascal SM 6.1 initial baseline defaults
-    // attn_q (4096 x 2560): 2-warp split
     g_tuning_table[{4096, 2560, 61}] = {4096, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 54.27, 60.42, 1.113};
-    // attn_kv (1024 x 2560): 1-warp row (zero smem)
+
     g_tuning_table[{1024, 2560, 61}] = {1024, 2560, 61, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 13.31, 17.41, 1.308};
-    // attn_out (2560 x 4096): 2-warp split
+
     g_tuning_table[{2560, 4096, 61}] = {2560, 4096, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 55.30, 59.07, 1.068};
-    // ffn_gate_up (9728 x 2560): 2-warp split
+
     g_tuning_table[{9728, 2560, 61}] = {9728, 2560, 61, CANDIDATE_WPR2_WPB4, "Q4K_PASCAL_WPR2_WPB4", 122.88, 135.09, 1.099};
-    // ffn_down (2560 x 9728): 4-warp control
+
     g_tuning_table[{2560, 9728, 61}] = {2560, 9728, 61, CANDIDATE_WPR4_WPB4, "Q4K_PASCAL_WPR4_WPB4", 126.91, 132.10, 1.041};
 
-    // Turing SM 7.5 initial baseline defaults
     g_tuning_table[{4096, 2560, 75}] = {4096, 2560, 75, CANDIDATE_WPR1_WPB4, "Q4K_PASCAL_WPR1_WPB4", 33.84, 35.07, 1.036};
     g_tuning_table[{1024, 2560, 75}] = {1024, 2560, 75, CANDIDATE_WPR1_WPB8, "Q4K_PASCAL_WPR1_WPB8", 11.30, 12.29, 1.088};
     g_tuning_table[{2560, 4096, 75}] = {2560, 4096, 75, CANDIDATE_WPR1_WPB4_U2, "Q4K_PASCAL_WPR1_WPB4_U2", 32.08, 33.46, 1.043};
@@ -450,13 +426,6 @@ Q4KCandidateID get_autotuned_candidate_for_shape(int N, int K, int arch) {
         return it->second.winning_candidate;
     }
 
-    // Deterministic safe fallback heuristic:
-    // If shape is not in table:
-    // If K % 256 == 0:
-    //   If K == 2560 -> WPR2_WPB4 (addresses K=2560 tail)
-    //   If N >= 8192 -> WPR1_WPB4 (high thread-block count)
-    //   Else -> WPR2_WPB4
-    // Otherwise fallback to exact upstream MMVQ
     if (K % QK_K == 0) {
         if (K == 2560) {
             return (N >= 8192) ? CANDIDATE_WPR1_WPB4 : CANDIDATE_WPR2_WPB4;

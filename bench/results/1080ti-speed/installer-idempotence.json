@@ -15,14 +15,14 @@
     "ggml/src/ggml-cuda/mmvq.cu": "68edc13bc8b328009f8f3c6f378be2ed2d42b9e127329113fbe523de500f8fe0",
     "ggml/src/ggml-cuda/mmvq.cuh": "c36f53caf49f0ba2e85bfcf04d2d0ecf7ca796bfc6609014a15931cc6129b89b",
     "ggml/src/ggml-cuda/ggml-cuda.cu": "670f2a9d3677b68d9000d70f66f9e8ab5e80cabcf8b39eb29a34cb1ab92e9c31",
-    "ggml/src/ggml-cuda/legacy-ai-q8-reuse.cuh": "05f9aa56f47c703981086d55fd7a4a128555c133528bdd961beb1b058768c39f",
+    "ggml/src/ggml-cuda/abra-q8-reuse.cuh": "05f9aa56f47c703981086d55fd7a4a128555c133528bdd961beb1b058768c39f",
     "src/llama-model.cpp": "4b68ad57ded740e975db1e158c1f01b31aa398b19628662530497a50e31c9204"
   },
   "after": {
     "ggml/src/ggml-cuda/mmvq.cu": "68edc13bc8b328009f8f3c6f378be2ed2d42b9e127329113fbe523de500f8fe0",
     "ggml/src/ggml-cuda/mmvq.cuh": "c36f53caf49f0ba2e85bfcf04d2d0ecf7ca796bfc6609014a15931cc6129b89b",
     "ggml/src/ggml-cuda/ggml-cuda.cu": "670f2a9d3677b68d9000d70f66f9e8ab5e80cabcf8b39eb29a34cb1ab92e9c31",
-    "ggml/src/ggml-cuda/legacy-ai-q8-reuse.cuh": "05f9aa56f47c703981086d55fd7a4a128555c133528bdd961beb1b058768c39f",
+    "ggml/src/ggml-cuda/abra-q8-reuse.cuh": "05f9aa56f47c703981086d55fd7a4a128555c133528bdd961beb1b058768c39f",
     "src/llama-model.cpp": "4b68ad57ded740e975db1e158c1f01b31aa398b19628662530497a50e31c9204"
   },
   "byte_identical": true

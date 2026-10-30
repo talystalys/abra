@@ -26,7 +26,6 @@ DEVICES = [('GPU-3007f159-e0cf-9303-0a81-41ea8e945315', '03:00.0', 0),
 PORT = 18174
 CTX = 10240
 
-
 def digest(path):
     h = hashlib.sha256()
     with Path(path).open('rb') as f:
@@ -34,17 +33,14 @@ def digest(path):
             h.update(block)
     return h.hexdigest()
 
-
 def save(path, data):
     path = Path(path)
     tmp = path.with_name(path.name + '.new')
     tmp.write_text(json.dumps(data, indent=2, ensure_ascii=False) + '\n')
     tmp.replace(path)
 
-
 def output(argv, **kwargs):
     return subprocess.check_output(list(map(str, argv)), text=True, **kwargs)
-
 
 def api(path, data=None, timeout=300):
     conn = http.client.HTTPConnection('127.0.0.1', PORT, timeout=timeout)
@@ -60,18 +56,14 @@ def api(path, data=None, timeout=300):
     finally:
         conn.close()
 
-
 def chat(text):
     return '<|im_start|>user\n' + text + ' /no_think<|im_end|>\n<|im_start|>assistant\n<think>\n\n</think>\n\n'
-
 
 def identifier(serial):
     return '|'.join(f'{serial:06}'[::-1])
 
-
 def fresh_prompt(workloads, depth, serial):
-    # Delimit individual digits to avoid variable-length numeric merges.
-    # Reverse digits so the first identifier token changes on adjacent requests.
+
     if not 0 <= serial < 1000000:
         raise ValueError('Unique document identifier space exhausted')
     label = identifier(serial)
@@ -79,7 +71,6 @@ def fresh_prompt(workloads, depth, serial):
     if 'Document 0|0|0|0|0|0:' not in template:
         raise ValueError('Regenerate workloads with delimited document identifiers')
     return template.replace('Document 0|0|0|0|0|0:', 'Document ' + label + ':', 1)
-
 
 def configurations():
     configs = {}
@@ -109,11 +100,9 @@ def configurations():
                          'family': f'stock-{revision}-nccl', 'build': 'build-comparison-nccl', 'nccl': True}
     return configs
 
-
 def gpu_rows():
     return output(['nvidia-smi', '--query-gpu=name,uuid,pci.bus_id,compute_cap,driver_version,power.limit',
                    '--format=csv,noheader'])
-
 
 def inventory():
     rows = gpu_rows()
@@ -126,7 +115,6 @@ def inventory():
             'nvcc': output(['/usr/local/cuda-12.9/bin/nvcc', '--version']),
             'driver': output(['nvidia-smi', '-q']), 'clocks': 'Dynamic; no clock, power, driver or service changes.'}
 
-
 class Server:
     def __init__(self, config, directory, parallel=1):
         self.c = config
@@ -138,7 +126,7 @@ class Server:
 
     def __enter__(self):
         self.directory.mkdir(parents=True, exist_ok=False)
-        # Never accept a readiness response from an unrelated server.
+
         with socket.socket() as probe:
             if probe.connect_ex(('127.0.0.1', PORT)) == 0:
                 raise RuntimeError(f'Benchmark port {PORT} is already occupied')
@@ -148,9 +136,9 @@ class Server:
         c = self.c
         ids = [0, 1] if c['gpu'] == 'both' else [0 if c['gpu'] == 'primary' else 1]
         node = DEVICES[ids[0]][2]
-        self.env = {k: v for k, v in os.environ.items() if not k.startswith(('LEGACY_AI_', 'NCCL_', 'OLLAMA_', 'GGML_'))}
+        self.env = {k: v for k, v in os.environ.items() if not k.startswith(('ABRA_', 'NCCL_', 'OLLAMA_', 'GGML_'))}
         self.env['CUDA_VISIBLE_DEVICES'] = ','.join(DEVICES[i][0] for i in ids)
-        # Vulkan enumerates independently of CUDA. Verify actual placement below.
+
         self.env['GGML_VK_VISIBLE_DEVICES'] = ','.join(str(i) for i in ids)
         if c['kind'] == 'llama':
             self.source = ROOT / '.deps' / c['source']
@@ -160,8 +148,8 @@ class Server:
                 raise RuntimeError('Missing server binary: ' + str(binary))
             self.env.update(LD_LIBRARY_PATH=str(bins) + ':/usr/local/cuda-12.9/lib64')
             if c['family'] in ['legacy', 'port-control']:
-                self.env.update(LEGACY_AI_SPLIT_TIED_OUTPUT='1' if c['family'] == 'legacy' else '0',
-                                LEGACY_AI_REUSE_Q8='1' if c['family'] == 'legacy' else '0',
+                self.env.update(ABRA_SPLIT_TIED_OUTPUT='1' if c['family'] == 'legacy' else '0',
+                                ABRA_REUSE_Q8='1' if c['family'] == 'legacy' else '0',
                                 GGML_CUDA_DISABLE_GRAPHS='1', GGML_CUDA_ALLREDUCE='nccl' if len(ids) == 2 else 'none')
             elif c.get('nccl'):
                 self.env['GGML_CUDA_ALLREDUCE'] = 'nccl'
@@ -205,7 +193,7 @@ class Server:
             self.argv = ['numactl', f'--cpunodebind={node}', f'--membind={node}', str(binary), 'serve']
             metadata = {'binary_sha256': digest(binary), 'release_folder': str(self.source)}
         self.manifest = {'configuration': c, 'parallel': self.parallel, 'argv': self.argv,
-                         'environment': {k: v for k, v in self.env.items() if k.startswith(('LEGACY_AI_', 'GGML_', 'OLLAMA_', 'CUDA_VISIBLE', 'LD_LIBRARY'))},
+                         'environment': {k: v for k, v in self.env.items() if k.startswith(('ABRA_', 'GGML_', 'OLLAMA_', 'CUDA_VISIBLE', 'LD_LIBRARY'))},
                          'model_sha256': MODEL_SHA, **metadata}
         save(self.directory / 'manifest.json', self.manifest)
         self.log = (self.directory / 'server.log').open('w')
@@ -233,11 +221,11 @@ class Server:
                 modelfile = self.directory / 'Modelfile'
                 modelfile.write_text('FROM ' + str(MODEL) + '\n')
                 with (self.directory / 'import.log').open('w') as log:
-                    subprocess.run([str(binary), 'create', 'legacy-ai-benchmark', '-f', str(modelfile)],
+                    subprocess.run([str(binary), 'create', 'abra-benchmark', '-f', str(modelfile)],
                                    env=self.env, stdout=log, stderr=subprocess.STDOUT, check=True, timeout=180)
-                self.manifest['model_show'] = api('/api/show', {'model': 'legacy-ai-benchmark'})
-                # Loading is excluded from warm measurements; retain the full load response.
-                save(self.directory / 'load.json', api('/api/generate', {'model': 'legacy-ai-benchmark',
+                self.manifest['model_show'] = api('/api/show', {'model': 'abra-benchmark'})
+
+                save(self.directory / 'load.json', api('/api/generate', {'model': 'abra-benchmark',
                       'prompt': '', 'stream': False, 'keep_alive': -1, 'options': self.options}))
                 ps = api('/api/ps')
                 self.manifest['loaded_models'] = ps
@@ -270,8 +258,7 @@ class Server:
         pids = [self.process.pid]
         seen = set(pids)
         for pid in pids:
-            # Go and the HTTP server can fork from any thread. Linux exposes
-            # children per task, so reading only the main task misses runners.
+
             for children in Path(f'/proc/{pid}/task').glob('*/children'):
                 try:
                     for child in map(int, children.read_text().split()):
@@ -332,7 +319,7 @@ class Server:
     def generate(self, prompt, limit=128, cache=False):
         if self.c['kind'] == 'ollama':
             path = '/api/generate'
-            request = {'model': 'legacy-ai-benchmark', 'prompt': prompt, 'raw': True, 'stream': True,
+            request = {'model': 'abra-benchmark', 'prompt': prompt, 'raw': True, 'stream': True,
                        'keep_alive': -1, 'options': {**self.options, 'num_predict': limit}}
         else:
             path = '/completion'
@@ -396,7 +383,6 @@ class Server:
                 'backend_prefill_tps': prompt_n / prompt_s if prompt_s and prompt_n else None,
                 'client_output_tps': n / elapsed if elapsed else None}
 
-
 def summarise(rows):
     result = {'requests': len(rows)}
     for name in ['backend_decode_tps', 'backend_prefill_tps', 'ttft_s', 'elapsed_s', 'output_tokens', 'prompt_tokens_evaluated']:
@@ -406,10 +392,8 @@ def summarise(rows):
                             'spread': max(v) - min(v), 'p95': v[max(0, math.ceil(.95 * len(v)) - 1)]}
     return result
 
-
 def make_workloads(reference):
-    # Put the changing identifier at the start to prevent reuse of long prefixes.
-    # All runtimes receive identical bytes. Sizes are verified using stock tokenization.
+
     suffix = '\nContinue with at least 250 numbered examples of everyday objects and their uses. Write a long list without introductory remarks.'
     workloads = {}
     for target in [512, 2048, 8192]:
@@ -434,7 +418,6 @@ def make_workloads(reference):
                             'identifier_end_token_index': end})
         workloads[str(target)] = prompts
     return workloads
-
 
 def execute(a):
     if socket.gethostname() != 'BigBoy':
@@ -594,7 +577,6 @@ def execute(a):
                     raise
             print('Completed', label, flush=True)
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -617,7 +599,6 @@ def main():
     with (ROOT / '.deps/comparison.lock').open('w') as lock:
         fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
         execute(a)
-
 
 if __name__ == '__main__':
     main()

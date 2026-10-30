@@ -10,7 +10,6 @@ KERNEL_VARIANTS = ['q4-w1', 'q4-w2', 'q6-w1', 'q6-w2', 'both-w1', 'both-w2', 'co
 VARIANTS = ['fallback', 'reuse-q8', 'graphs', 'split-output', 'split-output-reuse', *KERNEL_VARIANTS,
             *['output-' + name for name in KERNEL_VARIANTS]]
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('--out', type=Path, required=True)
@@ -55,7 +54,6 @@ def main():
                 subprocess.run(command, check=True)
     subprocess.run([sys.executable, str(ROOT / 'tools/analyze-port-results.py'), str(a.out),
                     '--out', str(a.out / 'report.json')], check=True)
-
 
 if __name__ == '__main__':
     main()

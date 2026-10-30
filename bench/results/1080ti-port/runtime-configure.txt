@@ -49,4 +49,4 @@ CMAKE_BUILD_TYPE=Release
 -- Generating embedded license file for target: llama-app
 -- Configuring done (5.7s)
 -- Generating done (0.4s)
--- Build files have been written to: /home/taly/legacy-ai-1080ti-port/.deps/llama.cpp-port/build-port
+-- Build files have been written to: /home/taly/abra-1080ti-port/.deps/llama.cpp-port/build-port

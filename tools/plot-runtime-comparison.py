@@ -8,7 +8,6 @@ import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('matrix', type=Path)
@@ -20,7 +19,7 @@ def main():
     colors = {'ollama-current': '#bd6b25', 'ollama-compatible': '#926e3a',
               'stock-current': '#3472a6', 'legacy': '#288467'}
     labels = {'ollama-current': 'Ollama 0.40.6 / Vulkan', 'ollama-compatible': 'Ollama 0.11.10 / CUDA',
-              'stock-current': 'Stock llama.cpp v0.7.0', 'legacy': 'Legacy AI'}
+              'stock-current': 'Stock llama.cpp v0.7.0', 'legacy': 'Abra'}
     decisions = {}
     for family in colors:
         candidates = [name for name in names if name.startswith(family + '-')]
@@ -85,7 +84,6 @@ def main():
                 'profiles': decisions})}
             fig.savefig(a.out / f'runtime-comparison-{depth}.{suffix}', dpi=180, facecolor='white', metadata=metadata)
         plt.close(fig)
-
 
 if __name__ == '__main__':
     main()

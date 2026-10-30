@@ -10,15 +10,12 @@ import runpy
 ROOT = Path(__file__).resolve().parent.parent
 helpers = runpy.run_path(str(ROOT / 'tools/compare-runtimes.py'))
 
-
 def read(path):
     return json.loads(Path(path).read_text())
-
 
 def require(value, description):
     if not value:
         raise AssertionError(description)
-
 
 def audit(directory):
     selected = read(directory / 'selection.json')['selected_main_configurations']
@@ -186,13 +183,11 @@ def audit(directory):
     helpers['save'](directory / 'audit.json', result)
     print(json.dumps({k: v for k, v in result.items() if k in ['audit_completed', 'matrix_counts', 'configurations']}, indent=2))
 
-
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument('directory', type=Path)
     a = p.parse_args()
     audit(a.directory)
-
 
 if __name__ == '__main__':
     main()

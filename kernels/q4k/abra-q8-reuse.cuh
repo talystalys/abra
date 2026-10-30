@@ -1,9 +1,6 @@
 #pragma once
 
-// Host-side, graph-local cache. Included only by mmvq.cu. The quantizer and
-// every weight dot product remain the pinned upstream implementations.
-// The owning scope cannot outlive a graph evaluation or cross CUDA streams.
-struct legacy_ai_q8_reuse_state {
+struct abra_q8_reuse_state {
     ggml_backend_cuda_context * ctx;
     ggml_cuda_pool_alloc<char> quantized;
     const ggml_tensor * input = nullptr;
@@ -13,15 +10,14 @@ struct legacy_ai_q8_reuse_state {
     int hits = 0;
     int invalidations = 0;
 
-    explicit legacy_ai_q8_reuse_state(ggml_backend_cuda_context & context)
+    explicit abra_q8_reuse_state(ggml_backend_cuda_context & context)
         : ctx(&context), quantized(context.pool(),
             GGML_PAD(2560, MATRIX_ROW_PADDING) * sizeof(block_q8_1) / QK8_1) {}
 
     bool eligible(const ggml_tensor * weights, const ggml_tensor * activation,
                   const ggml_tensor * ids, cudaStream_t current_stream) const {
         return !ids && ctx->curr_stream_no == 0 && current_stream == ctx->stream() &&
-            // Meta-backend model shards retain ANY usage in the pinned runtime.
-            // Exclude COMPUTE buffers, whose padding can be cleared by MMVQ.
+
             weights->buffer && ggml_backend_buffer_get_usage(weights->buffer) != GGML_BACKEND_BUFFER_USAGE_COMPUTE &&
             (weights->type == GGML_TYPE_Q4_K || weights->type == GGML_TYPE_Q6_K) &&
             activation->type == GGML_TYPE_F32 && activation->ne[0] == 2560 &&
@@ -30,33 +26,33 @@ struct legacy_ai_q8_reuse_state {
     }
 };
 
-static thread_local legacy_ai_q8_reuse_state * legacy_ai_active_q8_reuse = nullptr;
+static thread_local abra_q8_reuse_state * abra_active_q8_reuse = nullptr;
 
-legacy_ai_q8_reuse_scope::legacy_ai_q8_reuse_scope(ggml_backend_cuda_context & ctx, bool compatible) {
-    previous = legacy_ai_active_q8_reuse;
+abra_q8_reuse_scope::abra_q8_reuse_scope(ggml_backend_cuda_context & ctx, bool compatible) {
+    previous = abra_active_q8_reuse;
     static const bool enabled = [] {
-        const char * value = std::getenv("LEGACY_AI_REUSE_Q8");
+        const char * value = std::getenv("ABRA_REUSE_Q8");
         return value && std::strcmp(value, "1") == 0;
     }();
     if (enabled && compatible && ctx.curr_stream_no == 0 &&
         ggml_cuda_info().devices[ctx.device].cc == 610) {
-        state = new legacy_ai_q8_reuse_state(ctx);
+        state = new abra_q8_reuse_state(ctx);
     }
-    legacy_ai_active_q8_reuse = static_cast<legacy_ai_q8_reuse_state *>(state);
+    abra_active_q8_reuse = static_cast<abra_q8_reuse_state *>(state);
 }
 
-legacy_ai_q8_reuse_scope::~legacy_ai_q8_reuse_scope() {
-    auto * cache = static_cast<legacy_ai_q8_reuse_state *>(state);
-    if (cache && std::getenv("LEGACY_AI_REUSE_Q8_STATS")) {
+abra_q8_reuse_scope::~abra_q8_reuse_scope() {
+    auto * cache = static_cast<abra_q8_reuse_state *>(state);
+    if (cache && std::getenv("ABRA_REUSE_Q8_STATS")) {
         std::fprintf(stderr, "LEGACY_Q8_REUSE,%d,%d,%d,%d\n", cache->ctx->device,
                      cache->quantizations, cache->hits, cache->invalidations);
     }
-    legacy_ai_active_q8_reuse = static_cast<legacy_ai_q8_reuse_state *>(previous);
+    abra_active_q8_reuse = static_cast<abra_q8_reuse_state *>(previous);
     delete cache;
 }
 
-void legacy_ai_q8_reuse_scope::invalidate_write(const ggml_tensor * node) {
-    auto * cache = static_cast<legacy_ai_q8_reuse_state *>(state);
+void abra_q8_reuse_scope::invalidate_write(const ggml_tensor * node) {
+    auto * cache = static_cast<abra_q8_reuse_state *>(state);
     if (!cache || !cache->input || !node->data ||
         (node->flags & GGML_TENSOR_FLAG_COMPUTE) == 0 ||
         node->op == GGML_OP_NONE || node->op == GGML_OP_VIEW ||
@@ -65,8 +61,7 @@ void legacy_ai_q8_reuse_scope::invalidate_write(const ggml_tensor * node) {
     }
     const uintptr_t write_begin = reinterpret_cast<uintptr_t>(node->data);
     const uintptr_t input_begin = reinterpret_cast<uintptr_t>(cache->input_data);
-    // Include strided spans and aliases. Invalidate after every executed node,
-    // including all destinations of a fused operation, before another MMVQ.
+
     if (write_begin < input_begin + ggml_nbytes(cache->input) &&
         input_begin < write_begin + ggml_nbytes(node)) {
         cache->input = nullptr;
