@@ -9,10 +9,10 @@
 
 ---
 
-## Executive Summary
+## Summary
 
 * **The Problem:** Modern LLM runtimes (vLLM, TensorRT-LLM) optimize heavily for Tensor Core architectures (Volta/Ampere/Hopper). On legacy Pascal GPUs, quantized GEMV decode workloads suffer from thread divergence, high register pressure, and slow fallback emulation.
-* **The Engineering:** Abra bypasses scalar emulations by synthesizing hardware `IDP.4A.S8.S8` vector dot products, autotuning a 17-variant parameterized warp family to maintain 100% theoretical occupancy with zero register spills, and splitting vocabulary projections across dual cards via socket-aware NCCL.
+* **The Fix:** Abra bypasses scalar emulations by synthesizing hardware `IDP.4A.S8.S8` vector dot products, autotuning a 17-variant parameterized warp family to maintain 100% theoretical occupancy with zero register spills, and splitting vocabulary projections across dual cards via socket-aware NCCL.
 * **The Result:** **115.4 tokens/s decode** on Dual GTX 1080 Ti (Qwen3-4B Q4_K_M)—a **+44% throughput speedup** over single-GPU stock inference with bit-identical logit validation.
 
 ---
