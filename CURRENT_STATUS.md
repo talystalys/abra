@@ -1,6 +1,36 @@
 # CURRENT_STATUS.md
 
-## Latest optimization round — Qwen3-4B
+## Further speed work — Qwen3-4B
+
+The user authorized implementation and tests after the research-only round.
+The default two-card launcher now splits Qwen3-4B's duplicated tied output
+projection by vocabulary rows and reuses unchanged Q8_1 activation bytes
+within a graph. Model weights, F16 KV and upstream arithmetic remain unchanged.
+`--unoptimized` preserves the previous tensor mode; single-card and exact modes
+remain available. Placement/NCCL tuning and the new tensor kernel variants
+were not selected after measured negative results.
+
+The corrected comparison against frozen libraries measured generation at
+105.42 to 115.37 tokens/s at empty context (+9.4%), 94.23 to 102.49 at 2K
+(+8.8%), and 80.60 to 86.91 at 8K (+7.8%). Each mode/depth has 20 measured
+samples and five excluded warmups per forward/reverse block. Prompt medians
+changed +0.04%, +0.06% and +2.27%. The primary reached 91 C; dynamic clocks
+and sustained thermal slowdown remain. The first timing attempt loaded the
+candidate fallback via a copied executable's absolute RUNPATH and is
+superseded. The harness now verifies actual resolved library paths/hashes.
+
+All 14,585,856 selected-candidate logits across 0/2K/8K were bit-identical to
+the frozen tensor/FA reference. Both cards completed 7542 total oracle and
+activation regression cases. Fixed-corpus perplexity was 12.4064 in both
+modes, with identical probe answers and 8/10 scores. Complete code copy/edit,
+prose and reasoning matched all IDs across three repetitions. Each runtime
+completed a 100-request / 25,600-token reset soak with identical outputs and
+zero sampled swap. Allocation fell 152 MiB per card in the measured workloads.
+All eight actual launcher smokes passed; context-4096 probes also matched
+answers and retained 8/10. The two new installers were byte-idempotent.
+[Full measurements, limitations and reproduction](docs/research/1080ti-speed-results.md).
+
+## Previous optimization round — Qwen3-4B
 
 The user authorized further research, implementation and tests in
 [the next-round plan](docs/1080ti-next-plan.md). Default inference now uses
@@ -23,7 +53,7 @@ context probes retained 8/10 with no lost successes. [Full evidence and limitati
 
 - Branch: `port/1080ti-runtime`, derived from M4 `815e3ff`.
 - BigBoy checkout: `/home/taly/legacy-ai-1080ti-port`; public-key SSH to
-  `taly@BigBoy` resolves to `82.128.141.4` and works.
+  `taly@BigBoy` resolves to `<experimental-host-ip>` and works.
 - Hardware: two GTX 1080 Ti cards, each SM 6.1 and 11 GiB; identities and
   current host specs are in [the inventory](docs/research/2026-10-12-bigboy-refresh.md).
 - P0: the unchanged M4 oracle suite completed 756/756 cases on each card.
